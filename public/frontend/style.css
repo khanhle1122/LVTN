@@ -1,0 +1,133 @@
+
+
+
+.logo-login{
+    width: 200px;
+}
+.form-login{
+    margin-top: 400px;
+    height: auto;
+    width: 500px;
+    margin: auto;
+    padding: 20px;
+    padding-bottom: 10px;
+}
+.logo-header{
+    width: 150px;
+}
+.scroll-container {
+    display: flex;
+    overflow-x: auto;
+    padding: 20px 0;
+    gap: 20px;
+}
+
+.custom-file-input::before {
+    content: 'Chọn tệp';
+    display: inline-block;
+    background: linear-gradient(top, #f9f9f9, #e3e3e3);
+    border: 1px solid #999;
+    border-radius: 3px;
+    padding: 5px 8px;
+    outline: none;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    cursor: pointer;
+    text-shadow: 1px 1px #fff;
+    font-weight: 700;
+    font-size: 10pt;
+  }
+
+  .custom-file-input:hover::before {
+    border-color: black;
+  }
+
+  .custom-file-input input[type="file"] {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    display: block;
+    width: 0;
+    height: 0;
+  }
+
+  .file-info {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+
+  .file-info span {
+    margin-right: 10px;
+  }
+
+  .file-list {
+    display: flex;
+    flex-wrap: wrap;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .file-list li {
+    margin-right: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+  }
+  .cursor-pointer:hover{
+    cursor: pointer;
+    background-color: #e3e3e3e2;
+  }
+  
+/* Card styling */
+
+
+.percentage_k {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  font-weight: bold;
+}
+
+
+/* Star icon styling */
+
+
+
+
+/* Circle progress styling */
+.circle-k {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin: 20px 20px;
+}
+
+.circle-k::before {
+    content: '';
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    background: white;
+    border-radius: 50%;
+}
+
+.percentage_k {
+    /* position: relative; */
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+#toggle-icon_k {
+  cursor: pointer;
+}
+
