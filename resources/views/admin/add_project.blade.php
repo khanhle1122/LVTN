@@ -54,7 +54,7 @@
                         <div class="col-sm-4">
                             <div class="mb-4">
                                 <lablel>Người giám sát</lablel>
-                                <select class="form-select" id="sel1" name="userID">
+                                <select class="form-select" id="userID" name="userID">
                                     <option value=""></option>
                                     @foreach(App\Models\User::all() as $user)
                                         @if($user->role !== 'staff')

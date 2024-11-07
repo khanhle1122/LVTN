@@ -13,11 +13,14 @@ class AdminController extends Controller
 {
     public function index(){
         $projects =Project::all();
+        $project =Project::first();
+
         $totalProject = $projects->count();
         $inProgressProjects = $projects->where('status', 0)->count();  // Đang thực hiện
         $onHoldProjects = $projects->where('status', 1)->count();      // Tạm dừng
         return view('admin.index',compact(
                         'projects',
+                        'project',
                         'totalProject',
                         'inProgressProjects',
                         'onHoldProjects'

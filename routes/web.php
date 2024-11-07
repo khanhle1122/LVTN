@@ -112,6 +112,9 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::post('/check-unique', [NhanVienController::class, 'checkUnique'])->name('check.unique');
 
     Route::get('/admin/phancong',[NhanVienController::class, 'viewDivision'])->name('division.employee');
+    Route::post('/admin/add-member',[NhanVienController::class, 'addMember'])->name('add.member');
+    Route::get('/admin/delete-member={id}',[NhanVienController::class, 'deleteMember'])->name('delete.member');
+    Route::post('/admin/add-division',[NhanVienController::class, 'addDivision'])->name('add.division');
 
 
 

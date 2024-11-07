@@ -22,10 +22,7 @@
 	<link rel="stylesheet" href="{{ asset('assets/vendors/core/core.css') }}">
 	<!-- endinject -->
 	<!-- jQuery (Toastr cần jQuery) -->
-<!-- Trong blade layout -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 	<!-- Plugin css for this page -->
 	<link rel="stylesheet" href="{{ asset('assets/vendors/flatpickr/flatpickr.min.css') }}">
 	<!-- End plugin css for this page -->
@@ -55,7 +52,10 @@
 </head>
 <body>
 	<div class="main-wrapper">
-
+		<!-- Trong blade layout -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 		<!-- Sidebar and navbar -->
 		@include('admin.body.sidebar')
 		<div class="page-wrapper">

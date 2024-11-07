@@ -135,15 +135,22 @@
                                                                             <input value="{{ $employee->usercode }}" type="text" id="usercode" class="form-control" placeholder="Nhập mã nhân viên" name="usercode" required autocomplete="usercode" >
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-sm-9">
+                                                                    <div class="col-sm">
                                                                         <div class="mb-3">
                                                                             <label for="name" class="form-label">Họ và tên </label>
                                                                             <input value="{{ $employee->name }}" type="text" id="name" class="form-control" placeholder="Nhập họ và tên" name="name" required autocomplete="name">
                                                                         </div>
                                                                     </div>
+                                                                    <div class="col-sm-4">
+                                                                        <div class="mb-3">
+                                                                            <label for="expertise" class="form-label">Chuyên môn </label>
+                                                                            <input type="text" id="expertise" value="{{ $employee->expertise }}" class="form-control" placeholder="Nhập Chuyên môn" name="expertise" required autocomplete="expertise" >
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
+
                                                                 <div class="row">
-                                                                    <div class="col-md-4">
+                                                                    <div class="col-md-2">
                                                                         <label for="phone" class="form-label">Số điện thoại</label>
                                                                         <input value="{{ $employee->phone }}" type="text" id="phone" class="form-control mb-4 mb-md-0" data-inputmask-alias="(+99) 9999-99999 " inputmode="text" placeholder="Nhập số điện thoại" name="phone" required autocomplete="phone" >
                                                                     </div>
@@ -153,30 +160,31 @@
                                                                             <input value="{{ $employee->email }}" type="email" id="email" class="form-control" placeholder="Nhập email" name="email" required autocomplete="email" >
                                                                         </div>
                                                                     </div>
+                                                                    {{-- <div class="col-sm-2">
+                                                                        <div class="mb-3">
+                                                                            <label for="password" class="form-label">Mật khẩu </label>
+                                                                            <input type="text" id="password" class="form-control"  name="password" required autocomplete="password" >
+                                                                        </div>
+                                                                    </div> --}}
                                                                     <div class="col-sm-4">
                                                                         
                                                                         <div class="mb-3">
                                                                             <label for="exampleFormControlSelect1" class="form-label">Chức vụ</label>
                                                                             <select name="role" class="form-select" id="exampleFormControlSelect1">
-                                                                                <option selected disabled>
+                                                                                
                                                                                     @if($employee->role === 'admin')
-                                                                                        quản trị viên
-                                                                                    @elseif($employee->role === 'supervision')
-                                                                                        Giám sát viên
-                                                                                    @elseif($employee->role === 'leader')
-                                                                                        trưởng nhóm
-                                                                                    @else
-                                                                                        nhân viên
-                                                                                    @endif
-                                                                                </option>
-                                                                               
-                                                                                    <option value="admin">quản trị viên</option>
-                                                                               
-                                                                                    <option value="supervision">Giám sát viên</option>
-                                                                               
-                                                                                    <option value="leader">trưởng nhóm</option>
-                                                                               
+                                                                                    <option selected  value="admin" >quản trị viên</option>
                                                                                     <option value="staff">nhân viên</option>
+                                                                                    @else
+                                                                                    <option selected  value="staff">nhân viên </option>
+                                                                                    <option value="admin">quản trị viên</option>
+                                                                                    @endif
+                                                                               
+                                                                               
+                                                                                    
+                                                                               
+                                                                               
+                                                                                   
                                                                                 
                                                 
                                                                             </select>

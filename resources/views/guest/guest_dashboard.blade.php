@@ -281,12 +281,17 @@ License: For each use you must have a valid license purchased only from above li
                     @csrf  
                     <div class="mb-3 mt-3">
                           <label for="">Tên:</label>
-                          <input type="text" class="form-control" name="name" id="">
+                          <input type="text" class="form-control" name="name" id="name">
                       </div>
+                      <div class="mb-3 mt-3">
+                        <label for="">Email:</label>
+                        <input  type="email" class="form-control" name="email" id="email">
+                    </div>
                       <div class="mb-3 mt-3">
                           <label for="">Số điện thoại:</label>
                           <input  class="form-control" name="phone" id="phone" data-inputmask-alias="(+99) 9999-9999">
                       </div>
+
                       <div class="mb-3 mt-3">
                           <label for="">Địa chỉ:</label>
                           <input type="text" class="form-control" name="address" id="addresss">

@@ -21,10 +21,16 @@
                                 <input type="text" id="usercode" class="form-control" placeholder="Nhập mã nhân viên" name="usercode" required autocomplete="usercode" >
                             </div>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Họ và tên </label>
                                 <input type="text" id="name" class="form-control" placeholder="Nhập họ và tên" name="name" required autocomplete="name">
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="mb-3">
+                                <label for="expertise" class="form-label">Chuyên môn </label>
+                                <input type="text" id="expertise" class="form-control" placeholder="Nhập Chuyên môn" name="expertise" required autocomplete="expertise" >
                             </div>
                         </div>
                     </div>
@@ -42,11 +48,9 @@
                         <div class="col-sm-4">
                             
                             <div class="mb-3">
-                                <label for="exampleFormControlSelect1" class="form-label">Chức vụ</label>
+                                <label for="exampleFormControlSelect1" class="form-label">Quyền truy cập</label>
                                 <select name="role" class="form-select" id="exampleFormControlSelect1">
                                     <option value="admin">quản trị viên</option>
-                                    <option value="supervision">Giám sát viên</option>
-                                    <option value="leader">trưởng nhóm</option>
                                     <option value="staff">nhân viên</option>
                                 </select>
                             </div>
@@ -66,12 +70,9 @@
                         
                         <div class="mb-3 col">
                             <label for="password" class="form-label">mật khẩu</label>
-                            <input id="password" class="form-control" name="password" type="password" placeholder="Nhập mật khẩu">
+                            <input id="password" class="form-control" name="password" type="text" placeholder="Nhập mật khẩu">
                         </div>
-                        <div class="mb-3 col">
-                            <label for="confirm_password" class="form-label">xác nhận mật khẩu</label>
-                            <input id="confirm_password" class="form-control" name="confirm_password" type="password" placeholder="Nhập lại mật khẩu">
-                        </div>
+                       
                     </div>
                     <div class=" text-center ">
                         <button type="submit" class="btn btn-primary px-5" >Thêm nhân viên</button>

@@ -18,12 +18,14 @@ class GuestController extends Controller
             'name' => 'required|string',
             'phone' => 'required',
             'address' => 'required',
+            'email' =>'required',
             'description' => 'required'
         ]);
         Client::create([
             'name' => $request->name,
             'phone' => $request->phone,
             'address' => $request->address,
+            'email' => $request->email,
             'description' => $request->description,
         ]);
 

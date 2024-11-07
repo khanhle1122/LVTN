@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Models\Project;
+use App\Models\Division;
 use App\Models\Notification;
 
 class NhanVienController extends Controller
@@ -27,13 +28,14 @@ class NhanVienController extends Controller
 
     public function index()
     {
+        $project = Project::first();
         $employees = User::all(); // Phân trang với 10 bản ghi mỗi trang
-        return view('admin.employee', compact('employees'));
+        return view('admin.employee', compact('employees','project'));
     }
 
     public function addEmployee(){
-        
-        return view('admin.add_employee');
+        $project = Project::first();
+        return view('admin.add_employee',compact('project'));
 
     }
 
@@ -47,6 +49,7 @@ class NhanVienController extends Controller
             'role' =>'required',
             'address'=>'required',
             'phone'=> 'required',
+            'expertise'=> 'required',
         ]);
 
         $user = User::create([
@@ -55,6 +58,7 @@ class NhanVienController extends Controller
             'password' => Hash::make($request->password),
             'usercode' => $request->usercode,
             'role' => $request->role,
+            'expertise' =>$request->expertise,
             'address'=> $request->address,
             'phone'=> $request->phone
         ]);
@@ -101,50 +105,30 @@ class NhanVienController extends Controller
             ];
             return redirect()->back()->with($notification)->withInput();
         }
-
-        try {
-            $validatedData = $request->validate([
-                'name' => 'required|string|max:255',
-                'usercode' => 'required|string|max:255',
-                'email' => [
-                    'required',
-                    'email',
-                    Rule::unique('users')->ignore($user->id),
-                ],
-                'address' => 'required|string',
-                'phone' => 'required|string',
-                'role' => 'required|string',
-            ]);
-
-            $user->update($validatedData);
-
-            $notification = [
-                'message' => 'Nhân viên đã được chỉnh sửa thành công.',
-                'alert-type' => 'success'
-            ];
-        } catch (ValidationException $e) {
-            $errors = $e->errors();
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'usercode' => 'required|string|max:255',
             
-            if (isset($errors['email'])) {
-                $notification = [
-                    'message' => 'Email đã tồn tại.',
-                    'alert-type' => 'error'
-                ];
-            } else {
-                $notification = [
-                    'message' => 'Có lỗi xảy ra khi chỉnh sửa nhân viên.',
-                    'alert-type' => 'error'
-                ];
-            }
-            return redirect()->back()->with($notification)->withInput();
-        } catch (\Exception $e) {
-            $notification = [
-                'message' => 'Có lỗi xảy ra khi chỉnh sửa nhân viên.',
-                'alert-type' => 'error'
-            ];
-            return redirect()->back()->with($notification)->withInput();
-        }
+            'address' => 'required|string',
+            'phone' => 'required|string',
+            'role' => 'required|string',
+            'expertise'=> 'required|string',
+        ]);
 
+        $user->name = $request->name;
+        $user->usercode = $request->usercode;
+        $user->email = $request->email;
+        $user->address = $request->address;
+        $user->expertise	= $request->expertise	;
+        $user->phone = $request->phone;
+        $user->role = $request->role;
+
+        $user->save();
+        $notification = [
+            'message' => 'Nhân viên đã được chỉnh sửa thành công.',
+            'alert-type' => 'success'
+        ];
+        
         return redirect()->route('employee')->with($notification);
     }
 
@@ -173,8 +157,57 @@ class NhanVienController extends Controller
     }
     public function viewDivision(){
 
+        $project = Project::first();
+        $divisions = Division::all();
+        return view('admin.division',compact('project','divisions'));
+    }
+    public function addMember(Request $request){
+        $request->validate([
+            'userID'=> 'required',
+            'divisionID' => 'required',
+        ]);
+        $user = User::find($request->userID);
+
+        $user->divisionID = $request->divisionID;
+
+        $user->save();
+        $notification = array(
+            'message' => 'Đã Thêm thành công',
+            'alert-type' => 'success'
+        );
+        return redirect()->back()->with($notification);
 
 
-        return view('admin.division');
+    }
+    public function deleteMember($id){
+       
+        $user = User::find($id);
+
+        $user->divisionID = null;
+
+        $user->save();
+        $notification = array(
+            'message' => 'Đã Xoá thành công',
+            'alert-type' => 'success'
+        );
+        return redirect()->back()->with($notification);
+
+
+    }
+    public function addDivision(Request $request){
+        $request->validate([
+            'divisionName'=> 'required',
+            
+        ]);
+        Division::create([
+            'divisionName' =>$request->divisionName,
+        ]);
+        $notification = array(
+            'message' => 'Đã Thêm thành công',
+            'alert-type' => 'success'
+        );
+        return redirect()->back()->with($notification);
+
+
     }
 }

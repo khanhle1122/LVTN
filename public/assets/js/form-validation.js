@@ -29,6 +29,11 @@ $(function() {
       budget: {
         required: true,
       },
+      expertise:{
+        required: true,
+        minlength: 3
+      },
+
       projectName: {
         required: true,
         minlength: 3
@@ -129,6 +134,10 @@ $(function() {
       },
       phone: {
         required: "Vui lòng nhập sôs điện thoại",
+      },
+      expertise:{
+        required:"vui lòng nhập địa chỉ",
+        minlength: "vui lòng nhập trên 3 ký tự"
       },
       documentName: {
         required: "Vui lòng nhập tên thư mục",
