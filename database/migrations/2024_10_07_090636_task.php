@@ -23,10 +23,11 @@ return new class extends Migration
             $table->string('budget');
             $table->integer('parentID')->default(0);
             $table->integer('duration');
+            $table->integer('star')->default(0);
 
             
-            $table->unsignedBigInteger('division_id'); 
-            $table->foreign('division_id')->references('id')->on('divisions');
+            $table->unsignedBigInteger('userID'); 
+            $table->foreign('userID')->references('id')->on('users');
 
 
             $table->unsignedBigInteger('projectID'); // Khóa ngoại tham chiếu đến bảng project

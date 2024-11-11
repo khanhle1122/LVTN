@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('expertise');
+            $table->integer('status_division')->default(0);
             $table->string('address'); // Địa chỉ
             $table->string('phone', 11); // Số điện thoại (11 ký tự)
             $table->string('usercode')->unique(); // Tên đăng nhập (cần phải unique)

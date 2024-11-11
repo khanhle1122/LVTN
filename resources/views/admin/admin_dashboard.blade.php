@@ -111,6 +111,9 @@
 	<script src="{{ asset('assets/js/dropify.js') }}"></script>
 	<script src="{{ asset('assets/js/pickr.js') }}"></script>
 	<script src="{{ asset('assets/js/flatpickr.js') }}"></script>
+	<script src="../../../assets/vendors/chartjs/Chart.min.js"></script>
+	<script src="../../../assets/js/chartjs-light.js"></script>
+
 	<!-- End custom js for this page -->
 
 	<script>

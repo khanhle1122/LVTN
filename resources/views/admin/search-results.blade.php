@@ -34,7 +34,7 @@
           </div>
           @if($projects->isNotEmpty())
 
-          <div class="col-md-12 col-xl-12 mt-4">
+          <div class="col-md col-xl mt-4">
               <div class="card">
                   <div class="card-body"> 
                         <div class="py-12">
@@ -44,7 +44,7 @@
                             
                             <div class="row">
                                 @foreach($projects as $project)
-                                <div class="col-2 border mt-3 p-1 pb-3" style="width:180px">
+                                <div class="col-2 ms-3 border mt-3 p-1 pb-3" style="width:180px">
                                     <link rel="stylesheet" href="{{ asset('frontend/style.css') }}">
                                         <div class="card_k  ">
                                             <div class=" ">
@@ -98,7 +98,7 @@
             </div>
             @endif
             @if($files->isNotEmpty())
-            <div class="col-md col-xl mt-4">
+            <div class="col-md-3 col-xl-3 mt-4">
                 <div class="card">
                     <div class="card-body"> 
                         <h3>Tài liệu</h3>
@@ -140,7 +140,7 @@
             @endif
             @if($clients->isNotEmpty())
 
-            <div class="col-md col-xl mt-4">
+            <div class="col-md-3 col-xl-3 mt-4">
                 <div class="card">
                     <div class="card-body"> 
                         <div class="py-12">
@@ -159,7 +159,7 @@
             @endif
             @if($divisions->isNotEmpty())
 
-            <div class="col-md col-xl mt-4">
+            <div class="col-md-2 col-xl-2 mt-4">
                 <div class="card">
                     <div class="card-body"> 
                         <div class="py-12">
@@ -186,7 +186,7 @@
             @endif
             @if($tasks->isNotEmpty())
 
-            <div class="col-md col-xl mt-4">
+            <div class="col-md-4 col-xl-4 mt-4">
                 <div class="card">
                     <div class="card-body"> 
                         <div class="py-12">

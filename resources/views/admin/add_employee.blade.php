@@ -46,12 +46,14 @@
                             </div>
                         </div>
                         <div class="col-sm-4">
-                            
+                        
                             <div class="mb-3">
-                                <label for="exampleFormControlSelect1" class="form-label">Quyền truy cập</label>
+                                <label for="exampleFormControlSelect1" class="form-label">Vai trò</label>
                                 <select name="role" class="form-select" id="exampleFormControlSelect1">
-                                    <option value="admin">quản trị viên</option>
-                                    <option value="staff">nhân viên</option>
+                                    <option selected disabled>Chọn vai trò</option>
+                                    <option value="admin">Quản trị viên</option>
+                                    <option value="leader">Nhóm trưởng</option>
+                                    <option value="staff">Nhân viên</option>
                                 </select>
                             </div>
                             
@@ -87,70 +89,6 @@
         </div>
     </div>
 </div>
-<script>
-    $(document).ready(function() {
-        // Khi người dùng submit form
-        $("#signupForm").on('submit', function(e) {
-            e.preventDefault(); // Ngăn form gửi ngay lập tức
-            
-            var usercode = $('#usercode').val().trim();
-            var email = $('#email').val().trim();
-            var name = $('#name').val().trim();
-
-            $('.is-invalid').removeClass('is-invalid');
-            $('.invalid-feedback').remove();
-            var hasError = false;
-            if (usercode === "" || email==="" || name="") {
-            hasError = true;
-        }
-
-
-
-
-            if (hasError) {
-                return; // Dừng nếu có lỗi
-            }
-            // Gửi AJAX để kiểm tra trùng lặp
-            $.ajax({
-                url: "{{ route('check.unique') }}", // Route kiểm tra
-                method: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}", // Token bảo mật
-                    usercode: usercode,
-                    email: email
-                },
-                success: function(response) {
-                    // Xóa thông báo lỗi cũ
-                    $("#usercode").removeClass('is-invalid');
-                    $("#email").removeClass('is-invalid');
-                    $(".usercode-error").remove();
-                    $(".email-error").remove();
-                    
-                    // Kiểm tra trùng usercode
-                    if (response.usercodeExists) {
-                        $('#usercode').addClass('is-invalid');
-                        $('#usercode').after('<div class="invalid-feedback usercode-error">Mã nhân viên đã tồn tại, vui lòng nhập mã khác</div>');
-                    }
-
-                    // Kiểm tra trùng email
-                    if (response.emailExists) {
-                        $('#email').addClass('is-invalid');
-                        $('#email').after('<div class="invalid-feedback email-error">Email đã tồn tại, vui lòng nhập email khác</div>');
-                    }
-
-                    // Nếu không trùng, submit form
-                    if (!response.usercodeExists && !response.emailExists) {
-                        $('#signupForm')[0].submit(); // Submit form nếu không có lỗi
-                    }
-                }
-            });
-        });
-    });
-    function showError(input, message) {
-        input.addClass('is-invalid');
-        input.after('<div class="invalid-feedback">' + message + '</div>');
-    }
-</script>
 
 
 @endsection

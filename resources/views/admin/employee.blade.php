@@ -20,7 +20,8 @@
                         <th>STT</th>
                         <th>Mã nhân viên</th>
                         <th>Họ Tên</th>
-                        <th>chức vụ</th>
+                        <th>Vai trò</th>
+                        <th>Chuyên môn</th>
                         <th>Trạng thái</th>
                         <th>Email</th>
                         <th>Số điện thoại</th>
@@ -32,7 +33,83 @@
                         @php $counter = 1; @endphp
                     @foreach($employees as $employee)
                         @if($employee->role === 'admin')
+                        <tr>
+                            <td>{{ $counter }}</td>
+                            @php $counter++; @endphp
+                            <td>{{ $employee->usercode }}</td>
+                            <td>{{ $employee->name }}</td>
+                            <td>
+                                Quản trị viên
 
+
+                            </td>
+                            <td>{{ $employee->expertise }}</td>
+                            <td>
+                                @if($employee->status== 0)
+                                Đang hoạt động 
+                                @elseif($employee->status == 1)
+                                Đã khoá
+                                @endif 
+
+                            </td>
+                            <td>{{ $employee->email }}</td>
+                            <td>{{ $employee->phone }}</td>
+                            <td>{{ $employee->address }}</td>
+                            
+                            <td>
+                                <div class="ms-1">            
+                                         
+                                            
+                                    <button type="button" title="Thông tin" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#{{ $employee->usercode }}">
+                                        <i class="icon-sm text-dark" data-feather="info"></i>
+                                      </button>
+                                      <!-- Modal -->
+                                      <div class="modal fade" id="{{ $employee->usercode }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h5 class="modal-title" id="exampleModalLabel">Thông tin chi tiết</h5>
+                                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                               
+                                                    <h5 class="mt-3" >Các dự án đảm nhận</h5>
+                                                    <div class="row my-3">
+                                                    <div class="col-3">Mã dự án</div>
+                                                    <div class="col-6">Tên dự án</div>
+                                                    <div class="col-3">Tiến độ</div>
+                                                    </div>
+                                                        
+
+                                                    @forelse(App\Models\Project::where('userID', $employee->id)->get() as $project)
+                                                        <div class="row">
+                                                            <div class="col-3">{{ $project->projectCode }}</div>
+                                                            <div class="col-6">{{ $project->projectName }}</div>
+                                                            @if($project->status==1)
+                                                                <div class="col-6">{{ $project->projectName }}</div>
+                                                            @elseif($project->progress <100)
+                                                                <div class="col-3">{{ $project->progress }}</div>
+                                                            @endif
+                                                        </div>
+                                                    @empty
+                                                        <div class="text-center">Không có dự án tham gia</div>
+                                                    @endforelse
+                                               
+
+                                                    
+                                                    
+                                            </div>
+                                            <div class="modal-footer">
+                                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                              
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                </div>
+                            </td>
+                            
+                        </tr>
                         @else
                             <tr>
                                 <td>{{ $counter }}</td>
@@ -50,6 +127,7 @@
 
 
                                 </td>
+                                <td>{{ $employee->expertise }}</td>
                                 <td>
                                     @if($employee->status== 0)
                                     Đang hoạt động 
@@ -93,7 +171,11 @@
                                                                 <div class="row">
                                                                     <div class="col-3">{{ $project->projectCode }}</div>
                                                                     <div class="col-6">{{ $project->projectName }}</div>
-                                                                    <div class="col-3">{{ $project->progress }}</div>
+                                                                    @if($project->status==1)
+                                                                        <div class="col-6">{{ $project->projectName }}</div>
+                                                                    @elseif($project->progress <100)
+                                                                        <div class="col-3">{{ $project->progress }}</div>
+                                                                    @endif
                                                                 </div>
                                                             @empty
                                                                 <div class="text-center">Không có dự án tham gia</div>
@@ -160,33 +242,18 @@
                                                                             <input value="{{ $employee->email }}" type="email" id="email" class="form-control" placeholder="Nhập email" name="email" required autocomplete="email" >
                                                                         </div>
                                                                     </div>
-                                                                    {{-- <div class="col-sm-2">
-                                                                        <div class="mb-3">
-                                                                            <label for="password" class="form-label">Mật khẩu </label>
-                                                                            <input type="text" id="password" class="form-control"  name="password" required autocomplete="password" >
-                                                                        </div>
-                                                                    </div> --}}
+                                                                    
                                                                     <div class="col-sm-4">
                                                                         
                                                                         <div class="mb-3">
-                                                                            <label for="exampleFormControlSelect1" class="form-label">Chức vụ</label>
+                                                                            <label for="exampleFormControlSelect1" class="form-label">Vai trò</label>
                                                                             <select name="role" class="form-select" id="exampleFormControlSelect1">
                                                                                 
-                                                                                    @if($employee->role === 'admin')
-                                                                                    <option selected  value="admin" >quản trị viên</option>
-                                                                                    <option value="staff">nhân viên</option>
-                                                                                    @else
-                                                                                    <option selected  value="staff">nhân viên </option>
-                                                                                    <option value="admin">quản trị viên</option>
-                                                                                    @endif
-                                                                               
-                                                                               
-                                                                                    
-                                                                               
-                                                                               
                                                                                    
-                                                                                
-                                                
+                                                                                    <option  @if($employee->role === 'admin') selected @endif value="admin" >Quản trị viên</option>
+                                                                                    <option  @if($employee->role === 'leader') selected @endif value="leader">Nhóm trưởng</option>
+                                                                                    <option  @if($employee->role === 'staff') selected @endif value="staff">Nhân viên</option>
+                                                                                    
                                                                             </select>
                                                                         </div>
                                                                         

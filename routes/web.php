@@ -69,7 +69,6 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::get('/project/add',[DuAnController::class, 'addProject'])->name('add.project');
 
     Route::post('/project/add-project',[DuAnController::class, 'store'])->name('project.store');
-    Route::post('/check-code', [DuAnController::class, 'checkUnique'])->name('check.code');
 
 
     Route::get('/project/{id}', [DuAnController::class, 'toggleStar'])->name('project.toggleStar');
@@ -77,6 +76,8 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::get('/project/lock/{id}', [DuAnController::class, 'lockProject'])->name('lock.project');
 
     Route::get('/project/task/{id}',[TaskController::class, 'viewtask'])->name('view.task');
+
+    Route::get('/task/star{id}', [TaskController::class, 'toggleStar'])->name('task.toggleStar');
 
     Route::get('/task/list_task',[TaskController::class, 'listTask'])->name('list.task');
 
@@ -115,6 +116,7 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::post('/admin/add-member',[NhanVienController::class, 'addMember'])->name('add.member');
     Route::get('/admin/delete-member={id}',[NhanVienController::class, 'deleteMember'])->name('delete.member');
     Route::post('/admin/add-division',[NhanVienController::class, 'addDivision'])->name('add.division');
+    Route::get('/admin/leader-pick={id}',[NhanVienController::class, 'leaderPick'])->name('leader.pick');
 
 
 

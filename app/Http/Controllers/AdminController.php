@@ -17,13 +17,18 @@ class AdminController extends Controller
 
         $totalProject = $projects->count();
         $inProgressProjects = $projects->where('status', 0)->count();  // Đang thực hiện
-        $onHoldProjects = $projects->where('status', 1)->count();      // Tạm dừng
+        $successProjects = $projects->where('status', 1)->count();      // Tạm dừng
+        $onHoldProjects = $projects->where('status', 2)->count();  // Đang thực hiện
+        $lowProjects = $projects->where('status', 3)->count();  // Đang thực hiện
+
         return view('admin.index',compact(
                         'projects',
                         'project',
                         'totalProject',
+                        'successProjects',
                         'inProgressProjects',
-                        'onHoldProjects'
+                        'onHoldProjects',
+                        'lowProjects'
                     
                     
                     ));

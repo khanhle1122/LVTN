@@ -63,6 +63,11 @@ $(function() {
         minlength: 3
 
       },
+      task_code: {
+        required: true,
+        minlength: 3
+
+      },
       level: {
         required: true
       },
@@ -119,7 +124,11 @@ $(function() {
 
       task_name: {
         required: "Vui lòng nhập tên công việc",
-        minlength: "Tên phải lớn hơn  ký tự"
+        minlength: "Tên phải lớn hơn 3 ký tự"
+      },
+      task_code: {
+        required: "Vui lòng nhập mã công việc",
+        minlength: "Mã phải lớn hơn 3 ký tự"
       },
       description: {
         required: "Vui lòng nhập mô tả",
@@ -136,7 +145,7 @@ $(function() {
         required: "Vui lòng nhập sôs điện thoại",
       },
       expertise:{
-        required:"vui lòng nhập địa chỉ",
+        required:"vui lòng nhập Chuyên môn",
         minlength: "vui lòng nhập trên 3 ký tự"
       },
       documentName: {

@@ -21,11 +21,11 @@
                 <div class="">Tên: {{ $project->projectName }} </div>
                 <div class="">Quy mô: {{ $project->level }}</div>
                 <div class="">
-                    <div>Ngày bắt đầu: </div>
+                    <div>Khởi công: </div>
                     <div>{{ $project->startDate }}</div> 
                 </div>
                 <div class="">
-                    <div>Thời gian Hoàn thành dự kiến: </div>
+                    <div>Hoàn thành dự kiến: </div>
                     <div>{{ $project->endDate }}</div> 
                 </div>
                 <div class="">Đối tác: {{ $project->clientName }}</div>

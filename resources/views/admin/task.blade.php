@@ -90,7 +90,5 @@
         }
     });
 });
-
-
 </script>
 @endsection

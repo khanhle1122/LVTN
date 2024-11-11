@@ -15,16 +15,7 @@ use App\Models\Notification;
 
 class NhanVienController extends Controller
 {
-    public function checkUnique(Request $request)
-{
-    $usercodeExists = User::where('usercode', $request->usercode)->exists();
-    $emailExists = User::where('email', $request->email)->exists();
-
-    return response()->json([
-        'usercodeExists' => $usercodeExists,
-        'emailExists' => $emailExists,
-    ]);
-}
+   
 
     public function index()
     {
@@ -43,7 +34,7 @@ class NhanVienController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required'],
             'usercode' => ['required', 'string', 'max:255'],
             'role' =>'required',
@@ -51,22 +42,45 @@ class NhanVienController extends Controller
             'phone'=> 'required',
             'expertise'=> 'required',
         ]);
+        $userCodeExits = User::where('usercode',$request->usercode)->first();
+        $userEmailExits = User::where('email',$request->email)->first();
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'usercode' => $request->usercode,
-            'role' => $request->role,
-            'expertise' =>$request->expertise,
-            'address'=> $request->address,
-            'phone'=> $request->phone
-        ]);
+        if($userCodeExits){
+
+            $notification = [
+                'message' => 'Mã nhân viên đã tồn tại',
+                'alert-type' => 'error'
+            ];            
+        }
+        elseif($userEmailExits){
+            $notification = [
+                'message' => 'email đã tồn tại',
+                'alert-type' => 'error'
+            ];    
+        }
+        else{
+            
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'usercode' => $request->usercode,
+                'role' => $request->role,
+                'expertise' =>$request->expertise,
+                'address'=> $request->address,
+                'phone'=> $request->phone
+            ]);
+            if($request->role==='leader')
+
+            $user->status_division = 1;
+            $user->save();
+            $notification = [
+                'message' => 'Nhân viên đã được thêm',
+                'alert-type' => 'success'
+            ];
+        }
+
         
-        $notification = [
-            'message' => 'Nhân viên đã được thêm',
-            'alert-type' => 'success'
-        ];
     
         return redirect()->route('view.add.employee')->with($notification);
     }
@@ -208,6 +222,20 @@ class NhanVienController extends Controller
         );
         return redirect()->back()->with($notification);
 
+
+    }
+    public function leaderPick($id){
+        $user = User::find($id);
+        $userLeaderOld = User::where('divisionID',$user->divisionID)->where('status_division',1)->get();
+        foreach($userLeaderOld as $item){
+            $item->status_division =0;
+            $item->save();
+
+        }
+        
+        $user->status_division = 1;
+        $user->save();
+        return redirect()->back();
 
     }
 }

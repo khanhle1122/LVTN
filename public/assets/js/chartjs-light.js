@@ -162,11 +162,11 @@ $(function() {
     new Chart($('#chartjsDoughnut'), {
       type: 'doughnut',
       data: {
-        labels: ["Africa", "Asia", "Europe"],
+        labels: ["Đang tiến hành", "Hoàn thành", "chậm tiến độ"],
         datasets: [
           {
             label: "Population (millions)",
-            backgroundColor: [colors.primary, colors.danger, colors.info],
+            backgroundColor: [colors.primary, colors.success, colors.danger],
             borderColor: colors.cardBg,
             data: [2478,4267,1334],
           }

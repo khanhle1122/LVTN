@@ -9,23 +9,38 @@
           
     @foreach($divisions as $item)
     @if($item)
-    <div class="d-none mt-5 d-md-block col-md-3 col-xl-3  ">
+    <div class="d-none mt-5 d-md-block col-md-4 col-xl-4  ">
       <div class="card"> 
         <div  class="card-body">
             <div class="mb-3 text-center ">
               <h5 class="col">{{ $item->divisionName }}</h5>
             </div>
             <div class="row mb-4">
-              <div class="col-4">Mã nhân viên</div>
-              <div class="col-8">Tên nhân viên</div>
+              <div class="col-4">Mã </div>
+              <div class="col-6">Tên nhân viên</div>
+              <div class="col-2"></div>
             </div>
             @foreach(App\Models\User::where('divisionID',$item->id)->get() as $user)
               @if($user)
                 <div class="row ">
+                  
                   <div class="col-4">{{ $user->usercode }}</div>
-                  <div class="col-6 ">{{ $user->name  }}</div>
+                  <div class="col-6">{{ $user->name  }}  @if($user->status_division == 1)
+                    (nhóm trưởng)
+                    @endif
+                  </div>
                   <div class="col-2">
-                    <a href="{{ route('delete.member',$user->id) }}"><i data-feather="x" class="icon-sm text-danger"></i></a>
+                    <div class="row">
+                      @if($user->status_division != 1)
+                      <a href="{{ route('leader.pick',$user->id) }}" class="col-1"><i class="icon-sm text-warning" data-feather="key"></i></a>
+                      @else
+                        <div class="col-1"></div>
+                      @endif
+                      <div class="col-1">
+                        <a href="{{ route('delete.member',$user->id) }}"><i data-feather="x" class="icon-sm text-danger "></i></a>
+
+                      </div>
+                    </div>
                   </div>
                 </div>
               <hr>
@@ -55,7 +70,7 @@
     </div>
     @endif
     @endforeach
-    <div class="d-none mt-5 d-md-block col-md-3 col-xl-3  ">
+    <div class="d-none mt-5 d-md-block col-md-4 col-xl-4  ">
       <div class="card"> 
         <div  class="card-body">
           <div id="add-division" class="text-center mt-4 mb-4" style="cursor: pointer;">

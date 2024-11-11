@@ -65,6 +65,10 @@ class DuAnController extends Controller
 
         return redirect()->back();
     }
+
+
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -79,55 +83,64 @@ class DuAnController extends Controller
             'budget' => ' required',
             'files.*'      => 'nullable|file', 
             'description'      => 'nullable|string|max:255', 
+            'address' => 'required'
 
         ]);
-        
+        $projectCodeExits = Project::where('projectCode',$request->projectCode)->first();
 
-        // Lưu dự án vào cơ sở dữ liệu
-       $project = Project::create([
-            'projectCode'  => $request->projectCode,
-            'projectName'  => $request->projectName,
-            'clientName'   => $request->clientName,
-            'userID'       => $request->userID,
-            'startDate'    => $request->startDate,
-            'endDate'      => $request->endDate,
-            'type'         => $request->type,
-            'level'        => $request->level,
-            'budget'       => $request->budget,
-        ]);
-        if ($request->filled('description')) {
-            $project->description = $request->input('description');
-            $project->save();
-        }
-        $documentName = $project->projectCode.'_'.$project->projectName;
+        if($projectCodeExits){
 
-        $document = Document::create([
-            'documentName' => $documentName,
-            'projectID' => $project->id,
-            'doPath'    => 'public/uploads/'. $documentName,
-        ]);
-        $notification = array(
-            'message' => 'Dự án đã được thêm',
-            'alert-type' => 'success'
-        );
-        if($request->hasFile('files')) {
-            
-            $files = $request->file('files');
-            $document_dir = 'uploads/' . $documentName;
-            
-            foreach ($files as $file) {
-                $originalName = $file->getClientOriginalName();
+            $notification = array(
+                'message' => 'Mã Dự án đã tồn tại',
+                'alert-type' => 'error'
+            );
+        }else{
+            $project = Project::create([
+                'projectCode'  => $request->projectCode,
+                'projectName'  => $request->projectName,
+                'clientName'   => $request->clientName,
+                'userID'       => $request->userID,
+                'startDate'    => $request->startDate,
+                'endDate'      => $request->endDate,
+                'type'         => $request->type,
+                'level'        => $request->level,
+                'address'      => $request->address,
+                'budget'       => $request->budget,
+            ]);
+            if ($request->filled('description')) {
+                $project->description = $request->input('description');
+                $project->save();
+            }
+            $documentName = $project->projectCode.'_'.$project->projectName;
     
-                // Tạo tên file unique
-                $fileName = $this->generateUniqueFileName($document_dir, $originalName);
+            $document = Document::create([
+                'documentName' => $documentName,
+                'projectID' => $project->id,
+                'doPath'    => 'public/uploads/'. $documentName,
+            ]);
+            $notification = array(
+                'message' => 'Dự án đã được thêm',
+                'alert-type' => 'success'
+            );
+            if($request->hasFile('files')) {
                 
-                // Lưu file và lấy đường dẫn đầy đủ
-                $filePath = $file->storeAs('public/' . $document_dir, $fileName);
-                File::create([
-                    'fileName' => $fileName,
-                    'filePath' => $filePath, // Lưu đường dẫn đầy đủ vào DB
-                    'documentID' => $document->id,
-                ]);
+                $files = $request->file('files');
+                $document_dir = 'uploads/' . $documentName;
+                
+                foreach ($files as $file) {
+                    $originalName = $file->getClientOriginalName();
+        
+                    // Tạo tên file unique
+                    $fileName = $this->generateUniqueFileName($document_dir, $originalName);
+                    
+                    // Lưu file và lấy đường dẫn đầy đủ
+                    $filePath = $file->storeAs('public/' . $document_dir, $fileName);
+                    File::create([
+                        'fileName' => $fileName,
+                        'filePath' => $filePath, // Lưu đường dẫn đầy đủ vào DB
+                        'documentID' => $document->id,
+                    ]);
+                }
             }
         }
 
@@ -137,25 +150,23 @@ class DuAnController extends Controller
         return redirect()->route('add.project')->with($notification);
     }
 
-    
-    public function checkUnique(Request $request){
-
-        $projectCode = $request->input('projectCode');
-        
-        // Kiểm tra xem projectCode có tồn tại trong DB không
-        $projectExists = Project::where('projectCode', $projectCode)->exists();
-
-        // Trả về kết quả dưới dạng JSON
-        return response()->json(['projectExists' => $projectExists]);
-
-
-    }
-    // xoá dự án
-    
-    // tìm kiếm dự án
-
     // sửa dự án 
     public function editProject(Request $request,$id){
+        
+
+        $project = Project::findOrFail($id);
+        $projectCodeExits = Project::where('projectCode',$request->projectCode)
+                                    ->where('id','!=',$project->id)->exists();
+
+        if($projectCodeExits){
+            $notification = array(
+                'message' => 'Mã dự án đã tồn tại',
+                'alert-type' => 'error'
+            );
+
+
+        }
+       else{
         $request->validate([
             'projectCode' => 'required|string|max:255',
             'projectName' => 'required|string|max:255',
@@ -163,47 +174,48 @@ class DuAnController extends Controller
             'userID' => 'required|exists:users,id',
             'startDate' => 'required|date',
             'type'      => 'required',
+            'address'   => 'required',
             'endDate' => 'required|date|after_or_equal:startDate',
             'level' => 'nullable|string|max:255',
             'budget' => 'nullable|string', // Để xử lý sau khi lấy dữ liệu
             
         ]);
-        $project = Project::findOrFail($id);
-
-        // Cập nhật dữ liệu của dự án
-        $project->projectCode = $request->input('projectCode');
-        $project->projectName = $request->input('projectName');
-        $project->clientName = $request->input('clientName');
-        $project->userID = $request->input('userID');
-        $project->startDate = $request->input('startDate');
-        $project->endDate = $request->input('endDate');
-        $project->type = $request->input('type');
-
-        $project->level = $request->input('level');
-        if ($request->filled('budget')) {
-            $project->budget = $request->input('budget');
-        }
-         // Lưu vào cột budget dạng decimal
-        if ($request->filled('description')) {
-            $project->description = $request->input('description');
-        }
-        
-        // Lưu lại thay đổi
-        $project->save();        
-
-        $notification = array(
-            'message' => 'dự án đã được chỉnh sửa',
-            'alert-type' => 'success'
-        );
+         // Cập nhật dữ liệu của dự án
+         $project->projectCode = $request->input('projectCode');
+         $project->projectName = $request->input('projectName');
+         $project->clientName = $request->input('clientName');
+         $project->userID = $request->input('userID');
+         $project->startDate = $request->input('startDate');
+         $project->endDate = $request->input('endDate');
+         $project->type = $request->input('type');
+ 
+         $project->address = $request->input('address');
+         $project->level = $request->input('level');
+         if ($request->filled('budget')) {
+             $project->budget = $request->input('budget');
+         }
+          // Lưu vào cột budget dạng decimal
+         if ($request->filled('description')) {
+             $project->description = $request->input('description');
+         }
+         
+         // Lưu lại thay đổi
+         $project->save();        
+ 
+         $notification = array(
+             'message' => 'dự án đã được chỉnh sửa',
+             'alert-type' => 'success'
+         );
+       }
         
         return redirect()->route('project')->with($notification);
     }
 
     public function lockProject($id){
         $project = Project::find($id);
-
+        $currentDate = now();
         
-        if($project->status == 1 || $project->status == 0){
+        if($project->status == 1 || $project->status == 0 || $project->status == 3){
             $project->status = 2;
             $project->save();
             $notification = array(
@@ -214,6 +226,10 @@ class DuAnController extends Controller
             if($project->progress == 100){
                 $project->status = 1;
                 $project->save();
+            }elseif($project->endDate < $currentDate){
+                $project->status = 3;
+                $project->save();
+            
             }else{
                 $project->status = 0;
                 $project->save();

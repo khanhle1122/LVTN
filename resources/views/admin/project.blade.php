@@ -70,10 +70,7 @@
                                 <td><div class="mt-2">{{ $project->budget }}</div></td>
                                 <td>
                                     <div class="d-flex justify-content-between">
-                                        <div></div>
-                                        <div>
-
-                                        </div>
+                                        
                                         <div>
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#editProject{{ $project->id }}" class="btn btn-outline-warning" title="Chỉnh sửa">
                                                 <i class="icon-sm text-dark" data-feather="edit-2"></i>
@@ -91,11 +88,10 @@
                                                             <form id="signupForm" action="{{ route('edit.project',$project->id) }}" method="POST">
                                                                 @csrf
                                                                 <div class="row">
-                                                                    <div class="col-sm">
+                                                                    <div class="col-sm-3">
                                                                         <div class="mb-4">
                                                                             <label>Mã dự án</label>
-                                                                            <input type="text" id="projectCode" class="form-control" placeholder="{{ $project->projectCode }}" name="projectCode" disabled value="{{ $project->projectCode }}">
-                                                                            <input type="hidden" name="projectCode"  value="{{ $project->projectCode }}">
+                                                                            <input type="text" id="projectCode" class="form-control" placeholder="{{ $project->projectCode }}" name="projectCode"  value="{{ $project->projectCode }}">
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-sm">
@@ -127,6 +123,12 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>    
+                                                                <div class="row">
+                                                                    <div class="mb-4">
+                                                                        <label for="">Địa chỉ</label>
+                                                                        <input type="text" name="address" class="form-control" value="{{ $project->address }}">
+                                                                    </div>
+                                                                </div>
                                                                 <div class="row">
                                                                     <div class="col-sm-4">
                                                                         <div class="mb-4">
@@ -198,7 +200,7 @@
                                                                 <div class="row">
                                                                     <div class="mb-3 col">
                                                                         <label for="description">Mô tả dự án:</label>
-                                                                        <textarea class="form-control" rows="5" id="description" name="description" placeholder="{{ $project->description }}" value="{{ $project->description }}"></textarea>
+                                                                        <textarea class="form-control" rows="5" id="description" name="description"  value="{{ $project->description }}"></textarea>
                                                                     </div>
                                                                 </div>
                                                                 <div class=" text-center ">
@@ -210,8 +212,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div>
-                                            @if($project->status== 0 || $project->status == 1) 
+                                        <div class="ms-1">
+                                            @if($project->status== 0 || $project->status == 1 || $project->status == 3) 
                                             <a  class="btn btn-outline-danger" href="{{ route('lock.project',$project->id) }}">
                                                 <i class="icon-sm text-dark" data-feather="pause"></i>
                                             </a>

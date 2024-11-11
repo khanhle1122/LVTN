@@ -145,6 +145,7 @@ class TaskController extends Controller
     {
         $request->validate([
             'task_name' => 'required|string',
+            'task_code' => 'required',
             'note' => 'required|string', 
             'endDate' => 'required|date',
             'startDate' => 'required|date',
@@ -160,26 +161,7 @@ class TaskController extends Controller
         $duration = $endDate->diffInDays($startDate);
         $updatePartent = Task::where('parentID',$request->parentID)->get();
         // Trước khi tạo task mới, kiểm tra và điều chỉnh thời gian nếu cần
-        if ($request->change == 'update') {
-            
-
-            // Tìm task ngay trước task mới
-            $previousTask = Task::where('projectID', $request->projectID)
-                            ->where('endDate', '<', $request->startDate)
-                            ->orderBy('endDate', 'desc')
-                            ->first();
-
-            // Nếu có task trước đó và không liền kề
-            if ($previousTask) {
-                $previousEndDate = \Carbon\Carbon::parse($previousTask->endDate);
-                // Thêm 1 ngày vào endDate của task trước
-                if ($previousEndDate->addDays()->format('Y-m-d') != $startDate->format('Y-m-d')) {
-                    // Điều chỉnh startDate của task mới, thêm 2 ngày từ task trước
-                    $startDate = $previousEndDate->addDays();
-                    $endDate = (clone $startDate)->addDays($duration);
-                }
-            }
-        }
+        
 
         // Tạo task mới với thời gian đã được điều chỉnh
         $task = Task::create([
@@ -195,7 +177,7 @@ class TaskController extends Controller
             'duration' => $duration,
         ]);
 
-        if ($request->change == 'update') {
+        if ($request->change == 'update' && $request->change != 0 ) {
             // sửa parent 
             foreach($updatePartent as $item){
                 $item->parentID = $task->id ;
@@ -332,7 +314,8 @@ class TaskController extends Controller
         'projectID' => 'required',
         'userID' => 'required',
         'parentID' => 'required',
-        'task_id' => 'required'
+        'task_id' => 'required',
+        'address' => 'required',
     ]);
 
     try {
@@ -376,6 +359,7 @@ class TaskController extends Controller
         $task->parentID = $request->parentID;
         $task->progress = $request->progress;
         $task->userID = $request->userID;
+        $task->address = $request->address;
 
         if ($request->filled('budget')) {
             $task->budget = $request->budget;
@@ -604,5 +588,19 @@ public function deleteTask(Request $request) {
         ]);
     }
 }
-    
+    public function toggleStar($id = null)
+    {
+        $task = Task::find($id);
+
+        if ($project) {
+            // Đảo ngược trạng thái status giữa 0 và 1
+            $task->star = $task->star == 1 ? 0 : 1;
+            $task->save();
+
+            
+        }
+
+        return redirect()->back();
+    }
+
 }

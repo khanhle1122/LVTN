@@ -38,9 +38,9 @@
 
           <div>
             <div class="text-center mt-5">
-              <img class="logo-login" src="{{ asset('image/TITC.png') }}" alt="">
+              <img class="logo-login" style="width:200px" src="{{ asset('image/logo.svg') }}" alt="">
             </div>
-            <div>
+            <div class="mt-5">
               <form action="{{ route('login') }}" method="POST" class="form-login border border-1 rounded">
                 @csrf
                 <div class="mb-3 mt-3">

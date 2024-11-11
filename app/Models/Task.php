@@ -17,19 +17,20 @@ class Task extends Model
                     'status',
                     'parentID', 
                     'projectID',
+                    'userID',
                     'budget',
                     'progress',
-                    'divisionID',
-                    'duration'
+                    'duration',
+                    'star'
                     ];
 
     public function projects()
     {
         return $this->belongsTo(Project::class,'projectID');
     }
-    public function divisions()
+    public function users()
     {
-        return $this->belongsTo(Division::class);
+        return $this->belongsTo(User::class,'userID');
     }
   
 
