@@ -5,16 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Client extends Model
+class Coat extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
-        'name','phone','address','status','description','email','role'
-    ];
+    protected $fillable = ['hangmuc', 'description', 'projectID','note','estimated_cost','actual_cost'];
 
     public function projects()
     {
-        return $this->hasMany(Project::class, 'clientID');
+        return $this->belongsTo(Document::class,'projectID');
     }
 }

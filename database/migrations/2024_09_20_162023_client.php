@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('status')->default(0);
             $table->string('phone');
             $table->string('type');
+            $table->enum('role',['client','contractor'])->default('client');
             $table->string('description');
             $table->string('address');
         });

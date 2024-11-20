@@ -19,15 +19,10 @@ class NhanVienController extends Controller
 
     public function index()
     {
-        $project = Project::first();
-        $employees = User::all(); // Phân trang với 10 bản ghi mỗi trang
-        return view('admin.employee', compact('employees','project'));
-    }
+        $employees = User::all(); 
+        $notifications = Notification::where('is_read',0)->get();
 
-    public function addEmployee(){
-        $project = Project::first();
-        return view('admin.add_employee',compact('project'));
-
+        return view('admin.employee', compact('employees','notifications'));
     }
 
     public function store(Request $request)
@@ -173,7 +168,10 @@ class NhanVienController extends Controller
 
         $project = Project::first();
         $divisions = Division::all();
-        return view('admin.division',compact('project','divisions'));
+        $notifications = Notification::where('is_read',0)->get();
+
+
+        return view('admin.division',compact('project','divisions','notifications'));
     }
     public function addMember(Request $request){
         $request->validate([

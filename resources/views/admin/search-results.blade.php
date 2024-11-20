@@ -34,7 +34,7 @@
           </div>
           @if($projects->isNotEmpty())
 
-          <div class="col-md col-xl mt-4">
+          <div class="col-md-12 col-xl-12 mt-4">
               <div class="card">
                   <div class="card-body"> 
                         <div class="py-12">
@@ -48,22 +48,19 @@
                                     <link rel="stylesheet" href="{{ asset('frontend/style.css') }}">
                                         <div class="card_k  ">
                                             <div class=" ">
-                                                <div>
-                                                    <a href="{{ route('project.toggleStar',$project->id) }}" class="float-end me-2 " > @if( $project->toggleStar == 1) <i class="fa-solid fa-star" style="color: #FFD43B;"></i> @else <i class="fa-regular fa-star" ></i>  @endif </a>
-                                                    
-                                                </div>
+                                                
                                                 <div class="circle-k me-3" style="background: conic-gradient(rgb(49, 164, 7) {{$project->progress}}%, #e0e0e0 0)">
                                                     <span class="percentage_k">{{ $project->progress }}%</span>
                                                 </div>
                                                 
                                                 <div class="">
-                                                    @if($project->status==1)
-                                                    <span class=" text-success">Đã hoàng thành</span>
-                                                    @endif
+                                                    
                                     
                                                     <div class="ms-1">Mã: {{ $project->projectCode }}</div>
                                                     <div class="ms-1"><a class="text-dark" href="{{ route('view.task',$project->id) }}">{{ $project->projectName  }}</a> </div>
-                                                    
+                                                    @if($project->status==1)
+                                                    <span class="ms-1 text-success">Đã hoàng thành</span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -78,9 +75,28 @@
               
             </div>
             @endif
+            @if($tasks->isNotEmpty())
+
+            <div class="col-md-12 col-xl-12 mt-4">
+                <div class="card">
+                    <div class="card-body"> 
+                        <div class="py-12">
+                        <h3>Công việc</h3>
+                                <ul>
+                                    @foreach($tasks as $task)
+                                        <li>{{ $task->task_name }}</li>
+                                    @endforeach
+                                </ul>
+
+                                
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
             @if($users->isNotEmpty())
 
-            <div class="col-md col-xl mt-4">
+            <div class="col-md-6 col-xl-6 mt-4">
                 <div class="card">
                     <div class="card-body"> 
                         <div class="py-12">
@@ -98,7 +114,7 @@
             </div>
             @endif
             @if($files->isNotEmpty())
-            <div class="col-md-3 col-xl-3 mt-4">
+            <div class="col-md-6 col-xl-6 mt-4">
                 <div class="card">
                     <div class="card-body"> 
                         <h3>Tài liệu</h3>
@@ -140,7 +156,7 @@
             @endif
             @if($clients->isNotEmpty())
 
-            <div class="col-md-3 col-xl-3 mt-4">
+            <div class="col-md-6 col-xl-6 mt-4">
                 <div class="card">
                     <div class="card-body"> 
                         <div class="py-12">
@@ -159,7 +175,7 @@
             @endif
             @if($divisions->isNotEmpty())
 
-            <div class="col-md-2 col-xl-2 mt-4">
+            <div class="col-md-6 col-xl-6 mt-4">
                 <div class="card">
                     <div class="card-body"> 
                         <div class="py-12">
@@ -184,25 +200,7 @@
                 </div>
             </div>
             @endif
-            @if($tasks->isNotEmpty())
-
-            <div class="col-md-4 col-xl-4 mt-4">
-                <div class="card">
-                    <div class="card-body"> 
-                        <div class="py-12">
-                        <h3>Công việc</h3>
-                                <ul>
-                                    @foreach($tasks as $task)
-                                        <li>{{ $task->task_name }}</li>
-                                    @endforeach
-                                </ul>
-
-                                
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
+            
 
 
         @endif

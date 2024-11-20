@@ -5,24 +5,56 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\File;
 use App\Models\Task;
+use App\Models\Coat;
 use App\Models\Document;
+use Illuminate\Support\Facades\Auth;
 
 
 
 class TaskController extends Controller
 {
+    private function buildTaskHierarchy($tasks, $level = 0)
+    {
+        $result = collect();
+
+        foreach ($tasks as $task) {
+            // Thêm level để đánh dấu độ sâu của task
+            $task->level = $level;
+            $result->push($task);
+
+            // Lấy các task con
+            $childTasks = Task::where('parentID', $task->id)
+                             ->orderBy('startDate', 'asc')
+                             ->get();
+
+            if ($childTasks->isNotEmpty()) {
+                $result = $result->merge($this->buildTaskHierarchy($childTasks, $level + 1));
+            }
+        }
+
+        return $result;
+    }
+
     public function viewtask($id) {
-        $show= 0 ;
+        $show = 0 ;
         $project = Project::find($id);
         $documents = Document::where('projectID',$id)->get();
-        $tasks = Task::where('projectID', $id)
-        ->orderBy('startDate', 'asc')
-        ->get();
+        
+        $rootTasks = Task::where('parentID', 0)
+                            ->where('projectID',$id)
+                            ->orderBy('startDate', 'asc')
+                            ->get();
+
+        // Xây dựng cây task phân cấp
+        $tasks = $this->buildTaskHierarchy($rootTasks);
+        $coats = Coat::where('projectID',$project->id)->get();
+        $notifications = Notification::where('is_read',0)->get();
+
         // Kiểm tra nếu project không tồn tại
         if (!$project) {
             $notification = array(
@@ -31,18 +63,10 @@ class TaskController extends Controller
             );
             return redirect()->back()->with($notification);
         }
-    
-        // Lấy các task liên quan đến project
-        // $tasks = Task::where('projectID', $project->id)->get();
-    
         // Trả về view với project và tasks
-        return view('admin.task', compact('project','documents','tasks','show'));
+        return view('admin.task', compact('project','documents','tasks','coats','notifications'));
     }
-    public function listTask() {
-        
-
-        return view('admin.list_task');
-    }
+    
     
 
     public function addDo(Request $request){
@@ -79,13 +103,12 @@ class TaskController extends Controller
             ]);
         }
     
-        $show = 0;
         $notification = array(
             'message' => 'Thư mục và file đã được thêm ',
             'alert-type' => 'success'
         );
         
-        return redirect()->back()->with($notification,$show);
+        return redirect()->back()->with($notification);
 
 
     }
@@ -153,15 +176,50 @@ class TaskController extends Controller
             'userID' => 'required',
             'parentID' => 'required',
             'budget' => 'required',
-            'change' => 'required',
         ]);
-
+        //kiểm tra mã dự án
+        $project = Project::find($request->projectID);
+        $taskCodeExits = Task::where('task_code',$request->task_code)->exists();
+        if($taskCodeExits){
+            $notification = array(
+                'message' => 'Mã công việc đã tồn tại',
+                'alert-type' => 'error'
+            );
+            return redirect()->back()->with($notification);
+        }
+        // kiểm tra startDate và endDate
         $startDate = \Carbon\Carbon::parse($request->startDate);
         $endDate = \Carbon\Carbon::parse($request->endDate);
         $duration = $endDate->diffInDays($startDate);
-        $updatePartent = Task::where('parentID',$request->parentID)->get();
+
+       
+        $parentTasks = Task::where('id',$request->parentID)->get();
+
+        if( $request->startDate < $project->startDate ){
+            $notification = array(
+                'message' => 'Ngày bắt đầu công việc không được trước ngày bắt đầu của dự án',
+                'alert-type' => 'error'
+            );
+            return redirect()->back()->with($notification);
+        }
+        if( $request->parentID != 0)
+        foreach($parentTasks as $parentTask){
+            if($request->startDate < $parentTask->startDate){
+                $notification = array(
+                    'message' => 'Ngày bắt đầu công việc không được trước ngày bắt đầu của công việc tiên quyết',
+                    'alert-type' => 'error'
+                );
+                return redirect()->back()->with($notification);
+            }
+
+        }
+
+        $updatePartent = Task::where('parentID',$request->parentID)
+                               ->where('projectID', $request->projectID)->get();
         // Trước khi tạo task mới, kiểm tra và điều chỉnh thời gian nếu cần
-        
+        $existingParentTask = Task::where('projectID', $request->projectID)
+                                        ->where('parentID', 0)
+                                        ->get();
 
         // Tạo task mới với thời gian đã được điều chỉnh
         $task = Task::create([
@@ -176,77 +234,31 @@ class TaskController extends Controller
             'budget' => $request->budget,
             'duration' => $duration,
         ]);
+        if ($request->parentID == 0) {
+            
+            foreach ($existingParentTask as $item ) {
 
-        if ($request->change == 'update' && $request->change != 0 ) {
-            // sửa parent 
-            foreach($updatePartent as $item){
-                $item->parentID = $task->id ;
+                $item->parentID = $task->id;
                 $item->save();
             }
-            // Lấy tất cả các task sau task mới
-            $laterTasks = Task::where('projectID', $request->projectID)
-                            ->where('startDate', '>=', $startDate->format('Y-m-d'))
-                            ->where('id', '!=', $task->id)
-                            ->orderBy('startDate', 'asc')
-                            ->get();
 
-            $previousEndDate = $endDate;
-
-            foreach ($laterTasks as $laterTask) {
-                $taskStartDate = \Carbon\Carbon::parse($laterTask->startDate);
-                $taskEndDate = \Carbon\Carbon::parse($laterTask->endDate);
-                $taskDuration = $taskEndDate->diffInDays($taskStartDate);
-
-                // Cập nhật ngày bắt đầu là 2 ngày sau ngày kết thúc của task trước
-                $newStartDate = $previousEndDate->addDays();
-                // Tính ngày kết thúc mới dựa trên duration của task
-                $newEndDate = (clone $newStartDate)->addDays($taskDuration);
-
-                // Cập nhật task
-                $laterTask->update([
-                    'startDate' => $newStartDate->format('Y-m-d'),
-                    'endDate' => $newEndDate->format('Y-m-d')
-                ]);
-
-                // Cập nhật previousEndDate cho vòng lặp tiếp theo
-                $previousEndDate = $newEndDate;
-            }
-
-            // Kiểm tra và cập nhật thời gian dự án nếu cần
-            $this->updateProjectDuration($request->projectID);
         }
-        $show = 0;
+        $content =Auth::user()->name . ' đã thêm một công việc vào dự án '. $project->projectName .' có mã: '.$project->projectCode;
+        Notification::create([
+            'title' => 'Thêm công việc',
+            'content'   => $content,
+
+        ]);
+
+
         $notification = array(
             'message' => 'Công việc đã được thêm ',
             'alert-type' => 'success'
         );
-        return redirect()->back()->with($notification,$show);
+        return redirect()->back()->with($notification);
 
     }
    
-    // Hàm cập nhật thời gian dự án
-    private function updateProjectDuration($projectID)
-    {
-        $project = Project::find($projectID);
-        if ($project) {
-            // Lấy task có startDate sớm nhất và endDate muộn nhất
-            $firstTask = Task::where('projectID', $projectID)
-                            ->orderBy('startDate', 'asc')
-                            ->first();
-            $lastTask = Task::where('projectID', $projectID)
-                        ->orderBy('endDate', 'desc')
-                        ->first();
-
-            if ($firstTask && $lastTask) {
-                $project->update([
-                    'startDate' => $firstTask->startDate,
-                    'endDate' => $lastTask->endDate,
-                    'duration' => \Carbon\Carbon::parse($lastTask->endDate)
-                        ->diffInDays(\Carbon\Carbon::parse($firstTask->startDate))
-                ]);
-            }
-        }
-    }
     public function updateProgressTask(Request $request) {
         $task = Task::find($request->taskID);
         
@@ -270,84 +282,91 @@ class TaskController extends Controller
             // Cập nhật progress của project
             $project = Project::find($task->projectID);
 
-            if ($project) {
-                // Lấy tất cả các task của project
-                $allTasks = Task::where('projectID', $project->id)->get();
-                $totalProgress = 0;
-                $taskCount = count($allTasks);
+            $allTasks = Task::where('projectID', $project->id)->get();
+        $totalWeightedProgress = 0;
+        $totalWeight = 0;
+
+        foreach ($allTasks as $projectTask) {
+            $taskWeight = max(1, \Carbon\Carbon::parse($projectTask->endDate)
+                ->diffInDays(\Carbon\Carbon::parse($projectTask->startDate)));
+            
+            $totalWeightedProgress += ($projectTask->progress * $taskWeight);
+            $totalWeight += $taskWeight;
+        }
+
+        if ($totalWeight > 0) {
+            $project->progress = round($totalWeightedProgress / $totalWeight);
+        }
+
+        $currentDate = \Carbon\Carbon::now();
+        if ($project->endDate < $currentDate && $project->progress < 100) {
+            $project->status = 3; // Quá hạn
+        } elseif ($project->progress == 100) {
+            $project->status = 1; // Đã hoàn thành
+        }
+
+        $project->save();
     
-                // Tính tổng progress của tất cả các task
-                foreach ($allTasks as $projectTask) {
-                    $totalProgress += $projectTask->progress;
-                }
-    
-                // Cập nhật progress của project
-                $project->progress = $taskCount > 0 ? round($totalProgress / $taskCount) : 0;
-    
-                // Cập nhật status của project
-                if ($project->endDate < $currentDate) {
-                    // Nếu đã quá thời hạn
-                    $project->status = 3; // Quá hạn
-                } elseif ($project->progress == 100) {
-                    // Nếu hoàn thành 100% và chưa quá hạn
-                    $project->status = 1; // Đã hoàn thành
-                }
-    
-                $project->save();
-            }
-    
-            $show = 1;
-            $notification = [
-                'message' => 'Tiến độ đã được cập nhật',
-                'alert-type' => 'success'
-            ];
-            return redirect()->back()->with($notification, $show);
+        $notification = [
+            'message' => 'Tiến độ đã được cập nhật',
+            'alert-type' => 'success'
+        ];
+        $content =Auth::user()->name . ' đã cập nhật tiến độ dự án '. $project->projectName .' có mã: '.$project->projectCode;
+        Notification::create([
+            'title' => 'Cập nhật tiến độ dự án',
+            'content'   => $content,
+
+        ]);
+
+
+        return redirect()->back()->with($notification);
         }
     }
+
+    // chỉnh sửa task
 
     public function editTask(Request $request)
 {
     $request->validate([
         'task_name' => 'required|string',
+        'task_code' => 'required|string',
         'endDate' => 'required|date',
         'startDate' => 'required|date',
         'projectID' => 'required',
         'userID' => 'required',
-        'parentID' => 'required',
+        'status' => 'required',
         'task_id' => 'required',
-        'address' => 'required',
+        'progress' => 'required|numeric|min:0|max:100',
     ]);
 
     try {
         DB::beginTransaction();
+        
+        // Lấy project trước khi validation
+        $project = Project::findOrFail($request->projectID);
+
+        // kiểm tra task_code 
+        $taskCodeExists = Task::where('task_code', $request->task_code)
+            ->where('id', '!=', $request->task_id)
+            ->exists();
+            
+        if ($taskCodeExists) {
+            return redirect()->back()->with([
+                'message' => 'Mã công việc đã tồn tại',
+                'alert-type' => 'error'
+            ]);
+        }
+
+        if ($request->startDate < $project->startDate) {
+            return redirect()->back()->with([
+                'message' => 'Ngày bắt đầu công việc không được trước ngày bắt đầu của dự án',
+                'alert-type' => 'error'
+            ]);
+        }
 
         $startDate = \Carbon\Carbon::parse($request->startDate);
         $endDate = \Carbon\Carbon::parse($request->endDate);
         $duration = $endDate->diffInDays($startDate);
-        $updateParent = Task::where('parentID', $request->parentID)->get();
-
-        // Lấy thông tin task cũ trước khi update
-        $oldTask = Task::findOrFail($request->task_id);
-        $oldStartDate = \Carbon\Carbon::parse($oldTask->startDate);
-        $oldEndDate = \Carbon\Carbon::parse($oldTask->endDate);
-        $oldDuration = $oldEndDate->diffInDays($oldStartDate);
-
-        if ($request->change == 'update') {
-            // Tìm task ngay trước task mới
-            $previousTask = Task::where('projectID', $request->projectID)
-                            ->where('endDate', '<', $request->startDate)
-                            ->orderBy('endDate', 'desc')
-                            ->first();
-
-            // Nếu có task trước đó và không liền kề
-            if ($previousTask) {
-                $previousEndDate = \Carbon\Carbon::parse($previousTask->endDate);
-                if ($previousEndDate->addDays()->format('Y-m-d') != $startDate->format('Y-m-d')) {
-                    $startDate = $previousEndDate->addDays();
-                    $endDate = (clone $startDate)->addDays($duration);
-                }
-            }
-        }
 
         $task = Task::findOrFail($request->task_id);
 
@@ -356,104 +375,54 @@ class TaskController extends Controller
         $task->startDate = $startDate->format('Y-m-d');
         $task->endDate = $endDate->format('Y-m-d');
         $task->duration = $duration;
-        $task->parentID = $request->parentID;
         $task->progress = $request->progress;
+        $task->status = $request->status;
         $task->userID = $request->userID;
-        $task->address = $request->address;
 
         if ($request->filled('budget')) {
             $task->budget = $request->budget;
         }
+        
         if ($request->filled('note')) {
-            $task->description = $request->input('note');
+            $task->description = $request->note;
         }
 
         $task->save();
 
-        if ($request->change == 'update') {
-            // Sửa parent
-            foreach ($updateParent as $item) {
-                $item->parentID = $task->id;
-                $item->save();
-            }
-
-            // Lấy tất cả các task sau task mới
-            $laterTasks = Task::where('projectID', $request->projectID)
-                            ->where('startDate', '>=', $startDate->format('Y-m-d'))
-                            ->where('id', '!=', $task->id)
-                            ->orderBy('startDate', 'asc')
-                            ->get();
-
-            $previousEndDate = $endDate;
-            $timeDifference = $duration - $oldDuration;
-
-            foreach ($laterTasks as $laterTask) {
-                $taskStartDate = \Carbon\Carbon::parse($laterTask->startDate);
-                $taskEndDate = \Carbon\Carbon::parse($laterTask->endDate);
-                $taskDuration = $taskEndDate->diffInDays($taskStartDate);
-
-                // Điều chỉnh thời gian dựa trên sự thay đổi của task gốc
-                $newStartDate = $previousEndDate->addDays();
-                
-                // Nếu thời gian task gốc tăng
-                if ($timeDifference > 0) {
-                    $newEndDate = (clone $newStartDate)->addDays($taskDuration + $timeDifference);
-                } 
-                // Nếu thời gian task gốc giảm
-                else {
-                    $newEndDate = (clone $newStartDate)->addDays(max(0, $taskDuration + $timeDifference));
-                }
-
-                // Cập nhật task
-                $laterTask->update([
-                    'startDate' => $newStartDate->format('Y-m-d'),
-                    'endDate' => $newEndDate->format('Y-m-d'),
-                    'duration' => max(0, $newEndDate->diffInDays($newStartDate))
-                ]);
-
-                $previousEndDate = $newEndDate;
-            }
-        }
-
         // Cập nhật progress và status của project
-        $project = Project::findOrFail($request->projectID);
         $allTasks = Task::where('projectID', $project->id)->get();
         $totalWeightedProgress = 0;
         $totalWeight = 0;
 
         foreach ($allTasks as $projectTask) {
-            // Tính trọng số dựa trên thời gian của task
-            $taskWeight = \Carbon\Carbon::parse($projectTask->endDate)
-                ->diffInDays(\Carbon\Carbon::parse($projectTask->startDate));
-            
-            // Đảm bảo weight tối thiểu là 1
-            $taskWeight = max(1, $taskWeight);
+            $taskWeight = max(1, \Carbon\Carbon::parse($projectTask->endDate)
+                ->diffInDays(\Carbon\Carbon::parse($projectTask->startDate)));
             
             $totalWeightedProgress += ($projectTask->progress * $taskWeight);
             $totalWeight += $taskWeight;
         }
 
-        // Cập nhật progress của project
         if ($totalWeight > 0) {
             $project->progress = round($totalWeightedProgress / $totalWeight);
-        } else {
-            $project->progress = 0;
         }
 
-        // Cập nhật status của project
         $currentDate = \Carbon\Carbon::now();
         if ($project->endDate < $currentDate && $project->progress < 100) {
             $project->status = 3; // Quá hạn
         } elseif ($project->progress == 100) {
             $project->status = 1; // Đã hoàn thành
-        } 
+        }
 
         $project->save();
-
-        // Kiểm tra và cập nhật thời gian dự án nếu cần
-        $this->updateProjectDuration($request->projectID);
-
         DB::commit();
+
+
+        $content =Auth::user()->name . ' đã cập nhật công việc của dự án '. $project->projectName .' có mã: '.$task->task_code;
+        Notification::create([
+            'title' => 'Cập nhật tiến độ dự án',
+            'content'   => $content,
+
+        ]);
 
         return redirect()->back()->with([
             'message' => 'Công việc đã được chỉnh sửa thành công',
@@ -469,130 +438,48 @@ class TaskController extends Controller
         ]);
     }
 }
-public function deleteTask(Request $request) {
-    $request->validate([
-        'task_id' => 'required',
-    ]);
-
-    try {
-        DB::beginTransaction();
-        
-        // Tìm task cần xóa
-        $task = Task::findOrFail($request->task_id);
-        $projectID = $task->projectID;
-        $project = Project::find($projectID);
-        
-        if (!$project) {
-            throw new \Exception('Không tìm thấy dự án');
-        }
-
-        // Lưu thông tin thời gian của task bị xóa để điều chỉnh các task sau
-        $taskStartDate = \Carbon\Carbon::parse($task->startDate);
-        $taskEndDate = \Carbon\Carbon::parse($task->endDate);
-        $taskDuration = $taskEndDate->diffInDays($taskStartDate);
-        
-        // Xử lý task con
-        $childTasks = Task::where('parentID', $task->id)->get();
-        if ($childTasks->count() > 0) {
-            foreach ($childTasks as $childTask) {
-                $childTask->update(['parentID' => $task->parentID]);
-            }
-        }
-        
-        // Tìm các task liên quan
-        $laterTasks = Task::where('projectID', $projectID)
-            ->where('startDate', '>', $task->endDate)
-            ->orderBy('startDate', 'asc')
-            ->get();
-            
-        $previousTask = Task::where('projectID', $projectID)
-            ->where('endDate', '<', $task->startDate)
-            ->orderBy('endDate', 'desc')
-            ->first();
-            
-        // Xóa task
-        $task->delete();
-
-        // Cập nhật progress của project
-        $allTasks = Task::where('projectID', $project->id)->get();
-        $totalWeightedProgress = 0;
-        $totalWeight = 0;
-
-        foreach ($allTasks as $projectTask) {
-            // Tính trọng số dựa trên độ phức tạp hoặc thời gian của task
-            $taskWeight = \Carbon\Carbon::parse($projectTask->endDate)
-                ->diffInDays(\Carbon\Carbon::parse($projectTask->startDate));
-            
-            // Đảm bảo weight tối thiểu là 1
-            $taskWeight = max(1, $taskWeight);
-            
-            $totalWeightedProgress += ($projectTask->progress * $taskWeight);
-            $totalWeight += $taskWeight;
-        }
-
-        // Cập nhật progress và status của project
-        $currentDate = \Carbon\Carbon::now();
-        if ($totalWeight > 0) {
-            $project->progress = round($totalWeightedProgress / $totalWeight);
-        } else {
-            $project->progress = 0;
-        }
-
-        // Cập nhật status của project
-        if ($project->endDate < $currentDate && $project->progress < 100) {
-            $project->status = 3; // Quá hạn
-        } elseif ($project->progress == 100) {
-            $project->status = 1; // Đã hoàn thành
-        } 
-
-        $project->save();
-
-        // Cập nhật thời gian các task sau
-        if ($laterTasks->count() > 0) {
-            $previousEndDate = $previousTask ? 
-                \Carbon\Carbon::parse($previousTask->endDate) : 
-                \Carbon\Carbon::parse($laterTasks->first()->startDate)->subDays($taskDuration + 1);
-                
-            foreach ($laterTasks as $laterTask) {
-                $taskDuration = \Carbon\Carbon::parse($laterTask->endDate)
-                    ->diffInDays(\Carbon\Carbon::parse($laterTask->startDate));
-                    
-                $newStartDate = $previousEndDate->copy()->addDay();
-                $newEndDate = $newStartDate->copy()->addDays($taskDuration);
-                
-                $laterTask->update([
-                    'startDate' => $newStartDate->format('Y-m-d'),
-                    'endDate' => $newEndDate->format('Y-m-d')
-                ]);
-                
-                $previousEndDate = $newEndDate;
-            }
-        }
-        
-        // Cập nhật thời gian dự án
-        $this->updateProjectDuration($projectID);
-        
-        DB::commit();
-        
-        return redirect()->back()->with([
-            'message' => 'Công việc đã được xóa thành công',
-            'alert-type' => 'success'
+    public function lockTask(Request $request) {
+        $request->validate([
+            'task_id' => 'required',
         ]);
+        $currentDate = now();
+        $task = Task::find($request->task_id);
+        if($task->status == 0 || $task->status == 1 || $task->status == 2){
+            $task->status = 3;
+            $task->save();
+            $notification = array(
+                'message' => 'công việc đã tạm dừng',
+                'alert-type' => 'success'
+            );
+        }elseif($task->status == 3){
+            if($task->progress == 100){
+                $task->status = 1;
+                $task->save();
+            }elseif($task->endDate < $currentDate){
+                $task->status = 2;
+                $task->save();
+            
+            }else{
+                $task->status = 0;
+                $task->save();
+            }
+            
+            $notification = array(
+                'message' => 'công việc đã mở lại',
+                'alert-type' => 'success'
+            );
+
+
+        }
+        return redirect()->back()->with($notification);
+
         
-    } catch (\Exception $e) {
-        DB::rollBack();
-        
-        return redirect()->back()->with([
-            'message' => 'Có lỗi xảy ra khi xóa công việc: ' . $e->getMessage(),
-            'alert-type' => 'error'
-        ]);
     }
-}
-    public function toggleStar($id = null)
+    public function toggleStar($id)
     {
         $task = Task::find($id);
 
-        if ($project) {
+        if ($task) {
             // Đảo ngược trạng thái status giữa 0 và 1
             $task->star = $task->star == 1 ? 0 : 1;
             $task->save();

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Client;
+use App\Models\Notification;
 
 class GuestController extends Controller
 {
@@ -29,6 +30,11 @@ class GuestController extends Controller
             'description' => $request->description,
         ]);
 
+        $content = 'Một yêu cầu tư vấn từ khách hàng ';
+        Notification::create([
+            'title' => 'Yêu cầu tư vắn',
+            'content'   => $content,
+        ]);
 
 
         $notification = array(

@@ -12,7 +12,7 @@ class Project extends Model
     protected $fillable = [
         'projectCode', 
         'projectName', 
-        'clientName', 
+        'clientID', 
         'userID', 
         'startDate', 
         'endDate', 
@@ -37,6 +37,10 @@ class Project extends Model
     public function tasks()
     {
         return $this->hasMany(Task::class, 'projectID');
+    }
+    public function contractors()
+    {
+        return $this->belongsTo(Client::class, 'clientID');
     }
 
 }

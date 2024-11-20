@@ -12,10 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 class TaiLieuController extends Controller
 {
-    public function viewDocument(){
-
-        return view('project.task');
-    }
+    
 
 
     public function deleteFolder(Request $request){

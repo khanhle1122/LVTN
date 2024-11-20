@@ -92,9 +92,14 @@ $(function() {
         required: true,
         minlength: 3
       },
-      clientName:{
+      hangmuc: {
         required: true,
-        minlength: 5
+        minlength: 3
+      },
+      
+      clientID:{
+        required: true,
+        
       },
       confirm_password: {
         required: true,
@@ -130,8 +135,8 @@ $(function() {
         required: "Vui lòng nhập mã công việc",
         minlength: "Mã phải lớn hơn 3 ký tự"
       },
-      description: {
-        required: "Vui lòng nhập mô tả",
+      hangmuc: {
+        required: "Vui lòng nhập hạng mục",
         minlength: "Mô tả phải hơn 3 ký tự"
       },
       address: {
@@ -142,10 +147,14 @@ $(function() {
         required: "Vui lòng nhập ngân sách",
       },
       phone: {
-        required: "Vui lòng nhập sôs điện thoại",
+        required: "Vui lòng nhập số điện thoại",
       },
       expertise:{
         required:"vui lòng nhập Chuyên môn",
+        minlength: "vui lòng nhập trên 3 ký tự"
+      },
+      description:{
+        required:"vui lòng nhập mô tả",
         minlength: "vui lòng nhập trên 3 ký tự"
       },
       documentName: {
@@ -187,9 +196,8 @@ $(function() {
         required: "Vui lòng nhập ngày bắt đầu",
         date: "Vui lòng nhập ngày hợp lệ"
       },
-      clientName: {
-        required: "Vui lòng nhập ten khách hàng",
-        minlength: "Tên khách hàng phải có độ dài tối thiểu là 5 ký tự"
+      clientID: {
+        required: "Vui lòng chọn đối tác",
       },
       endDate: {
         required: "Vui lòng nhập ngày kết thúc",

@@ -135,17 +135,7 @@
                       <td>{{ $project->projectName }}</td>
                       <td>{{ $project->startDate }}</td>
                       <td>{{ $project->endDate }}</td>
-                      <td>@if($project->status == 1)   
-                        Đã hoàn thành
-  
-                    @elseif($project->status ==2)
-                        Tạm dừng
-                    @elseif($project->status ==0)
-                        Đang tiến hành
-  
-                    @elseif($project->status ==3)
-                        Chậm tiến độ 
-                    @endif</td>
+                      <td>{{ $project->progress }} %</td>
                       <td>{{ $project->user->name }}</td>
                     </tr>
                     @endif
@@ -248,31 +238,21 @@
                     <th class="pt-0">Tên dự án</th>
                     <th class="pt-0">Khởi công</th>
                     <th class="pt-0">Hoàn thành</th>
-                    <th class="pt-0">Trạng thái</th>
-                    <th class="pt-0">Giám sát</th>
+                    <th class="pt-0">Tiến độ</th>
+                    <th class="pt-0">Phụ trách</th>
                   </tr>
                 </thead>
                 <tbody>
-                  @foreach($projects as $project)
-                    @if($project->toggleStar==1)
+                  @foreach($tasks as $task)
+                    @if($task->star==1)
                     <tr>
                       <td>{{ $loop->iteration }}</td>
-                      <td>{{ $project->projectCode }}</td>
-                      <td>{{ $project->projectName }}</td>
-                      <td>{{ $project->startDate }}</td>
-                      <td>{{ $project->endDate }}</td>
-                      <td>@if($project->status == 1)   
-                        Đã hoàn thành
-  
-                    @elseif($project->status ==2)
-                        Tạm dừng
-                    @elseif($project->status ==0)
-                        Đang tiến hành
-  
-                    @elseif($project->status ==3)
-                        Chậm tiến độ 
-                    @endif</td>
-                      <td>{{ $project->user->name }}</td>
+                      <td>{{ $task->task_code }}</td>
+                      <td>{{ $task->task_code }}</td>
+                      <td>{{ $task->startDate }}</td>
+                      <td>{{ $task->endDate }}</td>
+                      <td>{{ $task->progress }} %</td>
+                      <td>{{ $task->users->name }}</td>
                     </tr>
                     @endif
                   
@@ -287,7 +267,7 @@
         <div class="card">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-baseline mb-2">
-              <h6 class="card-title mb-0">Thông báo</h6>
+              <h6 class="card-title mb-0">Yêu cầu tư vấn</h6>
               
             </div>
             <div class="d-flex flex-column">

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\Document;
 use App\Models\File;
+use App\Models\Client;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +17,9 @@ use Illuminate\Support\Facades\Auth;
 
 
 
-class DuAnController extends Controller
-{
-    public function generateUniqueFileName($directory, $originalName)
-    {
+class DuAnController extends Controller{
+
+    public function generateUniqueFileName($directory, $originalName){
         $fileName = pathinfo($originalName, PATHINFO_FILENAME);
         $extension = pathinfo($originalName, PATHINFO_EXTENSION);
         $counter = 1;
@@ -39,20 +39,16 @@ class DuAnController extends Controller
     // show all dự án 
     public function viewDA(){
         $projects= Project::all();
-        $project = Project::first();
-        return view('admin.project',compact('projects','project'));
+        $notifications = Notification::where('is_read',0)->get();
+        $contractors = Client::where('role','contractor')->get();
+
+        return view('admin.project',compact('projects','contractors','notifications'));
     } 
-    public function addProject(){
-        $project = Project::first();
 
-        return view('admin.add_project',compact('project'));
-
-    }
     // thêm dự án 
     
    
-    public function toggleStar($id = null)
-    {
+    public function toggleStar($id = null){
         $project = Project::find($id);
 
         if ($project) {
@@ -63,18 +59,18 @@ class DuAnController extends Controller
             
         }
 
+
         return redirect()->back();
     }
 
 
 
-
-    public function store(Request $request)
-    {
+    // thêm dự án
+    public function store(Request $request){
         $request->validate([
             'projectCode'  => 'required|string',
             'projectName'  => 'required|string',
-            'clientName'   => 'required|string',
+            'clientID'   => 'required',
             'startDate'  => 'required|date',
             'endDate'    => 'required|date|after_or_equal:startDate',
             'userID' =>'required',
@@ -83,22 +79,22 @@ class DuAnController extends Controller
             'budget' => ' required',
             'files.*'      => 'nullable|file', 
             'description'      => 'nullable|string|max:255', 
-            'address' => 'required'
-
+            'address' => 'required',
+            'clientID'  => 'required'
         ]);
         $projectCodeExits = Project::where('projectCode',$request->projectCode)->first();
 
         if($projectCodeExits){
 
             $notification = array(
-                'message' => 'Mã Dự án đã tồn tại',
+                'message' => 'Mã dự án đã tồn tại',
                 'alert-type' => 'error'
             );
         }else{
             $project = Project::create([
                 'projectCode'  => $request->projectCode,
                 'projectName'  => $request->projectName,
-                'clientName'   => $request->clientName,
+                'clientID'   => $request->clientID,
                 'userID'       => $request->userID,
                 'startDate'    => $request->startDate,
                 'endDate'      => $request->endDate,
@@ -106,11 +102,14 @@ class DuAnController extends Controller
                 'level'        => $request->level,
                 'address'      => $request->address,
                 'budget'       => $request->budget,
+                'clientID'     => $request->clientID,
+                'description'  => $request->description
             ]);
-            if ($request->filled('description')) {
-                $project->description = $request->input('description');
-                $project->save();
-            }
+            
+            $client = Client::find($request->clientID);
+            $client->status = 1;
+            $client->save();
+
             $documentName = $project->projectCode.'_'.$project->projectName;
     
             $document = Document::create([
@@ -142,6 +141,13 @@ class DuAnController extends Controller
                     ]);
                 }
             }
+            $content = Auth::user()->name . ' đã thêm dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode  ;
+            Notification::create([
+                'title' => 'Đã thêm dự án',
+                'content'   => $content,
+            ]);
+
+
         }
 
         
@@ -170,7 +176,7 @@ class DuAnController extends Controller
         $request->validate([
             'projectCode' => 'required|string|max:255',
             'projectName' => 'required|string|max:255',
-            'clientName' => 'nullable|string|max:255',
+            'clientID' => 'required',
             'userID' => 'required|exists:users,id',
             'startDate' => 'required|date',
             'type'      => 'required',
@@ -183,7 +189,7 @@ class DuAnController extends Controller
          // Cập nhật dữ liệu của dự án
          $project->projectCode = $request->input('projectCode');
          $project->projectName = $request->input('projectName');
-         $project->clientName = $request->input('clientName');
+         $project->clientID = $request->input('clientID');
          $project->userID = $request->input('userID');
          $project->startDate = $request->input('startDate');
          $project->endDate = $request->input('endDate');
@@ -206,6 +212,12 @@ class DuAnController extends Controller
              'message' => 'dự án đã được chỉnh sửa',
              'alert-type' => 'success'
          );
+
+         $content = Auth::user()->name .' Đã chỉnh sửa dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode ;
+        Notification::create([
+            'title' => 'Đã chỉnh sửa dự án',
+            'content'   => $content,
+        ]);
        }
         
         return redirect()->route('project')->with($notification);
@@ -222,6 +234,13 @@ class DuAnController extends Controller
                 'message' => 'dự án đã tạm dừng',
                 'alert-type' => 'success'
             );
+            $content = 'Đã tạm dừng dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode ;
+            Notification::create([
+                'title' => 'Đã tạm dừng dự án',
+                'content'   => $content,
+            ]);
+
+
         }elseif($project->status == 2){
             if($project->progress == 100){
                 $project->status = 1;
@@ -239,6 +258,11 @@ class DuAnController extends Controller
                 'message' => 'dự án đã mở lại',
                 'alert-type' => 'success'
             );
+            $content ='Đã mở lại dự ám dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode;
+            Notification::create([
+                'title' => 'Đã mở lại dự án',
+                'content'   => $content,
+            ]);
         }
         
         return redirect()->route('project')->with($notification);

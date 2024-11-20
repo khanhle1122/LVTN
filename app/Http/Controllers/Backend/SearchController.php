@@ -11,6 +11,7 @@ use App\Models\Division;
 use App\Models\Client;
 use App\Models\Task;
 
+use App\Models\Notification;
 
 
 
@@ -49,10 +50,10 @@ class SearchController extends Controller
                 ->orWhere('budget', 'LIKE', "%{$query}%")
                 ->get();
 
-        $project = Project::first();
+        $notifications = Notification::where('is_read',0)->get();
 
 
         // Trả về kết quả tìm kiếm
-        return view('admin.search-results', compact('projects', 'users', 'files', 'query','divisions','clients','tasks','project'));
+        return view('admin.search-results', compact('projects', 'users', 'files', 'query','divisions','clients','tasks','notifications'));
     }
 }

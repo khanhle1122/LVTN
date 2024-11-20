@@ -10,39 +10,29 @@ use App\Models\Notification;
 
 class NotificationController extends Controller
 {
-    public function sendNotification(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-        ]);
+    public function clearNotification(){
+        $notifications = Notification::all();
 
-        $notificate = Notification::create([
-            'user_id' => $request->user_id,
-            'title' => $request->title,
-            'content' => $request->content,
-        ]);
-        $notification = array(
-            'message' => 'Thông báo đã được gửi',
-            'alert-type' => 'success'
-        );
-        
-        return redirect()->back()->with($notification);
-        
-    }
-
-    public function showNotifications($userId)
-    {
-        $user = User::findOrFail($userId);
-        $notifications = $user->notifications()->latest()->get();
-        return view('notifications.index', compact('notifications', 'user'));
-    }
-
-    public function markAsRead($id)
-    {
-        $notification = Notification::findOrFail($id);
-        $notification->update(['is_read' => true]);
+        foreach($notifications as $notification){
+            $notification->is_read = 1;
+            $notification->save();
+        }
         return redirect()->back();
-    }   
+
+
+    }
+
+    public function checkNotification($id){
+        $notification = Notification::find($id);
+        $notification->is_read = 1;
+        $notification->save();
+        return redirect()->back();
+    }
+    public function showNotification(){
+        $notifications = Notification::where('is_read',0)->get();
+        $allNotifications = Notification::all();
+
+        return view('admin.view-notification',compact('notifications','allNotifications'));
+    }
+    
 }

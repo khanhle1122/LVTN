@@ -9,8 +9,10 @@ use App\Http\Controllers\Backend\NotificationController;
 use App\Http\Controllers\Backend\TaskController;
 use App\Http\Controllers\Backend\TaiLieuController;
 use App\Http\Controllers\Backend\SearchController;
+use App\Http\Controllers\Backend\ChatController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GuestController;
+use App\Http\Controllers\Backend\CoatController;
 
 
 
@@ -54,7 +56,12 @@ Route::post('/advise', [GuestController::class, 'adviseCliet'])->name('client.st
 
 Route::middleware('auth','role:admin')->group(function () {
     Route::get('/client', [ClientController::class, 'index'])->name('client');
-    Route::get('/client/add', [ClientController::class, 'viewAddClient'])->name('add.client');
+    Route::post('/client/themkhachhang', [ClientController::class, 'addClient'])->name('add.client');
+    Route::post('/client/chinh sửa', [ClientController::class, 'editClient'])->name('edit.client');
+    Route::get('/duyet-request/id={id}', [ClientController::class, 'checkRequest'])->name('check.status.client');
+    Route::get('/report-project', [ClientController::class, 'reportProject'])->name('report.project');
+
+
 
 });
 
@@ -66,7 +73,6 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth','role:admin')->group(function () {
     Route::get('/project/list_project',[DuAnController::class, 'viewDA'])->name('project');
-    Route::get('/project/add',[DuAnController::class, 'addProject'])->name('add.project');
 
     Route::post('/project/add-project',[DuAnController::class, 'store'])->name('project.store');
 
@@ -75,7 +81,10 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::post('/project/edit/{id}', [DuAnController::class, 'editProject'])->name('edit.project');
     Route::get('/project/lock/{id}', [DuAnController::class, 'lockProject'])->name('lock.project');
 
-    Route::get('/project/task/{id}',[TaskController::class, 'viewtask'])->name('view.task');
+});
+
+Route::middleware('auth','role:admin')->group(function () {
+    Route::get('/project/task/id={id}',[TaskController::class, 'viewtask'])->name('view.task');
 
     Route::get('/task/star{id}', [TaskController::class, 'toggleStar'])->name('task.toggleStar');
 
@@ -91,10 +100,33 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::post('/progress',[TaskController::class, 'updateProgressTask'])->name('update.progress.task');
     Route::post('/task/add-task',[TaskController::class, 'addTask'])->name('task.store');
     Route::post('/task/edit',[TaskController::class, 'editTask'])->name('task.edit');
-    Route::delete('/task/delete',[TaskController::class, 'deleteTask'])->name('delete.task');
+    Route::post('/task/lock', [TaskController::class, 'lockTask'])->name('lock.task');
 
 
 });
+Route::middleware('auth','role:admin')->group(function () {
+    Route::post('/add/coat', [CoatController::class, 'addCoat'])->name('add.coat');
+    Route::post('/edit/coat', [CoatController::class, 'editCoat'])->name('edit.coat');
+    Route::get('/delete/id={id}', [CoatController::class, 'deleteCoat'])->name('delete.coat');
+
+
+});
+
+Route::middleware('auth')->group(function () {
+    
+    Route::get('/clear-notification', [NotificationController::class, 'clearNotification'])->name('clear.notification');
+
+
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{room}/messages', [ChatController::class, 'store'])->name('chat.messages.store');
+
+});
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/search', [SearchController::class, 'search'])->name('search');
 
@@ -103,7 +135,6 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth','role:admin')->group(function () {
     Route::get('/admin/danhsachnhanvien',[NhanVienController::class, 'index'])->name('employee');
-    Route::get('/admin/themnhanvien',[NhanVienController::class, 'addEmployee'])->name('view.add.employee');
     Route::post('/admin/employees/store', [NhanVienController::class, 'store'])->name('store.employee');
 
     Route::delete('/admin/employees',[NhanVienController::class, 'deleteEmploye'])->name('delete-user');
@@ -123,10 +154,11 @@ Route::middleware('auth','role:admin')->group(function () {
 
 });
 
-Route::middleware('auth','role:admin')->group(function () {
+Route::middleware('auth')->group(function () {
     Route::post('/send-notification', [NotificationController::class, 'sendNotification'])->name('send.notification');
-    Route::get('/notifications/{userId}', [NotificationController::class, 'showNotifications'])->name('show.notifications');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('mark.notification.read');
+    Route::get('/notifications/id={id}', [NotificationController::class, 'checkNotification'])->name('check.notification');
+    Route::get('/notifications/show', [NotificationController::class, 'showNotification'])->name('show.notification');
 
 
 });

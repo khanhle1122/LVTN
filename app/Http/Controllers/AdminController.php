@@ -8,19 +8,22 @@ use Illuminate\Http\RedirectResponse;
 use App\Models\Project;
 use App\Models\Document;
 use App\Models\File;
+use App\Models\Notification;
+
+use App\Models\Task;
 
 class AdminController extends Controller
 {
     public function index(){
         $projects =Project::all();
         $project =Project::first();
-
+        $notifications = Notification::where('is_read',0)->get();
         $totalProject = $projects->count();
         $inProgressProjects = $projects->where('status', 0)->count();  // Đang thực hiện
         $successProjects = $projects->where('status', 1)->count();      // Tạm dừng
         $onHoldProjects = $projects->where('status', 2)->count();  // Đang thực hiện
         $lowProjects = $projects->where('status', 3)->count();  // Đang thực hiện
-
+        $tasks = Task::where('star',1)->get();
         return view('admin.index',compact(
                         'projects',
                         'project',
@@ -28,7 +31,9 @@ class AdminController extends Controller
                         'successProjects',
                         'inProgressProjects',
                         'onHoldProjects',
-                        'lowProjects'
+                        'lowProjects',
+                        'tasks',
+                        'notifications'
                     
                     
                     ));

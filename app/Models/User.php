@@ -46,10 +46,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(Project::class, 'userID');
     }
-    public function notifications()
-    {
-        return $this->hasMany(Notification::class);
-    }
     
     public function divisions()
     {

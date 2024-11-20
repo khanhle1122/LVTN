@@ -22,13 +22,14 @@ return new class extends Migration
             $table->integer('status')->default(0); // Trạng thái (giá trị số nguyên)
             $table->string('level', 255); // Cấp độ của dự án
             $table->string('budget');
-            $table->string('clientName', 255); // Ngân sách dự án
             $table->integer('progress')->default(0);
             $table->integer('toggleStar')->default(0);
 
             // Định nghĩa khóa ngoại tham chiếu đến bảng clients
             $table->foreignId('userID')->constrained('users')->onDelete('restrict');
-            
+            $table->foreignId('clientID') // Thêm khóa ngoại đến bảng clients
+                    ->constrained('clients')
+                    ->onDelete('restrict');
             // Thêm các cột timestamp (usscreated_at và updated_at)
             $table->timestamps();
         });

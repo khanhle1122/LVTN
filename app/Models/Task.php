@@ -32,6 +32,9 @@ class Task extends Model
     {
         return $this->belongsTo(User::class,'userID');
     }
-  
+    public function coats()
+    {
+        return $this->hasMany(Coat::class, 'taskID');
+    }
 
 }

@@ -2,12 +2,14 @@
     
     <div class="">
         <div class=" ">
+            <h3 class="mt-2 mb-4">Thư mục dự án</h3>
+
             <div class="">
                 @foreach($documents as $document)
                     @if($document->parentID == 0 )
                         <div class="row ms-2 ">
                             
-                            <div class="col-10 ">
+                            <div class="col-4 ">
                                 <i class="fa-solid fa-folder mt-1 "></i>
 
                                 <a  id="toggle-icon_k" class="mx-2 text-muted toggle-icon_k" data-bs-toggle="collapse" data-bs-target="#demo">
@@ -16,74 +18,75 @@
                                 </a>
 
                             </div>
+                            @if($project->status != 3)
                             <div class="col-1 d-flex">
                                 <div>
                                     
                                     <a type="button"  data-bs-toggle="modal" data-bs-target="#myModal{{ $document->id }}">
                                         <i class="icon text-muted" data-feather="file-plus"></i>
-                                      </a>
-                                      
-                                      <!-- add file -->
-                                      <div class="modal" id="myModal{{ $document->id }}">
-                                        <div class="modal-dialog">
-                                          <div class="modal-content">
-                                      
-                                            <!-- Modal Header -->
-                                            <div class="modal-header">
-                                              <h4 class="modal-title">Thêm file tài liệu</h4>
-                                              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                      
-                                            <!-- Modal body -->
-                                            <div class="modal-body">
-                                                <form action="{{ route('add.file') }}" method="post" enctype="multipart/form-data" id="addfile1" class="file-upload-form">
-                                                    @csrf
-                                                    <div class="row mt-4">
-                                                        <div class="col">
-                                                            <lablel>Thư mục chứa:</lablel>
-                                                            <select class="form-select" id="documentID" name="documentID">
-                                                                @foreach(App\Models\Document::where('projectID', $project->id)->get() as $doc)
-                                                                    
-                                                                    <option value="{{ $doc->id }}">{{ $doc->documentName }}</option>
-                                                                        
-                                                                @endforeach
-                                                            </select>
-                                                        </div>    
-                                                    </div>
-                                                    <div class="row mt-4 mb-5">
-                                                        <div>Các tài liệu liên quan</div>
-                                                        <label class="custom-file-input">
-                                                            <input type="file" multiple onchange="updateFileList(this)" name="files[]"/>
-                                                            <span id="file-count"></span>
-                                                            <div class="file-info">
-                                                              
-                                                              <ul class="file-list" id="file-list"></ul>
-                                                            </div>
-                                                        </label>
-                                                    </div>
-                                                    
-
-
-
-
-
-                                                    <div class="modal-footer">
-                                                        <button type="submit" class="btn btn-danger" >Thêm</button>
-                                                      </div>
-                                                </form>
-
-                                                
-                                                
-
-
-                                            </div>
-                                      
-                                            <!-- Modal footer -->
-                                            
-                                      
-                                          </div>
+                                    </a>
+                                    
+                                    <!-- add file -->
+                                    <div class="modal" id="myModal{{ $document->id }}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                    
+                                        <!-- Modal Header -->
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Thêm file tài liệu</h4>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
-                                      </div>
+                                    
+                                        <!-- Modal body -->
+                                        <div class="modal-body">
+                                            <form action="{{ route('add.file') }}" method="post" enctype="multipart/form-data" id="addfile1" class="file-upload-form">
+                                                @csrf
+                                                <div class="row mt-4">
+                                                    <div class="col">
+                                                        <lablel>Thư mục chứa:</lablel>
+                                                        <select class="form-select" id="documentID" name="documentID">
+                                                            @foreach(App\Models\Document::where('projectID', $project->id)->get() as $doc)
+                                                                
+                                                                <option value="{{ $doc->id }}">{{ $doc->documentName }}</option>
+                                                                    
+                                                            @endforeach
+                                                        </select>
+                                                    </div>    
+                                                </div>
+                                                <div class="row mt-4 mb-5">
+                                                    <div>Các tài liệu liên quan</div>
+                                                    <label class="custom-file-input">
+                                                        <input type="file" multiple onchange="updateFileList(this)" name="files[]"/>
+                                                        <span id="file-count"></span>
+                                                        <div class="file-info">
+                                                            
+                                                            <ul class="file-list" id="file-list"></ul>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                                
+
+
+
+
+
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-danger" >Thêm</button>
+                                                    </div>
+                                            </form>
+
+                                            
+                                            
+
+
+                                        </div>
+                                    
+                                        <!-- Modal footer -->
+                                        
+                                    
+                                        </div>
+                                    </div>
+                                    </div>
                                 </div>
                                 <div>
                                     <a type="button"  data-bs-toggle="modal" data-bs-target="#folder{{ $document->id }}">
@@ -160,10 +163,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-1">
-
-
-                            </div>
+                            @endif
+                            <div class="col-7"> </div>
                             
 
 
@@ -173,7 +174,7 @@
 
                                         <div class="row ms-2 ">
                                             
-                                            <div class="col-10 ">
+                                            <div class="col-5 ">
                                                 <i class="icon-sm " data-feather="folder"></i>
 
                                                 <a  id="toggle-icon_k" class=" toggle-icon_k" data-bs-toggle="collapse" data-bs-target="#demo{{ $doson->id }}">
@@ -182,21 +183,16 @@
                                                 </a>
 
                                             </div>
-                                            <div class="col-1">
+                                           
+                                            @if($project->status !=3)
+                                            <div class="col-1 d-flex ms-4">
 
-
-
-                                            </div>
-                                            <div class="col-1 d-flex">
-
-                                                <div class="col-6">
-                                                    
-                                                </div>
+                                                
                                                 <div class="col-6">
                                                     <a  class=" ms-1" type="button"data-bs-toggle="modal" data-bs-target="#deleteFolder">
                                                         <i class="icon-sm text-danger me-2" data-feather="trash"></i>
                                                     </a>
-                                                    <!-- Modal -->
+                                                    <!-- xoá -->
                                                     <div class="modal fade" id="deleteFolder" tabindex="-1" aria-labelledby="deleteFolderLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
                                                             <div class="modal-content">
@@ -223,6 +219,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            @endif
                                         </div>
                                             <div class="collapse col-12 " id="demo{{ $doson->id }}">
                                                     @foreach(App\Models\File::all() as $file)
@@ -232,7 +229,7 @@
                                                             $extension = pathinfo($file->filePath, PATHINFO_EXTENSION);
                                                         @endphp
                                                             <div class="row">
-                                                                <div class=" col-10">
+                                                                <div class=" col-3">
                                                                     <i class="text-muted icon-sm ms-4"  data-feather="file"></i>
                                                                     {{-- <a href="{{ Storage::url( $file->filePath ) }}" target="_blank" class="mx-2">{{ $file->fileName }}</a> --}}
                                                                     @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'pdf']))
@@ -243,20 +240,21 @@
                                                                         <a href="https://docs.google.com/viewer?url={{ urlencode(Storage::url($file->filePath)) }}&embedded=true" target="_blank" class="mx-2">{{ $file->fileName }}</a>
                                                                     @endif
                                                                 </div>
-                                                                <div class="col-1">
+                                                                <div class="col-2 ms-1">
                                                                     
                                                                 </div>
-                                                                <div class="col-1 d-flex">
-                                                                    <div>
+                                                                @if($project->status !=3)
+                                                                <div class="col-1 d-flex ">
+                                                                    <div style="margin-left:2px;">
                                                                         <a href="{{ Storage::url($file->filePath) }} " download>
-                                                                            <i class="icon-sm text-danger ms-1 me-2" data-feather="download"></i>
+                                                                            <i class="icon-sm text-dark  me-2" data-feather="download"></i>
                                                                         </a>
                                                                     </div>
                                                                     <div>
                                                                         <a type="button"data-bs-toggle="modal" data-bs-target="#deleteFolder">
                                                                             <i class="icon-sm text-danger " data-feather="trash"></i>
                                                                         </a>
-                                                                          <!-- Modal -->
+                                                                          <!-- xoáa -->
                                                                           <div class="modal fade" id="deleteFolder" tabindex="-1" aria-labelledby="deleteFolderLabel" aria-hidden="true">
                                                                             <div class="modal-dialog">
                                                                               <div class="modal-content">
@@ -285,6 +283,7 @@
                                                                     </div>
                                                                     
                                                                 </div>
+                                                                @endif
                                                             </div>
                                                         @endif
 
@@ -304,7 +303,7 @@
                                             $extension = pathinfo($file->filePath, PATHINFO_EXTENSION);
                                         @endphp
                                         <div class="row ms-2 col-12">
-                                            <div class=" col-10">
+                                            <div class=" col-4">
                                                 <i class="text-muted icon-sm"  data-feather="file"></i>
                                                 {{-- <a href="{{ Storage::url( $file->filePath ) }}"  class="mx-2">{{ $file->fileName }}</a> --}}
                                                 @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'pdf']))
@@ -318,17 +317,18 @@
                                             <div class="col-1">
                                                 
                                             </div>
+                                            @if($project->status !=3)
                                             <div class="col-1 d-flex">
                                                 <div>
                                                     <a href="{{ Storage::url($file->filePath) }} " download>
-                                                        <i class="icon-sm text-danger mx-2" data-feather="download"></i>
+                                                        <i class="icon-sm text-dark mx-2" data-feather="download"></i>
                                                     </a>
                                                 </div>
                                                 <div>
                                                     <a type="button"data-bs-toggle="modal" data-bs-target="#deleteFolder">
                                                     <i class="icon-sm text-danger " data-feather="trash"></i>
                                                 </a>
-                                                  <!-- Modal -->
+                                                  <!-- xoá -->
                                                   <div class="modal fade" id="deleteFolder" tabindex="-1" aria-labelledby="deleteFolderLabel" aria-hidden="true">
                                                     <div class="modal-dialog">
                                                       <div class="modal-content">
@@ -356,6 +356,7 @@
                                                   </div></div>
                                                 
                                             </div>
+                                            @endif
                                         </div>
                                         @endif
                                     @endforeach

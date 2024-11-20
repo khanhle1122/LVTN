@@ -16,7 +16,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 	<!-- End fonts -->
-
+	
 	<!-- core:css -->
 	{{-- <link rel="stylesheet" href="{{ asset('frontend/style.css') }}"> --}}
 	<link rel="stylesheet" href="{{ asset('assets/vendors/core/core.css') }}">
@@ -111,8 +111,9 @@
 	<script src="{{ asset('assets/js/dropify.js') }}"></script>
 	<script src="{{ asset('assets/js/pickr.js') }}"></script>
 	<script src="{{ asset('assets/js/flatpickr.js') }}"></script>
-	<script src="../../../assets/vendors/chartjs/Chart.min.js"></script>
-	<script src="../../../assets/js/chartjs-light.js"></script>
+	<script src="{{ asset('assets/vendors/chartjs/Chart.min.js') }}"></script>
+	<script src="{{ asset('assets/js/chartjs-light.js') }}"></script>
+	<script src="{{ asset('assets/js/chat.js') }}"></script>
 
 	<!-- End custom js for this page -->
 
