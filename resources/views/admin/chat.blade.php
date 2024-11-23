@@ -15,7 +15,7 @@
 }
 .chat-input {
   min-height: 38px;
-  max-height: 100px;
+  max-height: 210px;
   padding-right: 20px;
   padding-left: 20px;
   line-height: 1.5;
@@ -45,8 +45,8 @@
                   <input type="text" class="form-control" id="searchForm" placeholder="Tìm kiếm">
                 </div>
               </form>
-              <div class="mb-2 mt-2">Gần đây</div>
               <div class="perfect-scrollbar-example chat-list" id="chatList">
+                <div class="mb-2 mt-2">Gần đây</div>
                 @foreach($chatRooms as $chatRoom)
                   <a class="nav-link chat-item p-3  @if($loop->first) bg-infor active @endif" 
                      id="chatRoom{{ $chatRoom->id }}-tab" 
@@ -58,7 +58,7 @@
                      data-name="{{ $chatRoom->otherUser->name }}">
                      <div class="d-flex justify-content-between">
                       <div class="mt-1">
-                        <div class="h6">{{ $chatRoom->otherUser->name }}</div>
+                        <div class="h6" id="roomName">{{ $chatRoom->otherUser->name }}</div>
                         @php
                         $message = App\Models\Message::where('is_read', 0)
                                                      ->where('chat_room_id', $chatRoom->id)
@@ -73,12 +73,12 @@
                         @endphp
                         
                         @if($message)
-                            <div>{{ \Illuminate\Support\Str::limit($message->content, 40, ' ...') }}</div>
+                            <div id="content_other_user">{{ \Illuminate\Support\Str::limit($message->content, 40, ' ...') }}</div>
                         
                         @endif
                       </div>
                       <div>
-                        <div>{{ \Carbon\Carbon::parse($chatRoom->created_at)->format('H:i') }}</div>
+                        <div id="last_message_at">{{ \Carbon\Carbon::parse($chatRoom->last_message_at)->format('H:i') }}</div>
                         <div class="badge rounded-pill bg-primary ms-3">
                           @if( count($messageCount) > 0  )
                           {{ count($messageCount) }}
@@ -180,7 +180,7 @@
     textarea.addEventListener('input', function () {
       const maxHeight = this.scrollHeight * 2; // Gấp đôi chiều cao ban đầu
       this.style.height = 'auto'; // Reset chiều cao để đo chính xác nội dung
-      this.style.height = Math.min(this.scrollHeight, maxHeight) + 'px';
+      this.style.height = Math.min(this.scrollHeight, maxHeight) + 'px'; // Tăng chiều cao tối đa gấp đôi
       if (this.scrollHeight > maxHeight) {
         this.style.overflowY = 'scroll'; // Hiển thị thanh cuộn nếu vượt giới hạn
       } else {
@@ -228,7 +228,6 @@
     });
   });
 </script>
-
 <script>
   document.addEventListener("DOMContentLoaded", function () {
   const tabPanes = document.querySelectorAll('.tab-pane');
@@ -240,113 +239,97 @@
     const chatBody = pane.querySelector('.chat-body');
     const form = pane.querySelector('form');
     
-    // Tìm chat room link tương ứng
     const chatRoomLink = document.querySelector(`#chatRoom${chatRoomId}-tab`);
 
+    // Prevent default form submission
     form.addEventListener('submit', (e) => {
       e.preventDefault();
     });
 
-    // Hàm cập nhật thông tin chat room
-    const updateChatRoomInfo = (content, chatRoomId) => {
-    const chatRoomLink = document.querySelector(`#chatRoom${chatRoomId}-tab`);
-    
-    // Cập nhật tin nhắn cuối cùng
-    const messagePreview = chatRoomLink.querySelector('.mt-1 div:last-child');
-    const truncatedContent = content.length > 40 ? content.substring(0, 40) + '...' : content;
-    if (messagePreview) {
-      messagePreview.textContent = truncatedContent;
-    } else {
-      const newMessagePreview = document.createElement('div');
-      newMessagePreview.textContent = truncatedContent;
-      chatRoomLink.querySelector('.mt-1').appendChild(newMessagePreview);
-    }
+    const updateChatRoomInfo = (content) => {
+      const timeElement = chatRoomLink.querySelector('#last_message_at');
+      if (timeElement) {
+        timeElement.textContent = new Date().toLocaleTimeString('vi-VN', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+      }
 
-    // Cập nhật thời gian
-    const timeElement = chatRoomLink.querySelector('div > div:first-child');
-    if (timeElement) {
-      const now = new Date();
-      timeElement.textContent = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-    }
+      const chatList = document.querySelector('#chatList');
+      const firstChatRoom = chatList.querySelector('.chat-item');
+      if (firstChatRoom !== chatRoomLink) {
+        chatList.insertBefore(chatRoomLink, firstChatRoom);
+      }
+    };
 
-    // Di chuyển chat room lên đầu
-    const nameElement = chatRoomLink.querySelector('.h6');
-    const chatList = document.querySelector('#chatList');
-    if (chatList.firstChild !== chatRoomLink) {
-      chatList.prepend(chatRoomLink.cloneNode(true)); // Clone đầy đủ nội dung
-      chatRoomLink.remove(); // Xóa element cũ
-    }
-    
-  };
+    // Create a flag to track if a message is being sent
+    let isSending = false;
 
+    const sendMessage = async () => {
+      const content = textarea.value.trim();
+      if (!content || isSending) return; // Check if already sending
 
-  const sendMessage = () => {
-  const content = textarea.value.trim();
-  if (!content) return;
+      try {
+        isSending = true; // Set flag before sending
+        sendButton.disabled = true;
 
-  const token = document.querySelector('input[name="_token"]').value;
+        const token = document.querySelector('input[name="_token"]').value;
+        const response = await fetch(`/chat/${chatRoomId}/messages`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ content: content })
+        });
 
-  fetch(`/chat/${chatRoomId}/messages`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-TOKEN': token,
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify({ content: content })
-  })
-  .then(response => response.json())
-  .then(data => {
-    // Tạo HTML cho tin nhắn mới
-    const messageHTML = `
-      <div class="message-item d-flex flex-row-reverse align-items-start mb-3">
-        <div class="content">
-          <div class="message">
-            <div class="bubble bg-primary text-white p-2 rounded-start rounded-end mt-1">
-              ${data.content}
+        const data = await response.json();
+        
+        const messageHTML = `
+          <div class="message-item d-flex flex-row-reverse align-items-start mb-3">
+            <div class="content">
+              <div class="message">
+                <div class="bubble bg-primary text-white p-2 rounded-start rounded-end mt-1">
+                  ${data.content}
+                </div>
+                <small class="text-muted mt-2 d-block text-end">
+                  ${new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                </small>
+              </div>
             </div>
-            <small class="text-muted mt-2 d-block text-end">${new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</small>
           </div>
-        </div>
-      </div>
-    `;
+        `;
+        
+        chatBody.insertAdjacentHTML('beforeend', messageHTML);
+        chatBody.scrollTop = chatBody.scrollHeight;
+        updateChatRoomInfo(data.content);
+        textarea.value = '';
+        textarea.style.height = 'auto';
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        isSending = false; // Reset flag after sending
+        sendButton.disabled = false;
+      }
+    };
 
-    // Thêm tin nhắn vào khung chat
-    chatBody.insertAdjacentHTML('beforeend', messageHTML);
-    
-    // Cuộn xuống tin nhắn mới nhất
-    chatBody.scrollTop = chatBody.scrollHeight;
+    // Handle send button click
+    sendButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      sendMessage();
+    });
 
-    // Cập nhật thông tin chat room
-    updateChatRoomInfo(data.content, chatRoomId);
-
-    // Xóa nội dung textarea
-    textarea.value = '';
-    textarea.style.height = 'auto';
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
-};
-
-// Xóa sự kiện trước đó (nếu có) trước khi thêm mới
-sendButton.removeEventListener('click', sendMessage);
-sendButton.addEventListener('click', sendMessage);
-
-// Ngăn sự kiện nhấn Enter chạy nhiều lần
-textarea.removeEventListener('keydown', handleEnter);
-textarea.addEventListener('keydown', handleEnter);
-
-function handleEnter(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-}
-
-    
+    // Handle Enter key
+    textarea.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault(); // Prevent default Enter behavior
+        sendMessage();
+      }
+    });
   });
 });
 </script>
+
 
 @endsection
