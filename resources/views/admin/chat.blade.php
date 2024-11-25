@@ -40,7 +40,7 @@
               <form class="search-form">
                 <div class="input-group">
                   <span class="input-group-text">
-                    <i data-feather="search" class="cursor-pointer"></i>
+                    <i data-feather="search" class="cursor-pointer " ></i>
                   </span>
                   <input type="text" class="form-control" id="searchForm" placeholder="Tìm kiếm">
                 </div>
@@ -55,10 +55,20 @@
                      role="tab" 
                      aria-controls="chatRoom{{ $chatRoom->id }}" 
                      aria-selected="{{ $loop->first ? 'true' : 'false' }}"
-                     data-name="{{ $chatRoom->otherUser->name }}">
+                     data-name="@if(auth()->id() == $chatRoom->user_id )
+                        {{ $chatRoom->otherUser->name  }}
+                        @else
+                        {{ $chatRoom->user->name  }}
+                        @endif">
                      <div class="d-flex justify-content-between">
                       <div class="mt-1">
-                        <div class="h6" id="roomName">{{ $chatRoom->otherUser->name }}</div>
+                        <div class="h6" id="roomName">
+                          @if(auth()->id() == $chatRoom->user_id )
+                        {{ $chatRoom->otherUser->name  }}
+                        @else
+                        {{ $chatRoom->user->name  }}
+                        @endif
+                        </div>
                         @php
                         $message = App\Models\Message::where('is_read', 0)
                                                      ->where('chat_room_id', $chatRoom->id)
@@ -102,7 +112,13 @@
                        role="tabpanel" 
                        aria-labelledby="chatRoom{{ $chatRoom->id }}-tab">
                     <div class="chat-header">
-                      <h6 class="mb-4">{{ $chatRoom->otherUser->name }}</h6>
+                      <h6 class="mb-4">
+                        @if(auth()->id() == $chatRoom->user_id )
+                        {{ $chatRoom->otherUser->name  }}
+                        @else
+                        {{ $chatRoom->user->name  }}
+                        @endif
+                      </h6>
                     </div>
                     <hr>
                     <div class="chat-content perfect-scrollbar-example1 chat-body" style="height:650px; overflow-y:auto;">
@@ -173,6 +189,17 @@
   </div>
   
 </div>
+<script>
+  function listenForMessages(roomId) {
+        window.Echo.private(`chat.${roomId}`)
+            .listen('NewMessage', (e) => {
+                appendMessage(e.message);
+                updateChatListItem(e.message);
+                scrollToBottom();
+            });
+    }
+
+</script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const textarea = document.querySelector('.chat-input');
@@ -261,12 +288,13 @@
         chatList.insertBefore(chatRoomLink, firstChatRoom);
       }
     };
-
+    
     // Create a flag to track if a message is being sent
     let isSending = false;
 
     const sendMessage = async () => {
       const content = textarea.value.trim();
+      
       if (!content || isSending) return; // Check if already sending
 
       try {
