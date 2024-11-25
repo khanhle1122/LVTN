@@ -34,9 +34,7 @@
               <li class="nav-item">
                 <a href="{{ route('division.employee') }}" class="nav-link">Phân công nhân viên</a>
               </li>
-              <li class="nav-item">
-                <a href="{{ route('chat.index') }}" class="nav-link">Tin nhắn</a>
-              </li>
+              
             </ul>
           </div>
         </li>

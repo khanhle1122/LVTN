@@ -56,6 +56,18 @@
               
             </li>
             <li class="nav-item dropdown">
+                <a class="nav-link " href="{{ route('chat.index') }}" >
+                    <i class="fa-regular fa-comment fa-lg"></i>                    
+                    @if(count($notifications)>0)
+                      <div class="indicator">
+                        <div class="circle"></div>
+                      </div>
+                    @endif
+                </a>
+                
+              
+            </li>
+            <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <p class="">{{ Auth::user()->name }}</p>
 
@@ -80,6 +92,7 @@
                     </ul>
                 </div>
             </li>
+            
         </ul>
     </div>
 </nav>
