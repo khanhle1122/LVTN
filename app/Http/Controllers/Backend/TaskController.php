@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Models\Notification;
+use App\Models\NotificationUser;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\File;
 use App\Models\Task;
 use App\Models\Coat;
+use App\Models\User;
 use App\Models\Document;
 use Illuminate\Support\Facades\Auth;
 
@@ -53,7 +55,10 @@ class TaskController extends Controller
         // Xây dựng cây task phân cấp
         $tasks = $this->buildTaskHierarchy($rootTasks);
         $coats = Coat::where('projectID',$project->id)->get();
-        $notifications = Notification::where('is_read',0)->get();
+        $notifications = NotificationUser::where('user_id', Auth::id())
+        ->where('is_read', 0)
+        ->with('notification') // Kèm thông tin từ bảng `notifications`
+        ->get();
 
         // Kiểm tra nếu project không tồn tại
         if (!$project) {
@@ -244,12 +249,20 @@ class TaskController extends Controller
 
         }
         $content =Auth::user()->name . ' đã thêm một công việc vào dự án '. $project->projectName .' có mã: '.$project->projectCode;
-        Notification::create([
+        $notificate = Notification::create([
             'title' => 'Thêm công việc',
             'content'   => $content,
 
         ]);
+        $users = User::all();
 
+        foreach ($users as $user) {
+            NotificationUser::create([
+                'user_id' => $user->id,
+                'notification_id' => $notificate->id,
+                'is_read' => 0, // Mặc định là chưa đọc
+            ]);
+        }
 
         $notification = array(
             'message' => 'Công việc đã được thêm ',
@@ -418,14 +431,22 @@ class TaskController extends Controller
 
 
         $content =Auth::user()->name . ' đã cập nhật công việc của dự án '. $project->projectName .' có mã: '.$task->task_code;
-        Notification::create([
-            'title' => 'Cập nhật tiến độ dự án',
+        $notificate = Notification::create([
+            'title' => 'Cập nhật công việc',
             'content'   => $content,
 
         ]);
+        $users = User::all();
 
+        foreach ($users as $user) {
+            NotificationUser::create([
+                'user_id' => $user->id,
+                'notification_id' => $notificate->id,
+                'is_read' => 0, // Mặc định là chưa đọc
+            ]);
+        }
         return redirect()->back()->with([
-            'message' => 'Công việc đã được chỉnh sửa thành công',
+            'message' => 'Công việc đã được cập nhật thành công',
             'alert-type' => 'success'
         ]);
 

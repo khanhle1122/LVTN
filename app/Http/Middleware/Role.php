@@ -23,14 +23,14 @@ class Role
         switch ($user->role) {
             // Kiểm tra nếu người dùng là 'staff'
             case 'staff':
-                return redirect('staff/dashboard');
+                return redirect('staff');
 
             // Kiểm tra nếu người dùng là 'leader'
             case 'leader':
-                return redirect('leader/dashboard');
+                return redirect('leader');
 
             case 'supervisor':
-                return redirect('supervisor/dashboard');
+                return redirect('supervisor');
             
             // Kiểm tra nếu người dùng là 'admin', admin có thể truy cập tất cả
             case 'admin':

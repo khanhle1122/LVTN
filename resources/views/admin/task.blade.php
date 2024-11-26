@@ -37,9 +37,7 @@
                   <li class="nav-item">
                     <a class="nav-link" id="coat-tab" data-bs-toggle="tab" href="#coat" role="tab" aria-controls="coat" aria-selected="false">Chi phí dự án</a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link " id="folder-tab" data-bs-toggle="tab" href="#folder" role="tab" aria-controls="folder" aria-selected="false">Thư mục dự án</a>
-                  </li>
+                  
                 </ul>
                 <div class="tab-content border border-top-0 p-3" id="myTabContent">
                   <div class="tab-pane fade show active" id="tableTask" role="tabpanel" aria-labelledby="tableTask-tab">
@@ -49,14 +47,7 @@
                   <div class="tab-pane fade" id="coat" role="tabpanel" aria-labelledby="coat-tab">
                     @include('admin.task.coat')
                   </div>
-                  <div class="tab-pane fade" id="folder" role="tabpanel" aria-labelledby="folder-tab">
-                    @include('admin.task.add-do')
-                  </div>
                 </div>
-
-
-
-
               </div>
 
           </div>
@@ -122,7 +113,7 @@
           autoUnmask: true,
           allowMinus: false, // Không cho phép số âm
           min: 0, // Giá trị tối thiểu là 0
-          placeholder: "0",
+          placeholder: "Nhập số tiền (VND)",
           onBeforeMask: function(value, opts) {
               // Chuyển đổi số âm thành 0 hoặc số dương
               return value < 0 ? '0' : value;

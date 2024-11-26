@@ -10,8 +10,9 @@ use App\Models\File;
 use App\Models\Division;
 use App\Models\Client;
 use App\Models\Task;
-
+use App\Models\NotificationUser;
 use App\Models\Notification;
+use Illuminate\Support\Facades\Auth;
 
 
 
@@ -50,7 +51,10 @@ class SearchController extends Controller
                 ->orWhere('budget', 'LIKE', "%{$query}%")
                 ->get();
 
-        $notifications = Notification::where('is_read',0)->get();
+        $notifications = NotificationUser::where('user_id', Auth::id())
+        ->where('is_read', 0)
+        ->with('notification') // Kèm thông tin từ bảng `notifications`
+        ->get();
 
 
         // Trả về kết quả tìm kiếm

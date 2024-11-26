@@ -8,8 +8,10 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\Document;
 use App\Models\File;
+use App\Models\User;
 use App\Models\Client;
 use App\Models\Notification;
+use App\Models\NotificationUser;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -39,7 +41,10 @@ class DuAnController extends Controller{
     // show all dự án 
     public function viewDA(){
         $projects= Project::all();
-        $notifications = Notification::where('is_read',0)->get();
+        $notifications = NotificationUser::where('user_id', Auth::id())
+        ->where('is_read', 0)
+        ->with('notification') // Kèm thông tin từ bảng `notifications`
+        ->get();
         $contractors = Client::where('role','contractor')->get();
 
         return view('admin.project',compact('projects','contractors','notifications'));
@@ -58,7 +63,20 @@ class DuAnController extends Controller{
 
             
         }
+        $content = Auth::user()->name . ' đã dánh dấu dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode  ;
+        $notificate = Notification::create([
+            'title' => 'Đánh dấu dự án ',
+            'content'   => $content,
+        ]);
+        $users = User::all();
 
+        foreach ($users as $user) {
+            NotificationUser::create([
+                'user_id' => $user->id,
+                'notification_id' => $notificate->id,
+                'is_read' => 0, // Mặc định là chưa đọc
+            ]);
+        }
 
         return redirect()->back();
     }
@@ -141,19 +159,28 @@ class DuAnController extends Controller{
                     ]);
                 }
             }
+
             $content = Auth::user()->name . ' đã thêm dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode  ;
-            Notification::create([
+            $notificate = Notification::create([
                 'title' => 'Đã thêm dự án',
                 'content'   => $content,
             ]);
+            $users = User::all();
 
+            foreach ($users as $user) {
+                NotificationUser::create([
+                    'user_id' => $user->id,
+                    'notification_id' => $notificate->id,
+                    'is_read' => 0, // Mặc định là chưa đọc
+                ]);
+            }
 
         }
 
         
         
         // Điều hướng về trang danh sách dự án kèm thông báo
-        return redirect()->route('add.project')->with($notification);
+        return redirect()->back()->with($notification);
     }
 
     // sửa dự án 
@@ -213,11 +240,20 @@ class DuAnController extends Controller{
              'alert-type' => 'success'
          );
 
-         $content = Auth::user()->name .' Đã chỉnh sửa dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode ;
-        Notification::create([
-            'title' => 'Đã chỉnh sửa dự án',
+         $content = Auth::user()->name .' Đã Cập nhât dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode ;
+        $notificate = Notification::create([
+            'title' => 'Đã cập nhật dự án',
             'content'   => $content,
         ]);
+        $users = User::all();
+
+            foreach ($users as $user) {
+                NotificationUser::create([
+                    'user_id' => $user->id,
+                    'notification_id' => $notificate->id,
+                    'is_read' => 0, // Mặc định là chưa đọc
+                ]);
+            }
        }
         
         return redirect()->route('project')->with($notification);
@@ -235,11 +271,20 @@ class DuAnController extends Controller{
                 'alert-type' => 'success'
             );
             $content = 'Đã tạm dừng dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode ;
-            Notification::create([
+            $notificate = Notification::create([
                 'title' => 'Đã tạm dừng dự án',
                 'content'   => $content,
             ]);
+            $users = User::all();
 
+            foreach ($users as $user) {
+                NotificationUser::create([
+                    'user_id' => $user->id,
+                    'notification_id' => $notificate->id,
+                    'is_read' => 0, // Mặc định là chưa đọc
+                ]);
+            }
+       
 
         }elseif($project->status == 2){
             if($project->progress == 100){
@@ -259,10 +304,20 @@ class DuAnController extends Controller{
                 'alert-type' => 'success'
             );
             $content ='Đã mở lại dự ám dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode;
-            Notification::create([
+            $notificate = Notification::create([
                 'title' => 'Đã mở lại dự án',
                 'content'   => $content,
             ]);
+            $users = User::all();
+
+            foreach ($users as $user) {
+                NotificationUser::create([
+                    'user_id' => $user->id,
+                    'notification_id' => $notificate->id,
+                    'is_read' => 0, // Mặc định là chưa đọc
+                ]);
+            }
+       
         }
         
         return redirect()->route('project')->with($notification);

@@ -3,7 +3,9 @@
 
     <div class="mt-2">
         <a type="button" class="btn btn-outline-primary" title="Thêm chi phí"  data-bs-toggle="modal" data-bs-target="#coatAdd">
-            <i class="icon text-muted" data-feather="plus"></i> Thêm Chi phí
+            <div class="d-flex">
+                <i class="icon text-muted" data-feather="plus"></i> Thêm Chi phí
+            </div>
         </a>
         <div class="modal fade" id="coatAdd" tabindex="-1" aria-labelledby="coatAddLebel" aria-hidden="true">
             <div class="modal-dialog">

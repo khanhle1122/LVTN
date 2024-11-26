@@ -6,6 +6,10 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<meta name="description" content="Responsive HTML Admin Dashboard Template based on Bootstrap 5">
 	<meta name="author" content="NobleUI">
+	<meta name="csrf-token" content="{{ csrf_token() }}">
+	<meta name="user-id" content="{{ auth()->id() }}">
+
+
 	<meta name="keywords" content="nobleui, bootstrap, bootstrap 5, bootstrap5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
 
 	<title>Quản Lý dự án xây dựng</title>
@@ -48,7 +52,10 @@
 	<link rel="stylesheet" href="{{ asset('assets/css/demo1/style.css') }}">
 	<!-- End layout styles -->
 
-	<link rel="shortcut icon" href="{{ asset('assets/images/favicon.svg') }}" />
+	<link rel="shortcut icon" href="{{ asset('image/logo.svg') }}" />
+
+	        {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+
 </head>
 <body>
 	<div class="main-wrapper">
@@ -137,7 +144,7 @@
 			}
 		@endif
 	</script>
-		 
+	
 		
 </body>
 </html>

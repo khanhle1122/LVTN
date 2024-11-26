@@ -22,13 +22,13 @@
                                 @foreach($allNotifications as $notification)
                                 <tr>
                                   <td>
-                                    <div>{{ $notification->title }}</div>
+                                    <div>{{ $notification->notification->title }}</div>
                                   </td>
                                   <td>                                
-                                    <div>{{ $notification->content }}</div>
+                                    <div>{{ $notification->notification->content }}</div>
                                   </td>
                                   <td>
-                                    @if($notification->is_read == 0)
+                                    @if($notification->notification->is_read == 0)
                                         <div>Chưa đọc</div>
                                     @else
                                         <div>Đã đọc</div>

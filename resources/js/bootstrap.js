@@ -30,3 +30,19 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
 //     enabledTransports: ['ws', 'wss'],
 // });
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
+window.Pusher = Pusher;
+
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: '1a41edb7de947b4775fa',
+    cluster: 'ap1',
+    forceTLS: true
+});
+
+// console.log('Echo Instance:', window.Echo);
+console.log("booostrap.js loaded");
+
+

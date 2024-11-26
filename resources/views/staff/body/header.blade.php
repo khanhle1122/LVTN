@@ -12,7 +12,7 @@
             </div>
         </form>
         <ul class="navbar-nav">
-            <li class="nav-item dropdown">
+            {{-- <li class="nav-item dropdown">
                 <a class="nav-link " id="message" href="{{ route('chat.index') }}" >
                     <i class="fa-regular fa-comment fa-lg"></i>                    
                     @if(count(\App\Models\Message::where('sender_id', '!=', Auth()->id())
@@ -29,8 +29,8 @@
                 </a>
                 
               
-            </li>
-            <li class="nav-item dropdown">
+            </li> --}}
+            {{-- <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i data-feather="bell"></i>
                     @if(count($notifications)>0)
@@ -52,8 +52,8 @@
                               <a href="{{ route('check.notification', $notification->id) }}" class="dropdown-item d-flex align-items-center py-2">
                                   <div class="d-flex justify-content-between flex-grow-1 me-2">
                                       <div>
-                                        <p>{{ $notification->notification->title }}</p>
-                                        <p class="tx-12 text-muted">{{ $notification->notification->content }}</p>
+                                        <p>{{ $notification->title }}</p>
+                                        <p class="tx-12 text-muted">{{ $notification->content }}</p>
                                       </div>
                                       <p class="tx-12 text-muted mt-2"><em>{{ $notification->created_at->diffForHumans() }}</em></p>
                                   </div>
@@ -72,7 +72,7 @@
                   </div>
               </div>
               
-            </li>
+            </li> --}}
             
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -91,7 +91,7 @@
                     
                     <li class="dropdown-item py-2">
                         
-                        <a href="{{ route('admin.logout') }}" class="text-body ms-0">
+                        <a href="{{ route('staff.logout') }}" class="text-body ms-0">
                         <i class="me-2 icon-md" data-feather="log-out"></i>
                         <span>Log Out</span>
                         </a>

@@ -10,9 +10,14 @@ use App\Http\Controllers\Backend\TaskController;
 use App\Http\Controllers\Backend\TaiLieuController;
 use App\Http\Controllers\Backend\SearchController;
 use App\Http\Controllers\Backend\ChatController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\LeaderController;
+use App\Http\Controllers\SupervisorController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\Backend\CoatController;
+use App\Events\NewMessage;
+use App\Http\Controllers\PusherAuthController;
 
 
 
@@ -26,6 +31,7 @@ use App\Http\Controllers\Backend\CoatController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::post('/pusher/auth', [PusherAuthController::class, 'authenticate']);
 
 Route::middleware(['auth','role:admin'])->group(function(){
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin_index');
@@ -36,9 +42,7 @@ Route::middleware(['auth','role:admin'])->group(function(){
     
 });
 
-Route::get('/staff/dashboard', function () {
-    return view('staff.staff_dashboard');
-})->name('staff_dashboard');
+
 
 Route::get('/leader/dashboard', function () {
     return view('leader.leader_dashboard');
@@ -48,8 +52,25 @@ Route::get('/supervisor/dashboard', function () {
     return view('supervisor.supervisor_dashboade');
 })->name('supervisor_dashboard');
 
+Route::middleware('auth','role:staff')->group(function () {
+    Route::get('/staff', [StaffController::class, 'index'])->name('client');
+    Route::get('/staff/logout', [StaffController::class, 'StaffLogout'])->name('staff.logout');
 
 
+
+});
+Route::middleware('auth','role:leader')->group(function () {
+    Route::get('/leader', [LeaderController::class, 'index'])->name('leader');
+
+
+
+});
+Route::middleware('auth','role:supervisor')->group(function () {
+    Route::get('/supervisor', [SupervisorController::class, 'index'])->name('supervisor');
+
+
+
+});
 
 Route::get('/', [GuestController::class, 'index'])->name('guest');
 Route::post('/advise', [GuestController::class, 'adviseCliet'])->name('client.store');
@@ -57,7 +78,8 @@ Route::post('/advise', [GuestController::class, 'adviseCliet'])->name('client.st
 Route::middleware('auth','role:admin')->group(function () {
     Route::get('/client', [ClientController::class, 'index'])->name('client');
     Route::post('/client/themkhachhang', [ClientController::class, 'addClient'])->name('add.client');
-    Route::post('/client/chinh sửa', [ClientController::class, 'editClient'])->name('edit.client');
+    Route::post('/client/chinhsua', [ClientController::class, 'editClient'])->name('edit.client');
+    Route::post('/client/abc', [ClientController::class, 'editRoleClient'])->name('edit.role.client');
     Route::get('/duyet-request/id={id}', [ClientController::class, 'checkRequest'])->name('check.status.client');
     Route::get('/report-project', [ClientController::class, 'reportProject'])->name('report.project');
 
@@ -123,8 +145,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{room}/messages', [ChatController::class, 'store'])->name('chat.messages.store');
+    Route::post('/chat/{room}/upload', [ChatController::class, 'uploadFile']);
+    Route::post('/chat/{chatRoom}/mark-as-read', [ChatController::class, 'markAsRead']);});
 
-});
 
 
 Route::middleware('auth')->group(function () {

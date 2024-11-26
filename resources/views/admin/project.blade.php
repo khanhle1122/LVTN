@@ -43,8 +43,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-sm">
-                                        <div class="mb-3">
-                                            <label for="clientID" class="form-label">Đối tác</label>
+                                        <div class="mb-4">
+                                            <label for="clientID " class="">Đối tác</label>
                                             <select class="form-select" name="clientID" id="clientID">
                                                 <option selected disabled>Chọn đối tác</option>
                                                 @foreach($contractors as $contractor)
@@ -120,7 +120,8 @@
                                         <div class="mb-4">
                                             <label class="form-label">Ngân sách:</label>
                                             <div id="budgetInputContainer">
-                                                <input name="budget" min="1" autocomplete="budget" class="form-control mt-0" id="budgetInput" data-inputmask="'alias': 'currency', 'suffix':'₫'"/>
+                                                <input type="hidden" id="currencySelect" name="currency" value="vnd">
+                                                <input name="budget"  autocomplete="budget" class="form-control mt-0" id="budgetInput" data-inputmask="'alias': 'currency', 'suffix':'₫'"/>
                                             </div>
                                         </div>
                                     </div>
@@ -351,7 +352,7 @@
                                                                         <div class="mb-4">
                                                                             <label class="form-label">Ngân sách mới:</label>
                                                                             <div id="budgetInputContainer{{ $project->id }}">
-                                                                                <input name="budget" value="0" autocomplete="budget" class="form-control mt-0" id="budgetInput{{ $project->id }}" data-inputmask="'alias': 'currency', 'suffix':'₫'"/>
+                                                                                <input name="budget" value="0" autocomplete="budget" class="form-control mt-0 budget-mask"  id="budgetInput{{ $project->id }}" data-inputmask="'alias': 'currency', 'suffix':'₫'"/>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -415,53 +416,93 @@
     </div>
 
 </div>
-        <script>
-			$(document).ready(function() {
-    // Xử lý khi modal được hiển thị
-    $('div[id^="editProject"]').on('shown.bs.modal', function (e) {
-        const projectID = $(this).attr('id').replace('editProject', ''); // Lấy id của project
-        const currencySelect = $(`#currencySelect${projectID}`);
-        const budgetInputContainer = $(`#budgetInputContainer${projectID}`);
+        
+<script>
+    $(document).ready(function() {
+    const currencySelect = $('#currencySelect');
+    const budgetInputContainer = $('#budgetInputContainer');
+  
+    function updateBudgetInput() {
+        const currency = currencySelect.val();
+        const suffix = currency === 'vnd' ? '₫' : '$';
+        const placeholder = currency === 'vnd' ? 'Nhập số tiền (VND)' : 'Nhập số tiền (USD)';
+  
+        // Tạo input mới với data-inputmask phù hợp
+        const newInput = $('<input>')
+            .attr({
+                'name': 'budget',
+                'autocomplete': 'budget',
+                'class': 'form-control mt-0',
+                'id': 'budgetInput',
+                'placeholder': placeholder,
+                'data-inputmask': `'alias': 'currency', 'suffix':'${suffix}'`,
+                'min': '0' // Thêm thuộc tính min
+            });
+  
+        // Thay thế input cũ bằng input mới
+        budgetInputContainer.empty().append(newInput);
+  
+        // Áp dụng Inputmask cho input mới
+        Inputmask({
+            alias: "currency",
+            suffix: suffix,
+            groupSeparator: currency === 'vnd' ? '.' : ',',
+            radixPoint: currency === 'vnd' ? ',' : '.',
+            digits: currency === 'vnd' ? 0 : 2,
+            autoUnmask: true,
+            allowMinus: false, // Không cho phép số âm
+            min: 0, // Giá trị tối thiểu là 0
+            placeholder: "Nhập số tiền (VND)",
+            onBeforeMask: function(value, opts) {
+                // Chuyển đổi số âm thành 0 hoặc số dương
+                return value < 0 ? '0' : value;
+            }
+        }).mask(newInput[0]);
+  
+        // Thêm event listener để kiểm tra giá trị
+        newInput.on('input', function() {
+            let value = $(this).val();
+            // Nếu giá trị là số âm, set về 0
+            if (value < 0) {
+                $(this).val('0');
+            }
+        });
+    }
+  
+    // Xử lý khi thay đổi loại tiền tệ
+    currencySelect.on('change', updateBudgetInput);
+  
+    // Khởi tạo ban đầu
+    updateBudgetInput();
+  });
+  
+  </script>
 
-        function updateBudgetInput() {
-            const currency = currencySelect.val();
-            const suffix = currency === 'vnd' ? '₫' : '$';
-            const placeholder = currency === 'vnd' ? 'Nhập số tiền (VND)' : 'Nhập số tiền (USD)';
+<script>
 
-            // Tạo input mới với data-inputmask phù hợp
-            const newInput = $('<input>')
-                .attr({
-                    'name': 'budget',
-                    'autocomplete': 'budget',
-                    'class': 'form-control ',
-                    'id': `budgetInput${projectID}`,
-                    'placeholder': placeholder,
-                    'data-inputmask': `'alias': 'currency', 'suffix':'${suffix}'`
-                });
-
-            // Thay thế input cũ bằng input mới
-            budgetInputContainer.empty().append(newInput);
-
-            // Áp dụng Inputmask cho input mới
+    $(document).ready(function() {
+        // Áp dụng inputmask cho tất cả các trường có class `cost-mask` khi modal hiển thị
+        $('.modal').on('shown.bs.modal', function() {
             Inputmask({
-                alias: "currency",
-                suffix: suffix,
-                groupSeparator: currency === 'vnd' ? '.' : ',',
-                radixPoint: currency === 'vnd' ? ',' : '.',
-                digits: currency === 'vnd' ? 0 : 2,
-                autoUnmask: true
-            }).mask(newInput[0]);
-        }
-
-        // Khởi tạo khi modal hiển thị và khi thay đổi loại tiền tệ
-        updateBudgetInput();
-        currencySelect.on('change', updateBudgetInput);
+                alias: "numeric",
+                groupSeparator: ".",
+                radixPoint: ",",
+                autoGroup: true,
+                digits: 0,               // Không có phần thập phân
+                digitsOptional: false,   // Không có phần thập phân
+                prefix: "",
+                suffix: " ₫",
+                autoUnmask: true,
+                placeholder: "Nhập số tiền (VND)",
+                removeMaskOnSubmit: true,
+                allowMinus: false,
+                min: 0,
+                onBeforeMask: function(value, opts) {
+                    return value < 0 ? '0' : value;
+                }
+            }).mask($('.budget-mask'));
+        });
     });
-});
-
-
-	
-		</script>
-
-
+    
+    </script>
 @endsection

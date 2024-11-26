@@ -1,10 +1,8 @@
+<link rel="stylesheet" href="{{ asset('frontend/style.css') }}">
 <div class="mb-5">
-    <link rel="stylesheet" href="{{ asset('frontend/style.css') }}">
     <h3 class="h3">Thông tin dự án</h3>
-
-    <div class="card_k d-flex ">
-        
-        
+    
+    <div class="d-flex " >
         <div class="d-flex ">
             <div>
                 <a href="{{ route('project.toggleStar',$project->id) }}" class="d-flex flex-row-reverse mt-2" > @if( $project->toggleStar == 1) <i class="fa-solid fa-star" style="color: #FFD43B;"></i> @else <i class="fa-regular fa-star" ></i>  @endif </a>
@@ -20,7 +18,7 @@
                 <div class=""><span class="h6">Mã:</span> {{ $project->projectCode }}</div>
                 <div class=""><span class="h6">Tên:</span> {{ $project->projectName }} </div>
                 <div><span class="h6">Ngân sách: </span>{{ $project->budget }}</div>
-                <div><span class="h6">Người giám sát công trình:</span> {{ $project->user->name }}</div>
+                <div><span class="h6">Giám sát công trình:</span> {{ $project->user->name }}</div>
                 <div><span class="h6">Trạng thái: </span>
                     @if($project->status == 1)   
                                             Đã hoàn thành
@@ -44,17 +42,13 @@
                 <div class=""><span class="h6">Đối tác:</span> {{ $project->contractors->name }}</div>
                 <div class=""><span class="h6">Địa điểm thi công:</span> {{ $project->address }}</div>
             </div>
-           
         </div>
-        <div class="mx-5"></div>
-        <div class="ms-5">
+        <div class="flex-fill">
+            @include('admin.task.add-do')
             <span class="h6">Mô tả dự án: </span>
             <div class="ms-2">{{ $project->description }}</div>
         </div>
-        
     </div>
-    
-    
 </div>
 
 <hr>
@@ -70,7 +64,7 @@
                     <div class="mb-3 mt-3">
 
                         <a type="button" class="btn btn-outline-primary" title="Thêm công việc"  data-bs-toggle="modal" data-bs-target="#myModal">
-                            <i class="icon text-muted" data-feather="plus"></i> Thêm công việc
+                            <div class="d-flex"><i class="icon text-muted" data-feather="plus"></i> Thêm công việc</div>
                         </a>
                             
                     <!-- add task -->

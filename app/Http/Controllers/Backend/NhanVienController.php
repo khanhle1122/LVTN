@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Project;
 use App\Models\Division;
 use App\Models\Notification;
+use App\Models\NotificationUser;
 
 class NhanVienController extends Controller
 {
@@ -20,7 +21,10 @@ class NhanVienController extends Controller
     public function index()
     {
         $employees = User::all(); 
-        $notifications = Notification::where('is_read',0)->get();
+        $notifications = NotificationUser::where('user_id', Auth::id())
+        ->where('is_read', 0)
+        ->with('notification') // Kèm thông tin từ bảng `notifications`
+        ->get();
 
         return view('admin.employee', compact('employees','notifications'));
     }
@@ -77,7 +81,7 @@ class NhanVienController extends Controller
 
         
     
-        return redirect()->route('view.add.employee')->with($notification);
+        return redirect()->back()->with($notification);
     }
    
     public function viewDetail($id){
@@ -168,8 +172,10 @@ class NhanVienController extends Controller
 
         $project = Project::first();
         $divisions = Division::all();
-        $notifications = Notification::where('is_read',0)->get();
-
+        $notifications = NotificationUser::where('user_id', Auth::id())
+        ->where('is_read', 0)
+        ->with('notification') // Kèm thông tin từ bảng `notifications`
+        ->get();
 
         return view('admin.division',compact('project','divisions','notifications'));
     }

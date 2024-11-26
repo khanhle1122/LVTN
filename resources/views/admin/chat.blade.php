@@ -1,5 +1,7 @@
 @extends('admin.admin_dashboard')
 @section('admin')
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+
 <style>
   .perfect-scrollbar-example {
 	position: relative;
@@ -45,8 +47,9 @@
                   <input type="text" class="form-control" id="searchForm" placeholder="Tìm kiếm">
                 </div>
               </form>
+              <div class="mb-2 mt-2">Gần đây</div>
               <div class="perfect-scrollbar-example chat-list" id="chatList">
-                <div class="mb-2 mt-2">Gần đây</div>
+                
                 @foreach($chatRooms as $chatRoom)
                   <a class="nav-link chat-item p-3  @if($loop->first) bg-infor active @endif" 
                      id="chatRoom{{ $chatRoom->id }}-tab" 
@@ -190,32 +193,105 @@
   
 </div>
 <script>
-  function listenForMessages(roomId) {
-        window.Echo.private(`chat.${roomId}`)
-            .listen('NewMessage', (e) => {
-                appendMessage(e.message);
-                updateChatListItem(e.message);
-                scrollToBottom();
+  // Kết nối tới Pusher
+Pusher.logToConsole = true;
+
+const pusher = new Pusher('1a41edb7de947b4775fa', {
+    cluster: 'ap1',
+    encrypted: true,
+    authEndpoint: '/pusher/auth', // Route để xác thực
+    auth: {
+        headers: {
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        },
+    },
+});
+
+// Subcribe vào tất cả các channel chatroom
+const chatItems = document.querySelectorAll('.chat-item'); // Lấy danh sách các phòng chat
+chatItems.forEach(item => {
+    const chatRoomId = item.id.replace('chatRoom', '').replace('-tab', ''); // Lấy ID từ DOM
+    const channel = pusher.subscribe(`private-chat.${chatRoomId}`); // Subcribe vào từng channel
+
+    channel.bind('message.sent', function (data) {
+        // Kiểm tra nếu tin nhắn không phải do chính bạn gửi
+        const YOUR_USER_ID = {{ Auth()->id() }};
+        if (data.sender_id !== YOUR_USER_ID) {
+            const chatBody = document.querySelector(`#chatRoom${data.chat_room_id} .chat-body`);
+
+            if (chatBody) {
+                // Tạo giao diện tin nhắn của người khác
+                const messageHTML = `
+                    <div class="message-item d-flex align-items-start mb-3">
+                        <div class="content">
+                            <div class="message">
+                                <div class="bubble bg-light text-dark p-2 rounded-start rounded-end mt-1">
+                                    ${data.content}
+                                </div>
+                                <small class="text-muted mt-2 d-block">
+                                    ${new Date(data.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Thêm tin nhắn vào cuối danh sách
+                chatBody.insertAdjacentHTML('beforeend', messageHTML);
+
+                // Tự động cuộn xuống cuối cùng
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+        }
+        channel.bind('message.sent', function (data) {
+    const YOUR_USER_ID = {{ Auth()->id() }};
+
+    // Tìm phần tử DOM của phòng chat tương ứng
+    const chatItem = document.querySelector(`#chatRoom${data.chat_room_id}-tab`);
+    if (data.sender_id !== YOUR_USER_ID) {
+    if (chatItem) {
+        // Cập nhật nội dung tin nhắn mới trong danh sách
+        const contentElement = chatItem.querySelector('#content_other_user');
+        if (contentElement) {
+            contentElement.textContent = data.content;
+        }
+
+        // Cập nhật thời gian tin nhắn
+        const timeElement = chatItem.querySelector('#last_message_at');
+        if (timeElement) {
+            timeElement.textContent = new Date().toLocaleTimeString('vi-VN', {
+                hour: '2-digit',
+                minute: '2-digit',
             });
-    }
+        }
 
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const textarea = document.querySelector('.chat-input');
+        // Cập nhật số lượng tin nhắn chưa đọc nếu người gửi không phải là bạn
+        if (data.sender_id !== YOUR_USER_ID) {
+            const badge = chatItem.querySelector('.badge');
+            if (badge) {
+                let unreadCount = parseInt(badge.textContent) || 0;
+                unreadCount += 1; // Tăng số lượng tin nhắn chưa đọc
+                badge.textContent = unreadCount;
+                badge.style.display = 'inline';
+            }
+        }
 
-    textarea.addEventListener('input', function () {
-      const maxHeight = this.scrollHeight * 2; // Gấp đôi chiều cao ban đầu
-      this.style.height = 'auto'; // Reset chiều cao để đo chính xác nội dung
-      this.style.height = Math.min(this.scrollHeight, maxHeight) + 'px'; // Tăng chiều cao tối đa gấp đôi
-      if (this.scrollHeight > maxHeight) {
-        this.style.overflowY = 'scroll'; // Hiển thị thanh cuộn nếu vượt giới hạn
-      } else {
-        this.style.overflowY = 'hidden'; // Ẩn thanh cuộn nếu không cần
+        // Đưa phòng chat lên đầu danh sách
+        const chatList = document.querySelector('#chatList');
+        if (chatList.firstChild !== chatItem) {
+            chatList.insertBefore(chatItem, chatList.firstChild);
+        }
       }
+    }
+});
+
+
+
     });
-  });
+});
+
 </script>
+
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -358,6 +434,66 @@
   });
 });
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+  const chatItems = document.querySelectorAll('.chat-item'); // Danh sách phòng chat
+  const csrfToken = document.querySelector('input[name="_token"]').value; // CSRF token
+  const indicator = this.querySelector('.indicator');
 
+  chatItems.forEach(item => {
+    item.addEventListener('click', async function () {
+      // Lấy ID của phòng chat từ thuộc tính `id`
+      const chatRoomId = this.id.replace('chatRoom', '').replace('-tab', '');
 
+      // Badge hiển thị số tin nhắn chưa đọc
+      const badge = this.querySelector('.badge');
+      const contentElement = this.querySelector('#content_other_user'); // Nội dung tin nhắn hiển thị
+
+      if (badge && parseInt(badge.textContent) > 0) {
+        try {
+          // Gửi request đến API để đánh dấu tin nhắn đã đọc
+          const response = await fetch(`/chat/${chatRoomId}/mark-as-read`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': csrfToken
+            }
+          });
+
+          if (response.ok) {
+            // Cập nhật giao diện sau khi API thành công
+            badge.textContent = '0'; // Đặt lại số tin nhắn chưa đọc
+             // Ẩn badge
+             indicator.style.display = 'none';
+
+            // Xóa nội dung tin nhắn hiển thị trong danh sách
+            if (contentElement) {
+              contentElement.textContent = ''; // Làm rỗng nội dung
+            }
+          } else {
+            console.error('Failed to mark messages as read');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      }
+
+      // Đánh dấu phòng chat hiện tại là active
+      chatItems.forEach(i => i.classList.remove('active', 'bg-infor'));
+      this.classList.add('active', 'bg-infor');
+
+      // Hiển thị tab nội dung tương ứng
+      document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('show', 'active'));
+      const targetTab = document.querySelector(this.getAttribute('href'));
+      if (targetTab) {
+        targetTab.classList.add('show', 'active');
+      }
+    });
+  });
+});
+
+</script>
+<script>
+	
+</script>
 @endsection

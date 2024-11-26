@@ -8,6 +8,7 @@ use App\Models\Coat;
 use App\Models\Project;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Notification;
+use App\Models\NotificationUser;
 
 class CoatController extends Controller
 {
@@ -27,12 +28,7 @@ class CoatController extends Controller
             'note'  => $request->note,
             'projectID' => $request->projectID
         ]);
-        $project = Project::find($request->projectID);
-        $content =Auth::user()->name . ' đã thêm chi phí dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode   ;
-        Notification::create([
-            'title' => 'Đã thêm chi phí dự án',
-            'content'   => $content,
-        ]);
+        
 
         $notification = array(
             'message' => 'Chi phí đã được thêm ',
@@ -54,13 +50,7 @@ class CoatController extends Controller
             'message' => 'Chi phí đã được chỉnh sửa ',
             'alert-type' => 'success'
         );
-        $project = Project::find($coat->projectID);
-
-        $content =Auth::user()->name . ' đã chỉnh sửa dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode  ;
-        Notification::create([
-            'title' => 'Chỉnh sửa chi phí dự án',
-            'content'   => $content,
-        ]);
+        
         return redirect()->back()->with($notification);
     }
     public function deleteCoat($id){

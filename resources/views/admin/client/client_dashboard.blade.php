@@ -24,6 +24,7 @@
                             <th>Mô tả yêu cầu tư vấn</th>
                             <th>Trạng thái</th>
                             <th>Xác nhận</th>
+                            <th></th>
                         </tr>
                         </thead>
                         <tbody>  
@@ -48,6 +49,43 @@
                                        
                                         @endif
                                     </td>   
+                                    <td>
+                                        <div class="d-flex">
+                                            <div>
+                                                <a href="#exampleModal{{ $client->id }}"  data-bs-toggle="modal" data-bs-target="#exampleModal{{ $client->id }}">
+                                                    <i class="icon-sm text-warning" data-feather="edit-2"></i>
+                                                  </a>
+                                                  <div class="modal fade" id="exampleModal{{ $client->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                      <div class="modal-content">
+                                                        <div class="modal-header">
+                                                          <h5 class="modal-title" id="exampleModalLabel">Nâng cấp Đối tác</h5>
+                                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form class="mt-3" action="{{ route('edit.role.client') }}"  method="POST" id="signupForm">
+                                                                @csrf
+                                                                
+                                                                <div class="mb-3">
+                                                                    <label for="exampleFormControlSelect1" class="form-label">Trạng thái khách hàng</label>
+                                                                    <select class="form-select" id="exampleFormControlSelect1" name="role">
+                                                                        <option selected value="client">khách hàng tư vấn</option>
+                                                                        <option value="contractor">nhà thâu thầu</option>
+                                                                    </select>
+                                                                </div>
+                                                                
+                                                                <input type="hidden" name="id" value="{{ $client->id }}">
+                                                                <div class="text-center"><button class="btn btn-primary" type="submit">Thêm</button></div>
+                                                            </form>
+                                                        </div>
+                                                        
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </td>
                                 </tr>
                                 @endif
                             @endforeach
@@ -133,7 +171,7 @@
                                                     <div class="modal-dialog">
                                                       <div class="modal-content">
                                                         <div class="modal-header">
-                                                          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                                          <h5 class="modal-title" id="exampleModalLabel">Chỉnh sửa đối tác</h5>
                                                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
                                                         </div>
                                                         <div class="modal-body">

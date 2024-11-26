@@ -8,12 +8,17 @@ use App\Models\Client;
 use App\Models\Project;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Notification;
+use App\Models\NotificationUser;
+use Illuminate\Support\Facades\Auth;
 
 
 class ClientController extends Controller
 {
     public function index(){
-        $notifications = Notification::where('is_read',0)->get();
+        $notifications = NotificationUser::where('user_id', Auth::id())
+        ->where('is_read', 0)
+        ->with('notification') // Kèm thông tin từ bảng `notifications`
+        ->get();
         $clients = Client::all();
         $projects = Project::all();
         return view('admin.client.client_dashboard',compact('clients','projects','notifications'));
@@ -90,10 +95,31 @@ class ClientController extends Controller
     }
     public function reportProject(){
 
-        $notifications = Notification::where('is_read',0)->get();
+        $notifications = NotificationUser::where('user_id', Auth::id())
+        ->where('is_read', 0)
+        ->with('notification') // Kèm thông tin từ bảng `notifications`
+        ->get();
 
 
         return   view('admin.report',compact('notifications')); 
+
+    }
+    public function editRoleClient(Request $request){
+        $request->validate([
+            'id'    => 'required',
+            'role'  =>'required',
+            
+        ]);
+        $client = Client::find($request->id);
+        $client->role = $request->role;
+        $client->status = 0;
+        $client->save();
+
+        $notification = array(
+            'message' => 'Đã duyệt thành công',
+            'alert-type' => 'success'
+        );
+        return redirect()->back()->with($notification);
 
     }
 }

@@ -1,375 +1,370 @@
-<section>
-    
-    <div class="">
-        <div class=" ">
-            <h3 class="mt-2 mb-4">Thư mục dự án</h3>
 
-            <div class="">
-                @foreach($documents as $document)
-                    @if($document->parentID == 0 )
-                        <div class="row ms-2 ">
-                            
-                            <div class="col-4 ">
-                                <i class="fa-solid fa-folder mt-1 "></i>
+<h3 class="mt-2 mb-4">Thư mục dự án</h3>
+<div class="mb-5 mx-3">
+    @foreach($documents as $document)
+        @if($document->parentID == 0 )
+            <div class="row ms-2 ">
+                
+                <div class="col-6 ">
+                    <i class="fa-solid fa-folder mt-1 "></i>
 
-                                <a  id="toggle-icon_k" class="mx-2 text-muted toggle-icon_k" data-bs-toggle="collapse" data-bs-target="#demo">
-                                    <span class="h5 ms-3">{{ $document->documentName }} </span>
-                                    <i class="fa-solid fa-angle-down mx-3"></i>
-                                </a>
+                    <a  id="toggle-icon_k" class="mx-2 text-muted toggle-icon_k" data-bs-toggle="collapse" data-bs-target="#demo">
+                        <span class="h5 ms-3">{{ $document->documentName }} </span>
+                        <i class="fa-solid fa-angle-down mx-3"></i>
+                    </a>
 
+                </div>
+                @if($project->status != 3)
+                <div class="col-1 d-flex">
+                    <div>
+                        
+                        <a type="button"  data-bs-toggle="modal" data-bs-target="#myModal{{ $document->id }}">
+                            <i class="icon text-muted" data-feather="file-plus"></i>
+                        </a>
+                        
+                        <!-- add file -->
+                        <div class="modal" id="myModal{{ $document->id }}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                        
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Thêm file tài liệu</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
-                            @if($project->status != 3)
-                            <div class="col-1 d-flex">
-                                <div>
-                                    
-                                    <a type="button"  data-bs-toggle="modal" data-bs-target="#myModal{{ $document->id }}">
-                                        <i class="icon text-muted" data-feather="file-plus"></i>
-                                    </a>
-                                    
-                                    <!-- add file -->
-                                    <div class="modal" id="myModal{{ $document->id }}">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                    
-                                        <!-- Modal Header -->
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">Thêm file tài liệu</h4>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-                                    
-                                        <!-- Modal body -->
-                                        <div class="modal-body">
-                                            <form action="{{ route('add.file') }}" method="post" enctype="multipart/form-data" id="addfile1" class="file-upload-form">
-                                                @csrf
-                                                <div class="row mt-4">
-                                                    <div class="col">
-                                                        <lablel>Thư mục chứa:</lablel>
-                                                        <select class="form-select" id="documentID" name="documentID">
-                                                            @foreach(App\Models\Document::where('projectID', $project->id)->get() as $doc)
-                                                                
-                                                                <option value="{{ $doc->id }}">{{ $doc->documentName }}</option>
-                                                                    
-                                                            @endforeach
-                                                        </select>
-                                                    </div>    
-                                                </div>
-                                                <div class="row mt-4 mb-5">
-                                                    <div>Các tài liệu liên quan</div>
-                                                    <label class="custom-file-input">
-                                                        <input type="file" multiple onchange="updateFileList(this)" name="files[]"/>
-                                                        <span id="file-count"></span>
-                                                        <div class="file-info">
-                                                            
-                                                            <ul class="file-list" id="file-list"></ul>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                                
-
-
-
-
-
-                                                <div class="modal-footer">
-                                                    <button type="submit" class="btn btn-danger" >Thêm</button>
-                                                    </div>
-                                            </form>
-
-                                            
-                                            
-
-
-                                        </div>
-                                    
-                                        <!-- Modal footer -->
-                                        
-                                    
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <a type="button"  data-bs-toggle="modal" data-bs-target="#folder{{ $document->id }}">
-                                        <i class="icon text-muted" data-feather="folder-plus"></i>
-                                    </a>
-                                    
-                                    <!-- add folder -->
-                                    <div class="modal" id="folder{{ $document->id }}">
-                                        <div class="modal-dialog">
-                                        <div class="modal-content">
-                                    
-                                            <!-- Modal Header -->
-                                            <div class="modal-header">
-                                            <h4 class="modal-title">Thêm thư mục và tài liệu</h4>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                    
-                                            <!-- Modal body -->
-                                            <div class="modal-body">
-                                                <form action="{{ route('add.do') }}" method="post" enctype="multipart/form-data" class="form" id="addfile2" class="file-upload-form">
-                                                    @csrf
-                                                    <input type="hidden" name="projectID" value="{{ $project->id }}">
-                                                    <div class="row mt-4">
-                                                        <div class="col">
-                                                            <lablel>Thư mục chứa:</lablel>
-                                                            <select class="form-select" id="parentID" name="parentID">
-                                                                @foreach(App\Models\Document::where('projectID', $project->id)->get() as $doc)
-                                                                    
-                                                                    <option value="{{ $doc->id }}">{{ $doc->documentName }}</option>
-                                                                        
-                                                                @endforeach
-                                                            </select>
-                                                        </div>    
-                                                    </div>
-                                                    <div class="row mt-4">
-                                                        <div class="col">
-                                                            <label for="documentName">Tên thư mục</label>
-                                                            <input type="text" class="form-control" id="documentName" name="documentName" placeholder="Nhập tên thư mục" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row mt-4 mb-5">
-                                                        <div>Các tài liệu liên quan</div>
-                                                        <label class="custom-file-input">
-                                                            <input type="file" multiple onchange="updateFileList(this)" name="files[]"/>
-                                                            <span id="file-count"></span>
-                                                            <div class="file-info">
-                                                            
-                                                            <ul class="file-list" id="file-list"></ul>
-                                                            </div>
-                                                        </label>
-                                                    </div>
+                        
+                            <!-- Modal body -->
+                            <div class="modal-body">
+                                <form action="{{ route('add.file') }}" method="post" enctype="multipart/form-data" id="addfile1" class="file-upload-form">
+                                    @csrf
+                                    <div class="row mt-4">
+                                        <div class="col">
+                                            <lablel>Thư mục chứa:</lablel>
+                                            <select class="form-select" id="documentID" name="documentID">
+                                                @foreach(App\Models\Document::where('projectID', $project->id)->get() as $doc)
                                                     
-
-
-
-
-
-                                                    <div class="modal-footer">
-                                                        <button type="submit" class="btn btn-danger" >Thêm</button>
-                                                    </div>
-                                                </form>
-
-                                                
-                                                
-
-
-                                            </div>
-                                    
-                                            <!-- Modal footer -->
-                                            
-                                    
-                                        </div>
-                                        </div>
+                                                    <option value="{{ $doc->id }}">{{ $doc->documentName }}</option>
+                                                        
+                                                @endforeach
+                                            </select>
+                                        </div>    
                                     </div>
-                                </div>
-                            </div>
-                            @endif
-                            <div class="col-7"> </div>
-                            
-
-
-                            <div class="collapse col-12 mt-1" id="demo">
-                                @foreach(App\Models\Document::all() as $doson)
-                                    @if($doson->parentID == $document->id && $doson->status == 0)
-
-                                        <div class="row ms-2 ">
-                                            
-                                            <div class="col-5 ">
-                                                <i class="icon-sm " data-feather="folder"></i>
-
-                                                <a  id="toggle-icon_k" class=" toggle-icon_k" data-bs-toggle="collapse" data-bs-target="#demo{{ $doson->id }}">
-                                                    <span class="text-dark ms-2">{{ $doson->documentName }} </span>
-                                                    <i class="fa-solid fa-angle-down mx-3 text-dark"></i>
-                                                </a>
-
-                                            </div>
-                                           
-                                            @if($project->status !=3)
-                                            <div class="col-1 d-flex ms-4">
-
+                                    <div class="row mt-4 mb-5">
+                                        <div>Các tài liệu liên quan</div>
+                                        <label class="custom-file-input">
+                                            <input type="file" multiple onchange="updateFileList(this)" name="files[]"/>
+                                            <span id="file-count"></span>
+                                            <div class="file-info">
                                                 
-                                                <div class="col-6">
-                                                    <a  class=" ms-1" type="button"data-bs-toggle="modal" data-bs-target="#deleteFolder">
-                                                        <i class="icon-sm text-danger me-2" data-feather="trash"></i>
-                                                    </a>
-                                                    <!-- xoá -->
-                                                    <div class="modal fade" id="deleteFolder" tabindex="-1" aria-labelledby="deleteFolderLabel" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="deleteFolderLabel">Xoá thư mục: {{ $doson->documentName }}</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <div class="d-flex justify-content-between">
-                                                                        <form action="{{ route('delete.folder') }}" method="POST">
-                                                                            @csrf
-                                                                            <input type="hidden" name="id" value="{{ $doson->id }}">
-                                                                            <button type="submit" class="btn btn-outline-danger"  title="xoá">
-                                                                                xoá khỏi cơ sỡ dư liệu
-                                                                            </button>
+                                                <ul class="file-list" id="file-list"></ul>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+
+
+
+
+
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-danger" >Thêm</button>
+                                        </div>
+                                </form>
+
+                                
+                                
+
+
+                            </div>
+                        
+                            <!-- Modal footer -->
+                            
+                        
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div>
+                        <a type="button"  data-bs-toggle="modal" data-bs-target="#folder{{ $document->id }}">
+                            <i class="icon text-muted" data-feather="folder-plus"></i>
+                        </a>
+                        
+                        <!-- add folder -->
+                        <div class="modal" id="folder{{ $document->id }}">
+                            <div class="modal-dialog">
+                            <div class="modal-content">
+                        
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                <h4 class="modal-title">Thêm thư mục và tài liệu</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                        
+                                <!-- Modal body -->
+                                <div class="modal-body">
+                                    <form action="{{ route('add.do') }}" method="post" enctype="multipart/form-data" class="form" id="addfile2" class="file-upload-form">
+                                        @csrf
+                                        <input type="hidden" name="projectID" value="{{ $project->id }}">
+                                        <div class="row mt-4">
+                                            <div class="col">
+                                                <lablel>Thư mục chứa:</lablel>
+                                                <select class="form-select" id="parentID" name="parentID">
+                                                    @foreach(App\Models\Document::where('projectID', $project->id)->get() as $doc)
+                                                        
+                                                        <option value="{{ $doc->id }}">{{ $doc->documentName }}</option>
+                                                            
+                                                    @endforeach
+                                                </select>
+                                            </div>    
+                                        </div>
+                                        <div class="row mt-4">
+                                            <div class="col">
+                                                <label for="documentName">Tên thư mục</label>
+                                                <input type="text" class="form-control" id="documentName" name="documentName" placeholder="Nhập tên thư mục" required>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-4 mb-5">
+                                            <div>Các tài liệu liên quan</div>
+                                            <label class="custom-file-input">
+                                                <input type="file" multiple onchange="updateFileList(this)" name="files[]"/>
+                                                <span id="file-count"></span>
+                                                <div class="file-info">
+                                                
+                                                <ul class="file-list" id="file-list"></ul>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        
+
+
+
+
+
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-danger" >Thêm</button>
+                                        </div>
+                                    </form>
+
+                                    
+                                    
+
+
+                                </div>
+                        
+                                <!-- Modal footer -->
+                                
+                        
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+                <div class="col-3"> </div>
                 
-                
-                                                                        </form>
-                                                                    <div>
-                                                                    <a  class="btn btn-outline-danger" href="{{ route('delete.folder.inter',$doson->id) }}">Xoá cục bộ</a></div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+
+
+                <div class=" col-12 mt-1" >
+                    @foreach(App\Models\Document::all() as $doson)
+                        @if($doson->parentID == $document->id && $doson->status == 0)
+
+                            <div class="row ms-2 ">
+                                
+                                <div class="col-5 ">
+                                    <i class="icon-sm " data-feather="folder"></i>
+
+                                    <a  id="toggle-icon_k" class=" toggle-icon_k" data-bs-toggle="collapse" data-bs-target="#demo{{ $doson->id }}">
+                                        <span class="text-dark ms-2">{{ $doson->documentName }} </span>
+                                        <i class="fa-solid fa-angle-down mx-3 text-dark"></i>
+                                    </a>
+
+                                </div>
+                                
+                                @if($project->status !=3)
+                                <div class="col-1 d-flex ms-4">
+
+                                    
+                                    <div class="col-6">
+                                        <a  class=" ms-1" type="button"data-bs-toggle="modal" data-bs-target="#deleteFolder">
+                                            <i class="icon-sm text-danger me-2" data-feather="trash"></i>
+                                        </a>
+                                        <!-- xoá -->
+                                        <div class="modal fade" id="deleteFolder" tabindex="-1" aria-labelledby="deleteFolderLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteFolderLabel">Xoá thư mục: {{ $doson->documentName }}</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="d-flex justify-content-between">
+                                                            <form action="{{ route('delete.folder') }}" method="POST">
+                                                                @csrf
+                                                                <input type="hidden" name="id" value="{{ $doson->id }}">
+                                                                <button type="submit" class="btn btn-outline-danger"  title="xoá">
+                                                                    xoá khỏi cơ sỡ dư liệu
+                                                                </button>
+    
+    
+                                                            </form>
+                                                        <div>
+                                                        <a  class="btn btn-outline-danger" href="{{ route('delete.folder.inter',$doson->id) }}">Xoá cục bộ</a></div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            @endif
                                         </div>
-                                            <div class="collapse col-12 " id="demo{{ $doson->id }}">
-                                                    @foreach(App\Models\File::all() as $file)
-                                                        @if($file->documentID == $doson->id && $file->status == 0)
-                                                        @php
-                                                            // Lấy đuôi mở rộng của file
-                                                            $extension = pathinfo($file->filePath, PATHINFO_EXTENSION);
-                                                        @endphp
-                                                            <div class="row">
-                                                                <div class=" col-3">
-                                                                    <i class="text-muted icon-sm ms-4"  data-feather="file"></i>
-                                                                    {{-- <a href="{{ Storage::url( $file->filePath ) }}" target="_blank" class="mx-2">{{ $file->fileName }}</a> --}}
-                                                                    @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'pdf']))
-                                                                    <!-- Hiển thị trực tiếp trên trình duyệt -->
-                                                                        <a href="{{ Storage::url($file->filePath) }}" target="_blank" class="mx-2">{{ $file->fileName }}</a>
-                                                                    @else
-                                                                        <!-- Sử dụng Google Docs Viewer cho file không hỗ trợ -->
-                                                                        <a href="https://docs.google.com/viewer?url={{ urlencode(Storage::url($file->filePath)) }}&embedded=true" target="_blank" class="mx-2">{{ $file->fileName }}</a>
-                                                                    @endif
-                                                                </div>
-                                                                <div class="col-2 ms-1">
-                                                                    
-                                                                </div>
-                                                                @if($project->status !=3)
-                                                                <div class="col-1 d-flex ">
-                                                                    <div style="margin-left:2px;">
-                                                                        <a href="{{ Storage::url($file->filePath) }} " download>
-                                                                            <i class="icon-sm text-dark  me-2" data-feather="download"></i>
-                                                                        </a>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                                <div class=" col-12 " >
+                                        @foreach(App\Models\File::all() as $file)
+                                            @if($file->documentID == $doson->id && $file->status == 0)
+                                            @php
+                                                // Lấy đuôi mở rộng của file
+                                                $extension = pathinfo($file->filePath, PATHINFO_EXTENSION);
+                                            @endphp
+                                                <div class="row">
+                                                    <div class=" col-3">
+                                                        <i class="text-muted icon-sm ms-4"  data-feather="file"></i>
+                                                        {{-- <a href="{{ Storage::url( $file->filePath ) }}" target="_blank" class="mx-2">{{ $file->fileName }}</a> --}}
+                                                        @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'pdf']))
+                                                        <!-- Hiển thị trực tiếp trên trình duyệt -->
+                                                            <a href="{{ Storage::url($file->filePath) }}" target="_blank" class="mx-2">{{ $file->fileName }}</a>
+                                                        @else
+                                                            <!-- Sử dụng Google Docs Viewer cho file không hỗ trợ -->
+                                                            <a href="https://docs.google.com/viewer?url={{ urlencode(Storage::url($file->filePath)) }}&embedded=true" target="_blank" class="mx-2">{{ $file->fileName }}</a>
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-2 ms-1">
+                                                        
+                                                    </div>
+                                                    @if($project->status !=3)
+                                                    <div class="col-1 d-flex ">
+                                                        <div style="margin-left:2px;">
+                                                            <a href="{{ Storage::url($file->filePath) }} " download>
+                                                                <i class="icon-sm text-dark  me-2" data-feather="download"></i>
+                                                            </a>
+                                                        </div>
+                                                        <div>
+                                                            <a type="button"data-bs-toggle="modal" data-bs-target="#deleteFolder">
+                                                                <i class="icon-sm text-danger " data-feather="trash"></i>
+                                                            </a>
+                                                                <!-- xoáa -->
+                                                                <div class="modal fade" id="deleteFolder" tabindex="-1" aria-labelledby="deleteFolderLabel" aria-hidden="true">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="deleteFolderLabel">Xoá thư mục: {{ $doson->documentName }}</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
                                                                     </div>
-                                                                    <div>
-                                                                        <a type="button"data-bs-toggle="modal" data-bs-target="#deleteFolder">
-                                                                            <i class="icon-sm text-danger " data-feather="trash"></i>
-                                                                        </a>
-                                                                          <!-- xoáa -->
-                                                                          <div class="modal fade" id="deleteFolder" tabindex="-1" aria-labelledby="deleteFolderLabel" aria-hidden="true">
-                                                                            <div class="modal-dialog">
-                                                                              <div class="modal-content">
-                                                                                <div class="modal-header">
-                                                                                  <h5 class="modal-title" id="deleteFolderLabel">Xoá thư mục: {{ $doson->documentName }}</h5>
-                                                                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
-                                                                                </div>
-                                                                                <div class="modal-body">
-                                                                                    <div class="d-flex justify-content-between">
-                                                                                        <form action="{{ route('delete.file') }}" method="POST">
-                                                                                            @csrf
-                                                                                            @method('delete')
-                                                                                            <button type="submit" class="btn btn-outline-danger" value="{{ $file->id }}" name="id" title="xoá">
-                                                                                                xoá khỏi cơ sỡ dư liệu
-                                                                                            </button>
-                                
-                                
-                                                                                          </form>
-                                                                                          <div><a  class="btn btn-outline-danger" href="{{ route('delete.file.inter',$file->id) }}">Xoá cục bộ</a></div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                
-                                                                              </div>
-                                                                            </div>
+                                                                    <div class="modal-body">
+                                                                        <div class="d-flex justify-content-between">
+                                                                            <form action="{{ route('delete.file') }}" method="POST">
+                                                                                @csrf
+                                                                                @method('delete')
+                                                                                <button type="submit" class="btn btn-outline-danger" value="{{ $file->id }}" name="id" title="xoá">
+                                                                                    xoá khỏi cơ sỡ dư liệu
+                                                                                </button>
+                    
+                    
+                                                                                </form>
+                                                                                <div><a  class="btn btn-outline-danger" href="{{ route('delete.file.inter',$file->id) }}">Xoá cục bộ</a></div>
                                                                         </div>
                                                                     </div>
                                                                     
+                                                                    </div>
                                                                 </div>
-                                                                @endif
-                                                            </div>
-                                                        @endif
-
-                                                    @endforeach
-                                               
-                                            </div>
-
-                                        </div>
-
-                                    @endif
-                                @endforeach
-                                
-                                    @foreach(App\Models\File::all() as $file)
-                                        @if($file->documentID == $document->id)
-                                        @php
-                                            // Lấy đuôi mở rộng của file
-                                            $extension = pathinfo($file->filePath, PATHINFO_EXTENSION);
-                                        @endphp
-                                        <div class="row ms-2 col-12">
-                                            <div class=" col-4">
-                                                <i class="text-muted icon-sm"  data-feather="file"></i>
-                                                {{-- <a href="{{ Storage::url( $file->filePath ) }}"  class="mx-2">{{ $file->fileName }}</a> --}}
-                                                @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'pdf']))
-                                                <!-- Hiển thị trực tiếp trên trình duyệt -->
-                                                    <a href="{{ Storage::url($file->filePath) }}" target="_blank" class="mx-2">{{ $file->fileName }}</a>
-                                                @else
-                                                    <!-- Sử dụng Google Docs Viewer cho file không hỗ trợ -->
-                                                    <a href="https://docs.google.com/viewer?url={{ urlencode(Storage::url($file->filePath)) }}&embedded=true" target="_blank" class="mx-2">{{ $file->fileName }}</a>
-                                                @endif
-                                            </div>
-                                            <div class="col-1">
-                                                
-                                            </div>
-                                            @if($project->status !=3)
-                                            <div class="col-1 d-flex">
-                                                <div>
-                                                    <a href="{{ Storage::url($file->filePath) }} " download>
-                                                        <i class="icon-sm text-dark mx-2" data-feather="download"></i>
-                                                    </a>
-                                                </div>
-                                                <div>
-                                                    <a type="button"data-bs-toggle="modal" data-bs-target="#deleteFolder">
-                                                    <i class="icon-sm text-danger " data-feather="trash"></i>
-                                                </a>
-                                                  <!-- xoá -->
-                                                  <div class="modal fade" id="deleteFolder" tabindex="-1" aria-labelledby="deleteFolderLabel" aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                      <div class="modal-content">
-                                                        <div class="modal-header">
-                                                          <h5 class="modal-title" id="deleteFolderLabel">Xoá thư mục: {{ $doson->documentName }}</h5>
-                                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <div class="d-flex justify-content-between">
-                                                                <form action="{{ route('delete.file') }}" method="POST">
-                                                                    @csrf
-                                                                    @method('delete')
-                                                                    <button type="submit" class="btn btn-outline-danger" value="{{ $file->id }}" name="id" title="xoá">
-                                                                        xoá khỏi cơ sỡ dư liệu
-                                                                    </button>
-        
-        
-                                                                  </form>
-                                                                  <div><a  class="btn btn-outline-danger" href="{{ route('delete.file.inter',$file->id) }}">Xoá cục bộ</a></div>
                                                             </div>
                                                         </div>
                                                         
-                                                      </div>
                                                     </div>
-                                                  </div></div>
-                                                
-                                            </div>
+                                                    @endif
+                                                </div>
                                             @endif
+
+                                        @endforeach
+                                    
+                                </div>
+
+                            </div>
+
+                        @endif
+                    @endforeach
+                    
+                        @foreach(App\Models\File::all() as $file)
+                            @if($file->documentID == $document->id)
+                            @php
+                                // Lấy đuôi mở rộng của file
+                                $extension = pathinfo($file->filePath, PATHINFO_EXTENSION);
+                            @endphp
+                            <div class="row ms-2 col-12">
+                                <div class=" col-4">
+                                    <i class="text-muted icon-sm"  data-feather="file"></i>
+                                    {{-- <a href="{{ Storage::url( $file->filePath ) }}"  class="mx-2">{{ $file->fileName }}</a> --}}
+                                    @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'pdf']))
+                                    <!-- Hiển thị trực tiếp trên trình duyệt -->
+                                        <a href="{{ Storage::url($file->filePath) }}" target="_blank" class="mx-2">{{ $file->fileName }}</a>
+                                    @else
+                                        <!-- Sử dụng Google Docs Viewer cho file không hỗ trợ -->
+                                        <a href="https://docs.google.com/viewer?url={{ urlencode(Storage::url($file->filePath)) }}&embedded=true" target="_blank" class="mx-2">{{ $file->fileName }}</a>
+                                    @endif
+                                </div>
+                                <div class="col-1">
+                                    
+                                </div>
+                                @if($project->status !=3)
+                                <div class="col-1 d-flex">
+                                    <div>
+                                        <a href="{{ Storage::url($file->filePath) }} " download>
+                                            <i class="icon-sm text-dark mx-2" data-feather="download"></i>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a type="button"data-bs-toggle="modal" data-bs-target="#deleteFolder">
+                                        <i class="icon-sm text-danger " data-feather="trash"></i>
+                                    </a>
+                                        <!-- xoá -->
+                                        <div class="modal fade" id="deleteFolder" tabindex="-1" aria-labelledby="deleteFolderLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteFolderLabel">Xoá thư mục: {{ $doson->documentName }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="d-flex justify-content-between">
+                                                    <form action="{{ route('delete.file') }}" method="POST">
+                                                        @csrf
+                                                        @method('delete')
+                                                        <button type="submit" class="btn btn-outline-danger" value="{{ $file->id }}" name="id" title="xoá">
+                                                            xoá khỏi cơ sỡ dư liệu
+                                                        </button>
+
+
+                                                        </form>
+                                                        <div><a  class="btn btn-outline-danger" href="{{ route('delete.file.inter',$file->id) }}">Xoá cục bộ</a></div>
+                                                </div>
+                                            </div>
+                                            
+                                            </div>
                                         </div>
-                                        @endif
-                                    @endforeach
-                                
-                              </div>
+                                        </div></div>
+                                    
+                                </div>
+                                @endif
+                            </div>
+                            @endif
+                        @endforeach
+                    
+                    </div>
 
-                        </div>
-
-                    @endif
-                @endforeach
             </div>
-        </div>
-    </div>
+
+        @endif
+    @endforeach
+</div>
+
     <script>
         $(document).ready(function() {
     const formStates = {};
@@ -523,24 +518,3 @@ function updateFileList(input) {
 
         </script>
 
-
-
-    <script>
-        // Lấy tất cả các phần tử có class toggle-icon
-        document.querySelectorAll('.toggle-icon_k').forEach(function(toggleButton) {
-            const icon = toggleButton.querySelector('i.fa-angle-down, i.fa-angle-up');
-            
-            // Lắng nghe sự kiện click cho từng button
-            toggleButton.addEventListener('click', function() {
-                // Kiểm tra và thay đổi icon
-                if (icon.classList.contains('fa-angle-down')) {
-                    icon.classList.remove('fa-angle-down');
-                    icon.classList.add('fa-angle-up');
-                } else {
-                    icon.classList.remove('fa-angle-up');
-                    icon.classList.add('fa-angle-down');
-                }
-            });
-        });
-    </script>
-</section>

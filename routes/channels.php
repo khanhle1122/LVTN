@@ -16,3 +16,10 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+Broadcast::channel('chatroom.{chat_room_id}', function ($user, $chat_room_id) {
+    return \App\Models\ChatroomUser::where('chatroom_id', $chat_room_id)
+        ->where('user_id', $user->id)
+        ->exists();
+});
+
+
