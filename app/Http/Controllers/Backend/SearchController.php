@@ -14,6 +14,7 @@ use App\Models\NotificationUser;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 
+use App\Models\Message;
 
 
 
@@ -55,9 +56,14 @@ class SearchController extends Controller
         ->where('is_read', 0)
         ->with('notification') // Kèm thông tin từ bảng `notifications`
         ->get();
-
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
 
         // Trả về kết quả tìm kiếm
-        return view('admin.search-results', compact('projects', 'users', 'files', 'query','divisions','clients','tasks','notifications'));
+        return view('admin.search-results', compact('projects', 'users', 'files', 'query','divisions','clients','tasks','notifications','unreadMessagesCount'));
     }
 }

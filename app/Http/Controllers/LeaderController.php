@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\NotificationUser;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Message;
 
 class LeaderController extends Controller
 {

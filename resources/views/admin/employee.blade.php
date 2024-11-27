@@ -19,12 +19,13 @@
                     <i class="" data-feather="plus"></i>
                     <span>Thêm nhân viên</span>
                 </button>
-                <!-- Modal -->
+                
+                <!-- Thêm -->
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Thêm nhân viên</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
                         </div>
                         <div class="modal-body">
@@ -68,8 +69,7 @@
                                             <label for="role" class="form-label">Vai trò</label>
                                             <select name="role" class="form-select" id="role">
                                                 <option selected disabled>Chọn vai trò</option>
-                                                <option value="admin">Quản trị viên</option>
-                                                <option value="supervision">Giám sát</option>
+                                                <option value="supervisor">Giám sát</option>
                                                 <option value="leader">Nhóm trưởng</option>
                                                 <option value="staff">Nhân viên</option>
             
@@ -104,10 +104,43 @@
                     </div>
                     </div>
                 </div>
+                {{-- thêm danh sách --}}
+                <button type="button" class="btn btn-outline-primary my-3" data-bs-toggle="modal" data-bs-target="#addListEmployee">
+                    <i class="" data-feather="plus"></i>
+                    <span>Thêm nhân viên</span>
+                </button>
+
+                <div class="modal fade" id="addListEmployee" tabindex="-1" aria-labelledby="addListEmployeeLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="addListEmployeeLabel">Thêm danh sách nhân viên</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ route('store.employee') }}" method="POST" id="signupForm">
+                                @csrf
+                                <h3 class="h3 text-center mb-3">Danh sách</h3>
+                                <form action="{{ route('users.import') }}" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="mb-4">
+                                        <label for="">Danh sách:</label>
+                                        <input type="file" name="file" class="form-control">
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary">Thêm danh sách</button>
+                                    </div>
+                                </form>
+                            </form>
+                        </div>
+                        
+                    </div>
+                    </div>
+                </div>
 
 
                 <div class="table-responsive">
-                <table id="dataTableExample" class="table">
+                <table id="employee" class="table">
                     <thead>
                     <tr>
                         <th>STT</th>
@@ -138,12 +171,20 @@
                             </td>
                             <td><div class="mt-2">{{ $employee->expertise }}</div></td>
                             <td>
-                               <div class="mt-2"> @if($employee->status== 0)
-                                <span class="badge bg-success">Hoạt động</span>
+                               <div class="mt-2"> 
+                                @if($employee->status== 0)
+                                <span class="badge bg-primary-subtle text-primary border border-primary d-inline-flex align-items-center">
+                                    <i data-feather="play-circle" class="icon-sm me-1"></i>
+                                    Hoạt động
+                                </span>
                                 @elseif($employee->status == 1)
-                                <span class="badge bg-danger">Đã khoá</span>
+                                <span class="badge bg-warning-subtle text-warning border border-warning d-inline-flex align-items-center">
+                                    <i data-feather="pause-circle" class="icon-sm me-1"></i>
+                                    Đã khoá
+                                </span>
 
-                                @endif </div>
+                                @endif 
+                                </div>
 
                             </td>
                             <td><div class="mt-2">{{ $employee->email }}</div></td>
@@ -165,7 +206,7 @@
                                    <div class="mt-2">
                                     @if( $employee->role === 'staff') 
                                         nhân viên
-                                    @elseif($employee->role === 'supervision' )
+                                    @elseif($employee->role === 'supervisor' )
                                         giám sát viên
                                     @elseif($employee->role === 'leader' )
                                         nhóm trưởng
@@ -177,12 +218,20 @@
                                 </td>
                                 <td><div class="mt-2">{{ $employee->expertise }}</div></td>
                             <td>
-                               <div class="mt-2"> @if($employee->status== 0)
-                                <span class="badge bg-success">Hoạt động</span>
-                                @elseif($employee->status == 1)
-                                <span class="badge bg-danger">Đã khoá</span>
-
-                                @endif </div>
+                                <div class="mt-2"> 
+                                    @if($employee->status== 0)
+                                    <span class="badge bg-primary-subtle text-primary border border-primary d-inline-flex align-items-center">
+                                        <i data-feather="play-circle" class="icon-sm me-1"></i>
+                                        Hoạt động
+                                    </span>
+                                    @elseif($employee->status == 1)
+                                    <span class="badge bg-danger-subtle text-danger border border-danger d-inline-flex align-items-center">
+                                        <i data-feather="lock" class="icon-sm me-1"></i>
+                                        Đã khoá
+                                    </span>
+    
+                                    @endif 
+                                    </div>
 
                             </td>
                             <td><div class="mt-2">{{ $employee->email }}</div></td>
@@ -206,7 +255,7 @@
                                                     </div>
                                                     <div class="modal-body">
                                                        
-                                                            <h5 class="mt-3" >Các dự án dàm nhận</h5>
+                                                            <h5 class="mt-3" >Các dự án Đảm nhận</h5>
                                                             <div class="row my-3">
                                                             <div class="col-3">Mã dự án</div>
                                                             <div class="col-6">Ten dự án</div>
@@ -294,8 +343,7 @@
                                                                             <select name="role" class="form-select" id="exampleFormControlSelect1">
                                                                                 
                                                                                    
-                                                                                    <option  @if($employee->role === 'admin') selected @endif value="admin" >Quản trị viên</option>
-                                                                                    <option  @if($employee->role === 'supervision') selected @endif value="supervisor">Giám sát</option>
+                                                                                    <option  @if($employee->role === 'supervisor') selected @endif value="supervisor">Giám sát</option>
                                                                                     <option  @if($employee->role === 'leader') selected @endif value="leader">Nhóm trưởng</option>
                                                                                     <option  @if($employee->role === 'staff') selected @endif value="staff">Nhân viên</option>
                                                                                     
@@ -346,6 +394,14 @@
 
 </div>
         
-
+<script>
+    $(document).ready(function() {
+        $('#employee').DataTable({
+            columnDefs: [
+                { orderable: false, targets: 9 } // Chỉ định cột thứ 2 không cho phép sắp xếp
+            ]
+        });
+    });
+    </script>
 
 @endsection

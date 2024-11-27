@@ -1,5 +1,5 @@
-@extends('admin.admin_dashboard')
-@section('admin')
+@extends('staff.staff_dashboard')
+@section('staff')
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 
 <style>

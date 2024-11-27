@@ -1,5 +1,6 @@
 <div>
     <h3 class="mt-2 mb-4">Chi phí dự án</h3>
+    @if($project->status != 2)
 
     <div class="mt-2">
         <a type="button" class="btn btn-outline-primary" title="Thêm chi phí"  data-bs-toggle="modal" data-bs-target="#coatAdd">
@@ -44,6 +45,7 @@
             </div>
           </div>
     </div>
+    @endif
     @if(count($coats) >0 )
     <div class="table-responsive mt-3">
         <table id="dataTable" class="table">

@@ -6,7 +6,7 @@
     <div class="row ">
         <!-- left wrapper start -->
         
-        <div class="col-md-12 col-xl-12  middle-wrapper">
+        <div class="col-md-12 col-xl-12  ">
 
 
             
@@ -48,6 +48,8 @@
                                             <i class=" ms-3 icon-sm text-success" data-feather="check"></i>
                                        
                                         @endif
+                                        
+
                                     </td>   
                                     <td>
                                         <div class="d-flex">
@@ -83,7 +85,9 @@
                                                     </div>
                                                   </div>
                                             </div>
-                                            
+                                            <a href="{{ route('delete.client.guest',$client->id) }}">
+                                                <i data-feather="trash" class="icon-sm text-danger ms-3"></i>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -99,7 +103,7 @@
   
             </div>
         </div>
-        <div class="col-md-3 col-xl-3 left-wrapper mt-4">
+        <div class="col-md-3 col-xl-3  mt-4">
             <div class="card rounded">
                 <div class="card-body"> 
                   <h3>Thêm gói thầu</h3>
@@ -288,8 +292,16 @@
 </div>
 <script>
     $(document).ready(function() {
-        $('#clientTable').DataTable();
-        $('#contractTable').DataTable();
+        $('#clientTable').DataTable({
+            columnDefs: [
+                    { orderable: false, targets: 7 } // Chỉ định cột thứ 2 không cho phép sắp xếp
+                ]
+        });
+        $('#contractTable').DataTable({
+            columnDefs: [
+                    { orderable: false, targets: 6 } // Chỉ định cột thứ 2 không cho phép sắp xếp
+                ]
+        });
     });
     </script>
 @endsection

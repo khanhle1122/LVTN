@@ -160,7 +160,7 @@
 
 
                 <div class="table-responsive">
-                <table id="dataTableExample" class="table">
+                <table id="projectList" class="table">
                     <thead>
                     <tr>
                         <th></th>
@@ -298,10 +298,10 @@
                                                                                 <option disabled>Người khác:</option>
 
                                                                                 @foreach(App\Models\User::all() as $user)
-                                                                                    @if($user->role === 'supervision' && $project->userID != $user->id)
-                                                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                                                    @endif
-                                                                                @endforeach
+                                                                                @if($user->role !== 'staff')
+                                                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                                                @endif
+                                                                            @endforeach
                                                                             </select>
                                                                         </div>
                                                                         
@@ -505,4 +505,13 @@
     });
     
     </script>
+    <script>
+        $(document).ready(function() {
+            $('#projectList').DataTable({
+                columnDefs: [
+                    { orderable: false, targets: 11 } // Chỉ định cột thứ 2 không cho phép sắp xếp
+                ]
+            });
+        });
+        </script>
 @endsection

@@ -13,6 +13,7 @@ use App\Models\Project;
 use App\Models\Division;
 use App\Models\Notification;
 use App\Models\NotificationUser;
+use App\Models\Message;
 
 class NhanVienController extends Controller
 {
@@ -25,8 +26,13 @@ class NhanVienController extends Controller
         ->where('is_read', 0)
         ->with('notification') // Kèm thông tin từ bảng `notifications`
         ->get();
-
-        return view('admin.employee', compact('employees','notifications'));
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
+        return view('admin.employee', compact('employees','notifications','unreadMessagesCount'));
     }
 
     public function store(Request $request)
@@ -176,8 +182,14 @@ class NhanVienController extends Controller
         ->where('is_read', 0)
         ->with('notification') // Kèm thông tin từ bảng `notifications`
         ->get();
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
 
-        return view('admin.division',compact('project','divisions','notifications'));
+        return view('admin.division',compact('project','divisions','notifications','unreadMessagesCount'));
     }
     public function addMember(Request $request){
         $request->validate([

@@ -5,10 +5,12 @@
     <div class="d-flex " >
         <div class="d-flex ">
             <div>
+                @if($project->status != 2)
+
                 <a href="{{ route('project.toggleStar',$project->id) }}" class="d-flex flex-row-reverse mt-2" > @if( $project->toggleStar == 1) <i class="fa-solid fa-star" style="color: #FFD43B;"></i> @else <i class="fa-regular fa-star" ></i>  @endif </a>
-                
+                @endif
             </div>
-            <div class="circle-k" style="background: @if($project->status == 2) conic-gradient(rgb(255, 0, 0) @else conic-gradient(rgb(49, 164, 7) @endif {{$project->progress}}%, #e0e0e0 0)">
+            <div class="circle-k" style="background: @if($project->status == 3) conic-gradient(rgb(255, 0, 0) @else conic-gradient(rgb(49, 164, 7) @endif {{$project->progress}}%, #e0e0e0 0)">
                 <span class="percentage_k">{{ $project->progress }}%</span>
             </div>
             
@@ -129,8 +131,9 @@
                                                 <select class="form-select" id="userID" name="userID">
                                                     <option selected disabled>Chọn nhân viên phụ trách</option>                                                                                                
                                                     @foreach(App\Models\User::all() as $employee)
-                                                        @if( $employee->role !== "admin" && $employee->status_division == 1)
-                                                            <option value="{{ $employee->id }}"> {{ $employee->name }}</option>
+                                                    @if( ($employee->role !== "admin" && $employee->role !== "supervitor" && $employee->status_division == 1) || 
+                                                        ($employee->divisionID == null && $employee->role !== "admin" && $employee->role !== "supervision") )
+                                                                                                                <option value="{{ $employee->id }}"> {{ $employee->name }}</option>
                                                         @endif
                                                         
                                                     @endforeach
@@ -162,7 +165,7 @@
                     @endif
 
                     <div class="table-responsive">
-                    <table id="dataTableExample" class="table ">
+                    <table id="taskList" class="table">
                         <thead>
                         <tr>
                             <th></th>
@@ -360,4 +363,12 @@
             </div>
         </div>
     </div>
-
+    <script>
+        $(document).ready(function() {
+            $('#taskList').DataTable({
+                columnDefs: [
+                    { orderable: false, targets: 12 } // Chỉ định cột thứ 2 không cho phép sắp xếp
+                ]
+            });
+        });
+        </script>

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\NotificationUser;
 use App\Models\Notification;
+use App\Models\Message;
 
 class ProfileController extends Controller
 {

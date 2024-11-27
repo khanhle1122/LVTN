@@ -8,12 +8,13 @@ use App\Models\User;
 use App\Models\Notification;
 use App\Models\NotificationUser;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Message;
 
 
 class NotificationController extends Controller
 {
     public function clearNotification(){
-        $notifications = NotificationUser::all();
+        $notifications = NotificationUser::where('user_id',auth()->id())->get();
 
         foreach($notifications as $notification){
             $notification->is_read = 1;
@@ -38,8 +39,23 @@ class NotificationController extends Controller
         $allNotifications = NotificationUser::where('user_id', Auth::id())
         ->with('notification') // Kèm thông tin từ bảng `notifications`
         ->get();
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
+        return view('admin.view-notification',compact('notifications','allNotifications','unreadMessagesCount'));
+    }
 
-        return view('admin.view-notification',compact('notifications','allNotifications'));
+    public function deleteNotification($id){
+        $notification = NotificationUser::find($id);
+        $notification->delete();
+        $notification = array(
+            'message' => 'Đã xoá 1 thông báo',
+            'alert-type' => 'success'
+        );
+        return redirect()->back()->with($notification);
     }
     
 }

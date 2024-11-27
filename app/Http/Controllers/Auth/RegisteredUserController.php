@@ -15,7 +15,10 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    
+    public function create(): View
+    {
+        return view('erroe.404');
+    }
     public function store(Request $request)
     {
         $request->validate([

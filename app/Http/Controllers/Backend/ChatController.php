@@ -9,6 +9,8 @@ use App\Models\NotificationUser;
 use App\Models\ChatRoom;
 use App\Models\Message;
 use App\Events\NewMessage;
+use App\Models\User;
+
 use Illuminate\Support\Facades\Auth;
 
 
@@ -25,9 +27,49 @@ class ChatController extends Controller
             ->with(['user', 'otherUser'])
             ->orderBy('last_message_at', 'desc')
             ->get();
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
 
-        return view('admin.chat', compact('chatRooms','notifications'));
+            $users = User::all();
+        return view('admin.chat', compact('chatRooms','notifications','unreadMessagesCount','users'));
     }
+    public function index_staff()
+    {
+        $users = User::all();
+        $notifications = NotificationUser::where('user_id', Auth::id())
+        ->where('is_read', 0)
+        ->with('notification') // Kèm thông tin từ bảng `notifications`
+        ->get();
+        $chatRooms = ChatRoom::where('user_id', auth()->id())
+            ->orWhere('other_user_id', auth()->id())
+            ->with(['user', 'otherUser'])
+            ->orderBy('last_message_at', 'desc')
+            ->get();
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
+        return view('staff.chat', compact('chatRooms','notifications','unreadMessagesCount','users'));
+    }
+
+    public function addRoom($id){
+        $user_id = Auth()->id();
+        $other_user_id = User::find($id);
+
+        ChatRoom::create([
+            'user_id'   => $user_id,
+            'other_user_id' => $other_user_id->id,
+        ]);
+        return redirect()->back();
+
+    }
+
 
     public function show($roomId)
     {

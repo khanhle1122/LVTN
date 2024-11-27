@@ -14,7 +14,7 @@
                     </a>
 
                 </div>
-                @if($project->status != 3)
+                @if($project->status != 2)
                 <div class="col-1 d-flex">
                     <div>
                         

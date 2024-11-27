@@ -1,36 +1,23 @@
-<nav class="navbar">
-    <a href="#" class="sidebar-toggler">
-        <i data-feather="menu"></i>
-    </a>
+<nav class="navbar ">
+    
     <div class="navbar-content">
-        <form class="search-form" action="{{ route('search') }}" method="GET">
-            <div class="input-group">
-                <div class="input-group-text">
-                    <i data-feather="search"></i>
-                </div>
-                <input type="text" class="form-control" id="navbarForm" name="query" placeholder="Search here...">
-            </div>
-        </form>
+        
         <ul class="navbar-nav">
-            {{-- <li class="nav-item dropdown">
-                <a class="nav-link " id="message" href="{{ route('chat.index') }}" >
-                    <i class="fa-regular fa-comment fa-lg"></i>                    
-                    @if(count(\App\Models\Message::where('sender_id', '!=', Auth()->id())
-                              ->where('is_read', 0)
-                              ->get()) > 0)
-                            <div class="indicator">
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ count(\App\Models\Message::where('sender_id', '!=', Auth()->id())
-                                    ->where('is_read', 0)
-                                    ->get()) }}
-                                </span>
-                            </div>
-                        @endif
+            <li class="nav-item dropdown">
+                <a class="nav-link" href="{{ route('chat.staff.index') }}">
+                    <i class="fa-regular fa-comment fa-lg"></i>
+                    @if($unreadMessagesCount > 0)
+                        <div class="indicator">
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ $unreadMessagesCount }}
+                            </span>
+                        </div>
+                    @endif
                 </a>
                 
               
-            </li> --}}
-            {{-- <li class="nav-item dropdown">
+            </li>
+            <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i data-feather="bell"></i>
                     @if(count($notifications)>0)
@@ -52,8 +39,8 @@
                               <a href="{{ route('check.notification', $notification->id) }}" class="dropdown-item d-flex align-items-center py-2">
                                   <div class="d-flex justify-content-between flex-grow-1 me-2">
                                       <div>
-                                        <p>{{ $notification->title }}</p>
-                                        <p class="tx-12 text-muted">{{ $notification->content }}</p>
+                                        <p>{{ $notification->notification->title }}</p>
+                                        <p class="tx-12 text-muted">{{ $notification->notification->content }}</p>
                                       </div>
                                       <p class="tx-12 text-muted mt-2"><em>{{ $notification->created_at->diffForHumans() }}</em></p>
                                   </div>
@@ -68,11 +55,11 @@
                       @endif
                   </div>
                   <div class="px-3 py-2 d-flex align-items-center justify-content-center border-top">
-                      <a href="{{ route('show.notification') }}">View All Notifications</a>
+                      <a href="{{ route('show.notification') }}">Xem tất cả</a>
                   </div>
               </div>
               
-            </li> --}}
+            </li>
             
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

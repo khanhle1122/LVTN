@@ -11593,7 +11593,7 @@
 				 *      } );
 				 *    } );
 				 */
-				"sNext": "Next",
+				"sNext": "Tiếp",
 	
 	
 				/**
@@ -11616,7 +11616,7 @@
 				 *      } );
 				 *    } );
 				 */
-				"sPrevious": "Previous"
+				"sPrevious": "Trước"
 			},
 	
 			/**
@@ -11671,7 +11671,7 @@
 			 *      } );
 			 *    } );
 			 */
-			"sInfo": "Showing _START_ to _END_ of _TOTAL_ entries",
+			"sInfo": "Hiển thị từ _START_ đến _END_ trong tổng số _TOTAL_ mục",
 	
 	
 			/**
@@ -11692,7 +11692,7 @@
 			 *      } );
 			 *    } );
 			 */
-			"sInfoEmpty": "Showing 0 to 0 of 0 entries",
+			"sInfoEmpty": "Hiển thị 0 đến 0 trong tổng số 0 mục",
 	
 	
 			/**
@@ -11832,7 +11832,7 @@
 			 *      } );
 			 *    } );
 			 */
-			"sLengthMenu": "Show _MENU_ entries",
+"sLengthMenu": "Hiển thị _MENU_ mục",
 	
 	
 			/**
@@ -11911,7 +11911,7 @@
 			 *      } );
 			 *    } );
 			 */
-			"sSearch": "Search:",
+			"sSearch": "",
 	
 	
 			/**
@@ -11922,7 +11922,7 @@
 			 *  @dtopt Language
 			 *  @name DataTable.defaults.language.searchPlaceholder
 			 */
-			"sSearchPlaceholder": "",
+			"sSearchPlaceholder": "Nhập từ khóa...",
 	
 	
 			/**

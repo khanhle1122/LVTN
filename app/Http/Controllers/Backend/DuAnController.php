@@ -15,6 +15,7 @@ use App\Models\NotificationUser;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Message;
 
 
 
@@ -46,8 +47,13 @@ class DuAnController extends Controller{
         ->with('notification') // Kèm thông tin từ bảng `notifications`
         ->get();
         $contractors = Client::where('role','contractor')->get();
-
-        return view('admin.project',compact('projects','contractors','notifications'));
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
+        return view('admin.project',compact('projects','contractors','notifications','unreadMessagesCount'));
     } 
 
     // thêm dự án 

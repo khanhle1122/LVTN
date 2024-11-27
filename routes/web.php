@@ -18,6 +18,7 @@ use App\Http\Controllers\GuestController;
 use App\Http\Controllers\Backend\CoatController;
 use App\Events\NewMessage;
 use App\Http\Controllers\PusherAuthController;
+use App\Http\Controllers\UserController;
 
 
 
@@ -44,17 +45,11 @@ Route::middleware(['auth','role:admin'])->group(function(){
 
 
 
-Route::get('/leader/dashboard', function () {
-    return view('leader.leader_dashboard');
-})->name('leader_dashboard');
-
-Route::get('/supervisor/dashboard', function () {
-    return view('supervisor.supervisor_dashboade');
-})->name('supervisor_dashboard');
 
 Route::middleware('auth','role:staff')->group(function () {
     Route::get('/staff', [StaffController::class, 'index'])->name('client');
     Route::get('/staff/logout', [StaffController::class, 'StaffLogout'])->name('staff.logout');
+    Route::get('staff/chat', [ChatController::class, 'index_staff'])->name('chat.staff.index');
 
 
 
@@ -82,6 +77,7 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::post('/client/abc', [ClientController::class, 'editRoleClient'])->name('edit.role.client');
     Route::get('/duyet-request/id={id}', [ClientController::class, 'checkRequest'])->name('check.status.client');
     Route::get('/report-project', [ClientController::class, 'reportProject'])->name('report.project');
+    Route::get('client/delete/{id}', [ClientController::class, 'deleteClient'])->name('delete.client.guest');
 
 
 
@@ -141,12 +137,19 @@ Route::middleware('auth')->group(function () {
 
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth','role:admin')->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+
+});
+
+Route::middleware('auth')->group(function () {
     Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{room}/messages', [ChatController::class, 'store'])->name('chat.messages.store');
     Route::post('/chat/{room}/upload', [ChatController::class, 'uploadFile']);
-    Route::post('/chat/{chatRoom}/mark-as-read', [ChatController::class, 'markAsRead']);});
+    Route::post('/chat/{chatRoom}/mark-as-read', [ChatController::class, 'markAsRead']);
+    Route::get('/chat/addroom/{id}', [ChatController::class, 'addRoom'])->name('addRoom.chat');
+
+});
 
 
 
@@ -171,7 +174,7 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::get('/admin/delete-member={id}',[NhanVienController::class, 'deleteMember'])->name('delete.member');
     Route::post('/admin/add-division',[NhanVienController::class, 'addDivision'])->name('add.division');
     Route::get('/admin/leader-pick={id}',[NhanVienController::class, 'leaderPick'])->name('leader.pick');
-
+    Route::post('/users/import', [UserController::class, 'import'])->name('users.import');
 
 
 
@@ -182,6 +185,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('mark.notification.read');
     Route::get('/notifications/id={id}', [NotificationController::class, 'checkNotification'])->name('check.notification');
     Route::get('/notifications/show', [NotificationController::class, 'showNotification'])->name('show.notification');
+    Route::get('/notifications/delete/id={id}', [NotificationController::class, 'deleteNotification'])->name('delete.notification');
 
 
 });

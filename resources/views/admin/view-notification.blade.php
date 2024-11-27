@@ -28,7 +28,7 @@
                                     <div>{{ $notification->notification->content }}</div>
                                   </td>
                                   <td>
-                                    @if($notification->notification->is_read == 0)
+                                    @if($notification->is_read == 0)
                                         <div>Chưa đọc</div>
                                     @else
                                         <div>Đã đọc</div>
@@ -38,9 +38,13 @@
                                   <td>
                                     @if($notification->is_read == 0)
                                     <a href="{{ route('check.notification', $notification->id) }}" title="đánh dấu đã đọc" class="">
-                                      <i data-feather="check"></i>
+                                      <i data-feather="check" class="icon-sm mx-2"></i>
                                     </a>
                                     @endif
+
+                                    <a href="{{ route('delete.notification', $notification->id) }}" title="đánh dấu đã đọc" class="">
+                                      <i data-feather="trash" class="icon-sm text-danger"></i>
+                                    </a>
                                   </td>
                                   
                                 </tr>

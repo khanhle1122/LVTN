@@ -15,6 +15,7 @@ use App\Models\Coat;
 use App\Models\User;
 use App\Models\Document;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Message;
 
 
 
@@ -68,8 +69,14 @@ class TaskController extends Controller
             );
             return redirect()->back()->with($notification);
         }
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
         // Trả về view với project và tasks
-        return view('admin.task', compact('project','documents','tasks','coats','notifications'));
+        return view('admin.task', compact('project','documents','tasks','coats','notifications','unreadMessagesCount'));
     }
     
     
@@ -399,6 +406,10 @@ class TaskController extends Controller
         if ($request->filled('note')) {
             $task->description = $request->note;
         }
+        if($request->progress == 100)
+            $task->status = 1;
+        elseif($request->progress < 100)
+            $task->status = 0;
 
         $task->save();
 

@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\Notification;
 use App\Models\NotificationUser;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Message;
 
 class GuestController extends Controller
 {

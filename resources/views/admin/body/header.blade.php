@@ -15,17 +15,13 @@
             <li class="nav-item dropdown">
                 <a class="nav-link " id="message" href="{{ route('chat.index') }}" >
                     <i class="fa-regular fa-comment fa-lg"></i>                    
-                    @if(count(\App\Models\Message::where('sender_id', '!=', Auth()->id())
-                              ->where('is_read', 0)
-                              ->get()) > 0)
-                            <div class="indicator">
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ count(\App\Models\Message::where('sender_id', '!=', Auth()->id())
-                                    ->where('is_read', 0)
-                                    ->get()) }}
-                                </span>
-                            </div>
-                        @endif
+                    @if($unreadMessagesCount > 0)
+                        <div class="indicator">
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ $unreadMessagesCount }}
+                            </span>
+                        </div>
+                    @endif
                 </a>
                 
               
@@ -68,7 +64,7 @@
                       @endif
                   </div>
                   <div class="px-3 py-2 d-flex align-items-center justify-content-center border-top">
-                      <a href="{{ route('show.notification') }}">View All Notifications</a>
+                      <a href="{{ route('show.notification') }}">Xem tất cả</a>
                   </div>
               </div>
               

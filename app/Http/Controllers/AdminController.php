@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use App\Models\Project;
 use App\Models\Document;
 use App\Models\File;
+use App\Models\Message;
 use App\Models\Notification;
 use App\Models\NotificationUser;
 
@@ -27,6 +28,12 @@ class AdminController extends Controller
         $onHoldProjects = $projects->where('status', 2)->count();  // Đang thực hiện
         $lowProjects = $projects->where('status', 3)->count();  // Đang thực hiện
         $tasks = Task::where('star',1)->get();
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
         return view('admin.index',compact(
                         'projects',
                         'totalProject',
@@ -35,7 +42,8 @@ class AdminController extends Controller
                         'onHoldProjects',
                         'lowProjects',
                         'tasks',
-                        'notifications'
+                        'notifications',
+                        'unreadMessagesCount'
                     
                     
                     ));

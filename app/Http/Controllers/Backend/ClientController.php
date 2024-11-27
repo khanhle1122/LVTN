@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Notification;
 use App\Models\NotificationUser;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Message;
 
 
 class ClientController extends Controller
@@ -21,7 +22,13 @@ class ClientController extends Controller
         ->get();
         $clients = Client::all();
         $projects = Project::all();
-        return view('admin.client.client_dashboard',compact('clients','projects','notifications'));
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
+        return view('admin.client.client_dashboard',compact('clients','projects','notifications','unreadMessagesCount'));
     }
     public function addClient(Request $request){
         $request->validate([
@@ -99,9 +106,14 @@ class ClientController extends Controller
         ->where('is_read', 0)
         ->with('notification') // Kèm thông tin từ bảng `notifications`
         ->get();
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
 
-
-        return   view('admin.report',compact('notifications')); 
+        return   view('admin.report',compact('notifications','unreadMessagesCount')); 
 
     }
     public function editRoleClient(Request $request){
@@ -120,6 +132,28 @@ class ClientController extends Controller
             'alert-type' => 'success'
         );
         return redirect()->back()->with($notification);
+
+    }
+    public function deleteClient($id){
+        $client=Client::find($id);
+
+        if($client->role != 'client'){
+            $notification = array(
+                'message' => 'Không thể xoá đối tác',
+                'alert-type' => 'error'
+            );
+            return redirect()->back()->with($notification);
+
+        }
+
+        $client->delete();
+
+        $notification = array(
+            'message' => 'Đã xoá',
+            'alert-type' => 'success'
+        );
+        return redirect()->back()->with($notification);
+
 
     }
 }
