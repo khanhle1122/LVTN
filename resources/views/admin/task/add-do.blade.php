@@ -1,5 +1,4 @@
 
-<h3 class="mt-2 mb-4">Thư mục dự án</h3>
 <div class="mb-5 mx-3">
     @foreach($documents as $document)
         @if($document->parentID == 0 )
@@ -367,15 +366,15 @@
 
     <script>
         $(document).ready(function() {
-    const formStates = {};
+        const formStates = {};
 
     // Theo dõi sự kiện khi chọn file cho tất cả input file
-    $(document).on('change', 'input[type="file"]', function() {
-        const formId = $(this).closest('form').attr('id');
-        formStates[formId] = this.files.length > 0;
-        updateFileList(this);
-    });
-
+        $(document).on('change', 'input[type="file"]', function() {
+            const formId = $(this).closest('form').attr('id');
+            formStates[formId] = this.files.length > 0;
+            updateFileList(this);
+        });
+        
     // Xử lý submit cho tất cả form có class 'file-upload-form'
     $(document).on('submit', '.file-upload-form', function(e) {
         const formId = $(this).attr('id');

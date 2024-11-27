@@ -197,22 +197,18 @@
                                         
                                     @if($project->status == 1)   
                                     <span class="badge bg-success-subtle text-success border border-success d-inline-flex align-items-center">
-                                        <i data-feather="check-circle" class="icon-sm me-1"></i>
                                         Đã hoàn thành
                                     </span>
                                     @elseif($project->status == 2)
                                     <span class="badge bg-warning-subtle text-warning border border-warning d-inline-flex align-items-center">
-                                        <i data-feather="pause-circle" class="icon-sm me-1"></i>
                                         Tạm dừng
                                     </span>
                                     @elseif($project->status == 0)
                                     <span class="badge bg-primary-subtle text-primary border border-primary d-inline-flex align-items-center">
-                                        <i data-feather="play-circle" class="icon-sm me-1"></i>
                                         Đang tiến hành
                                     </span>
                                     @elseif($project->status == 3)
                                     <span class="badge bg-danger-subtle text-danger border border-danger d-inline-flex align-items-center">
-                                        <i data-feather="alert-circle" class="icon-sm me-1"></i>
                                         Chậm tiến độ
                                     </span>
                                     @endif
@@ -227,7 +223,7 @@
                                         
                                         <div class="me-1">
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#editProject{{ $project->id }}" title="Chỉnh sửa">
-                                                <i class="icon-sm text-warning" data-feather="edit-2"></i>
+                                                <i class="fa-regular fa-pen-to-square text-warning"></i>
                                             </a>
                                             
                                             <!-- Modal edit -->
@@ -378,11 +374,11 @@
                                             @if($project->status== 0 || $project->status == 1 || $project->status == 3) 
                                             
                                             <a class=""   href="{{ route('lock.project',$project->id) }}">
-                                                <i class="icon-sm text-danger" data-feather="lock"></i>
+                                                <i class="fa-solid fa-pause text-danger"></i>
                                             </a>
                                              @elseif($project->status == 2)
                                                 <a  class="" href="{{ route('lock.project',$project->id) }}">
-                                                    <i class="icon-sm text-success" data-feather="unlock"></i>
+                                                    <i class="fa-solid fa-play text-success"></i>
                                                 </a>
 
 
@@ -391,7 +387,7 @@
                                         <div class="">
                                             <span class="mx-1">|</span>
                                             <a  class="" href="{{ route('view.task',$project->id) }}">
-                                                <i class="icon-sm text-primary" data-feather="eye"></i>
+                                                <i class="fa-solid fa-eye text-primary"></i>
                                             </a>
                                             
                                         </div>

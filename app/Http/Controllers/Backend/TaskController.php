@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,8 @@ use App\Models\User;
 use App\Models\Document;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Message;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\TasksImport;
 
 
 
@@ -522,4 +525,51 @@ class TaskController extends Controller
         return redirect()->back();
     }
 
+    public function import(Request $request)
+    {
+        // Validate file và projectID
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,xls',
+            'projectID' => 'required|exists:projects,id',
+        ]);
+
+        try {
+            Log::info('Bắt đầu import file');
+            if(!$request->hasFile('file')) {
+                Log::error('Không tìm thấy file');
+                $notification = array(
+                    'message' => 'Không tìm thấy file',
+                    'alert-type' => 'error'
+                );
+                return redirect()->back()->with($notification);        
+            }
+            // Gọi import và truyền projectID vào
+            $file = $request->file('file');
+
+            Log::info('File được tải lên: ' . $file->getClientOriginalName());
+            if ($request->hasFile('file')) {
+                \Log::info('File name: ' . $request->file('file')->getClientOriginalName());
+            } else {
+                \Log::error('Không tìm thấy file.');
+            }
+            
+            Excel::import(new TasksImport($request->projectID), $request->file('file'));
+
+            $notification = array(
+                'message' => 'Đã Thêm thành công',
+                'alert-type' => 'success'
+            );
+            return redirect()->back()->with($notification);        
+        } catch (\Exception $e) {
+            Log::error('Lỗi import: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+    
+            $notification = array(
+                'message' => 'Lỗi import: ' . $e->getMessage(),
+                'alert-type' => 'error'
+            );
+            
+            return redirect()->back()->with($notification);
+        }
+    }
 }

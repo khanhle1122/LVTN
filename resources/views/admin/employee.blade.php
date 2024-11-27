@@ -22,7 +22,7 @@
                 
                 <!-- Thêm -->
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Thêm nhân viên</h5>
@@ -107,7 +107,7 @@
                 {{-- thêm danh sách --}}
                 <button type="button" class="btn btn-outline-primary my-3" data-bs-toggle="modal" data-bs-target="#addListEmployee">
                     <i class="" data-feather="plus"></i>
-                    <span>Thêm nhân viên</span>
+                    <span>Thêm danh sách viên</span>
                 </button>
 
                 <div class="modal fade" id="addListEmployee" tabindex="-1" aria-labelledby="addListEmployeeLabel" aria-hidden="true">
@@ -118,20 +118,19 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
                         </div>
                         <div class="modal-body">
-                            <form action="{{ route('store.employee') }}" method="POST" id="signupForm">
+                            
+                            <form action="{{ route('users.import.khanh') }}" method="POST" enctype="multipart/form-data" id="importForm">
                                 @csrf
-                                <h3 class="h3 text-center mb-3">Danh sách</h3>
-                                <form action="{{ route('users.import') }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <div class="mb-4">
-                                        <label for="">Danh sách:</label>
-                                        <input type="file" name="file" class="form-control">
-                                    </div>
-                                    <div class="text-center">
-                                        <button type="submit" class="btn btn-primary">Thêm danh sách</button>
-                                    </div>
-                                </form>
+                                <div class="mb-4">
+                                    <label for="fileInput">Danh sách:</label>
+                                    <input type="file" name="file" class="form-control" id="fileInput">
+                                    <!-- Invalid feedback sẽ được thêm vào đây bằng JS -->
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Thêm danh sách</button>
+                                </div>
                             </form>
+                        
                         </div>
                         
                     </div>
@@ -158,45 +157,7 @@
                     <tbody>
                         @php $counter = 1; @endphp
                     @foreach($employees as $employee)
-                        @if($employee->role === 'admin')
-                        <tr>
-                            <td><div class="mt-2">{{ $counter }}</div></td>
-                            @php $counter++; @endphp
-                            <td><div class="mt-2">{{ $employee->usercode }}</div></td>
-                            <td><div class="mt-2">{{ $employee->name }}</div></td>
-                            <td>
-                                Quản trị viên
-
-
-                            </td>
-                            <td><div class="mt-2">{{ $employee->expertise }}</div></td>
-                            <td>
-                               <div class="mt-2"> 
-                                @if($employee->status== 0)
-                                <span class="badge bg-primary-subtle text-primary border border-primary d-inline-flex align-items-center">
-                                    <i data-feather="play-circle" class="icon-sm me-1"></i>
-                                    Hoạt động
-                                </span>
-                                @elseif($employee->status == 1)
-                                <span class="badge bg-warning-subtle text-warning border border-warning d-inline-flex align-items-center">
-                                    <i data-feather="pause-circle" class="icon-sm me-1"></i>
-                                    Đã khoá
-                                </span>
-
-                                @endif 
-                                </div>
-
-                            </td>
-                            <td><div class="mt-2">{{ $employee->email }}</div></td>
-                            <td><div class="mt-2">{{ $employee->phone }}</div></td>
-                            <td><div class="mt-2">{{ $employee->address }}</div></td>
-                            
-                            <td>
-                               
-                            </td>
-                            
-                        </tr>
-                        @else
+                        
                             <tr>
                                 <td><div class="mt-2">{{ $counter }}</div></td>
                             @php $counter++; @endphp
@@ -210,7 +171,8 @@
                                         giám sát viên
                                     @elseif($employee->role === 'leader' )
                                         nhóm trưởng
-                                        
+                                    @elseif($employee->role === 'admin' )
+                                        Quản trị viên
                                     @endif
 
                                    </div>
@@ -221,12 +183,12 @@
                                 <div class="mt-2"> 
                                     @if($employee->status== 0)
                                     <span class="badge bg-primary-subtle text-primary border border-primary d-inline-flex align-items-center">
-                                        <i data-feather="play-circle" class="icon-sm me-1"></i>
+                                        
                                         Hoạt động
                                     </span>
                                     @elseif($employee->status == 1)
                                     <span class="badge bg-danger-subtle text-danger border border-danger d-inline-flex align-items-center">
-                                        <i data-feather="lock" class="icon-sm me-1"></i>
+                                        
                                         Đã khoá
                                     </span>
     
@@ -243,7 +205,7 @@
                                         <div></div>
                                         <div>    
                                             <a type="button" title="Thông tin"  data-bs-toggle="modal" data-bs-target="#{{ $employee->usercode }}">
-                                                <i class="icon-sm text-primary" data-feather="info"></i>
+                                                <i class="fa-solid fa-circle-info text-primary"></i>
                                               </a>
                                               <!-- Modal -->
                                               <div class="modal fade" id="{{ $employee->usercode }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -289,10 +251,10 @@
                                         <div class="">
                                     
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#editModel{{ $employee->id }}" title="Chỉnh sửa">
-                                                <i class="icon-sm text-warning" data-feather="edit-2"></i>
+                                                <i class="fa-regular fa-pen-to-square text-warning"></i>
                                             </a>
                                             
-                                            <!-- Modal -->
+                                            <!-- edit  -->
                                             <div class="modal fade" id="editModel{{ $employee->id }}" tabindex="-1" aria-labelledby="editModelLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-xl">
                                                     <div class="modal-content">
@@ -374,15 +336,18 @@
                                         </div>
                                         <span class="mx-1">|</span>
                                         @if($employee->status == 0)
-                                            <a title="khoá nhân viên" href="{{ route('lock.employee',$employee->id) }}" ><i class="icon-sm text-danger" data-feather="lock"></i></a>
+                                            <a title="khoá nhân viên" href="{{ route('lock.employee',$employee->id) }}" >
+                                                <i class="fa-solid fa-lock text-danger"></i>
+                                            </a>
                                         @elseif($employee->status ==1 )
-                                            <a title="mở khoá nhân viên" href="{{ route('lock.employee',$employee->id) }}" ><i class="icon-sm text-success" data-feather="unlock"></i></a>
+                                            <a title="mở khoá nhân viên" href="{{ route('lock.employee',$employee->id) }}" >
+                                                <i class="fa-solid fa-lock-open text-success"></i>
+                                            </a>
                                         @endif
                                     </div>
                                 </td>
                                 
                             </tr>
-                        @endif
                     @endforeach
                     </tbody>
                 </table>
@@ -397,11 +362,66 @@
 <script>
     $(document).ready(function() {
         $('#employee').DataTable({
+            lengthMenu: [10, 25, 50, 100],
             columnDefs: [
                 { orderable: false, targets: 9 } // Chỉ định cột thứ 2 không cho phép sắp xếp
             ]
         });
     });
     </script>
-
+<script>
+    $(document).ready(function() {
+        $('#importForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Reset các thông báo lỗi cũ
+            $('.is-invalid').removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+            
+            const fileInput = $('#fileInput');
+            const file = fileInput[0].files[0];
+            const maxSize = 8 * 1024 * 1024; // 8MB
+            let hasError = false;
+            
+            // Kiểm tra file có được chọn không
+            if (!file) {
+                showError(fileInput, 'Vui lòng chọn file');
+                hasError = true;
+                return;
+            }
+            
+            // Kiểm tra định dạng file
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            if (!['xlsx', 'xls', 'csv'].includes(fileExtension)) {
+                showError(fileInput, 'File phải có định dạng .xlsx, .xls hoặc .csv');
+                hasError = true;
+                return;
+            }
+            
+            // Kiểm tra kích thước file
+            if (file.size > maxSize) {
+                showError(fileInput, 'Kích thước file không được vượt quá 8MB');
+                hasError = true;
+                return;
+            }
+            
+            // Nếu không có lỗi thì submit form
+            if (!hasError) {
+                this.submit();
+            }
+        });
+    
+        // Hàm hiển thị lỗi
+        function showError(element, message) {
+            element.addClass('is-invalid');
+            element.after(`<div class="invalid-feedback">${message}</div>`);
+        }
+    
+        // Reset lỗi khi chọn file mới
+        $('#fileInput').on('change', function() {
+            $(this).removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+        });
+    });
+    </script>
 @endsection

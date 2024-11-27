@@ -119,6 +119,7 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::post('/task/add-task',[TaskController::class, 'addTask'])->name('task.store');
     Route::post('/task/edit',[TaskController::class, 'editTask'])->name('task.edit');
     Route::post('/task/lock', [TaskController::class, 'lockTask'])->name('lock.task');
+    Route::post('/task/import', [TaskController::class, 'import'])->name('task.import.khanh');
 
 
 });
@@ -174,7 +175,7 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::get('/admin/delete-member={id}',[NhanVienController::class, 'deleteMember'])->name('delete.member');
     Route::post('/admin/add-division',[NhanVienController::class, 'addDivision'])->name('add.division');
     Route::get('/admin/leader-pick={id}',[NhanVienController::class, 'leaderPick'])->name('leader.pick');
-    Route::post('/users/import', [UserController::class, 'import'])->name('users.import');
+    Route::post('/users/import', [NhanVienController::class, 'import'])->name('users.import.khanh');
 
 
 
