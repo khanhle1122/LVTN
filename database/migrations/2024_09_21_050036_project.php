@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('budget');
             $table->integer('progress')->default(0);
             $table->integer('toggleStar')->default(0);
+            $table->integer('report_status')->default(0); // Trạng thái (giá trị số nguyên)
 
             // Định nghĩa khóa ngoại tham chiếu đến bảng clients
             $table->foreignId('userID')->constrained('users')->onDelete('restrict');

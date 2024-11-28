@@ -17,7 +17,7 @@
                     <table id="clientTable" class="table">
                         <thead>
                         <tr>
-                            <th>Tên đối tác</th>
+                            <th>Tên khách tư vấn</th>
                             <th>email</th>
                             <th>số điẹn thoại</th>
                             <th>Địa chỉ</th>
@@ -150,7 +150,6 @@
                             <th>email</th>
                             <th>số điẹn thoại</th>
                             <th>Địa chỉ</th>
-                            <th>Yêu cầu tư vấn</th>
                             <th>Trạng thái</th>
                             <th></th>
                         </tr>
@@ -163,7 +162,6 @@
                                     <td>{{ $client->email }}</td>
                                     <td>{{ $client->phone }}</td>
                                     <td>{{ $client->address }}</td>
-                                    <td>{{ $client->description }}</td>
                                     <td>@if($client->status==0) Đang đấu thầu @else Đã thầu @endif</td>
                                     <td>
                                         <div class="d-flex">
@@ -299,7 +297,7 @@
         });
         $('#contractTable').DataTable({
             columnDefs: [
-                    { orderable: false, targets: 6 } // Chỉ định cột thứ 2 không cho phép sắp xếp
+                    { orderable: false, targets: 5 } // Chỉ định cột thứ 2 không cho phép sắp xếp
                 ]
         });
     });

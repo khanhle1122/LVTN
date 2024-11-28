@@ -169,7 +169,7 @@
 
                             <div class="row ms-2 ">
                                 
-                                <div class="col-5 ">
+                                <div class="col ">
                                     <i class="icon-sm " data-feather="folder"></i>
 
                                     <a  id="toggle-icon_k" class=" toggle-icon_k" data-bs-toggle="collapse" data-bs-target="#demo{{ $doson->id }}">
@@ -183,8 +183,8 @@
                                 <div class="col-1 d-flex ms-4">
 
                                     
-                                    <div class="col-6">
-                                        <a  class=" ms-1" type="button"data-bs-toggle="modal" data-bs-target="#deleteFolder">
+                                    <div class="col-4">
+                                        <a  class=" ms-4" type="button"data-bs-toggle="modal" data-bs-target="#deleteFolder">
                                             <i class="icon-sm text-danger me-2" data-feather="trash"></i>
                                         </a>
                                         <!-- xoá -->
@@ -224,7 +224,7 @@
                                                 $extension = pathinfo($file->filePath, PATHINFO_EXTENSION);
                                             @endphp
                                                 <div class="row">
-                                                    <div class=" col-3">
+                                                    <div class=" col">
                                                         <i class="text-muted icon-sm ms-4"  data-feather="file"></i>
                                                         {{-- <a href="{{ Storage::url( $file->filePath ) }}" target="_blank" class="mx-2">{{ $file->fileName }}</a> --}}
                                                         @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'pdf']))
@@ -298,7 +298,7 @@
                                 $extension = pathinfo($file->filePath, PATHINFO_EXTENSION);
                             @endphp
                             <div class="row ms-2 col-12">
-                                <div class=" col-4">
+                                <div class=" col">
                                     <i class="text-muted icon-sm"  data-feather="file"></i>
                                     {{-- <a href="{{ Storage::url( $file->filePath ) }}"  class="mx-2">{{ $file->fileName }}</a> --}}
                                     @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'pdf']))

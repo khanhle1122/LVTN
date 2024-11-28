@@ -5,7 +5,8 @@ namespace App\Imports;
 use App\Models\Task;
 use App\Models\Project;
 use App\Models\User;
-
+use App\Models\Notification;
+use App\Models\NotificationUser;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Collection;
@@ -72,6 +73,40 @@ class TasksImport implements ToCollection, WithHeadingRow
                 'projectID' => $this->projectID,
             ]);
 
+            if ($task->userID) {
+                $supervisor = User::find($task->userID);
+                $project = Project::find($this->projectID);
+                if ($supervisor ) {
+                    // Tạo thông báo
+                    $content = 'Bạn được phân công phụ trách công việc ' . $task->task_name . ' có mã công việc ' . $task->task_code . ' của dự án '. $project->projectName .' mã ' . $project->projectCode;
+                    $notificate = Notification::create([
+                        'title' => 'Việc làm của bạn',
+                        'content'   => $content,
+                    ]);
+                    if($supervisor->divisionID == null){
+
+                    
+                    NotificationUser::create([
+                        'user_id' => $supervisor->id,
+                        'notification_id' => $notificate->id,
+                        'is_read' => 0, // Mặc định là chưa đọc
+                    ]);
+                    }
+                    else{
+                        $users = User::where('divisionID',$supervisor->divisionID)->get();
+                        foreach($users as $user){
+                            NotificationUser::create([
+                                'user_id' => $user->id,
+                                'notification_id' => $notificate->id,
+                                'is_read' => 0, // Mặc định là chưa đọc
+                            ]);
+                        }
+                    }
+
+
+                }
+            }
+            
             // Lưu task_code và id để sử dụng cho việc gán parentID sau này
             $this->taskMap[$row['task_code']] = $task->id;
         }

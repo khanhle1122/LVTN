@@ -49,6 +49,11 @@ class TaskController extends Controller
     public function viewtask($id) {
         $show = 0 ;
         $project = Project::find($id);
+        if($project === null){
+            
+            
+            return view('error.404');
+        }
         $documents = Document::where('projectID',$id)->get();
         
         $rootTasks = Task::where('parentID', 0)
@@ -86,7 +91,6 @@ class TaskController extends Controller
 
     public function addDo(Request $request){
         $request->validate([
-            'files.*' => 'required|file',
             'documentName' => 'required',
             'parentID' => 'required',
             
@@ -99,24 +103,26 @@ class TaskController extends Controller
             'doPath'    => 'public/uploads/'. $request->documentName,
         ]);
         $documents = Document::find($request->parentID);
-
-        $files = $request->file('files');
-        $document_dir = 'uploads/' . $documents->documentName .'/'. $document->do_son_name;
-        
-        foreach ($files as $file) {
-            $originalName = $file->getClientOriginalName();
-
-            // Tạo tên file unique
-            $fileName = $this->generateUniqueFileName($document_dir, $originalName);
+        if($request->file('files')){
+            $files = $request->file('files');
+            $document_dir = 'uploads/' . $documents->documentName .'/'. $document->do_son_name;
             
-            // Lưu file và lấy đường dẫn đầy đủ
-            $filePath = $file->storeAs('public/' . $document_dir, $fileName);
-            File::create([
-                'fileName' => $fileName,
-                'filePath' => $filePath, // Lưu đường dẫn đầy đủ vào DB
-                'documentID' => $document->id,
-            ]);
+            foreach ($files as $file) {
+                $originalName = $file->getClientOriginalName();
+
+                // Tạo tên file unique
+                $fileName = $this->generateUniqueFileName($document_dir, $originalName);
+                
+                // Lưu file và lấy đường dẫn đầy đủ
+                $filePath = $file->storeAs('public/' . $document_dir, $fileName);
+                File::create([
+                    'fileName' => $fileName,
+                    'filePath' => $filePath, // Lưu đường dẫn đầy đủ vào DB
+                    'documentID' => $document->id,
+                ]);
+            }
         }
+        
     
         $notification = array(
             'message' => 'Thư mục và file đã được thêm ',
@@ -258,20 +264,36 @@ class TaskController extends Controller
             }
 
         }
-        $content =Auth::user()->name . ' đã thêm một công việc vào dự án '. $project->projectName .' có mã: '.$project->projectCode;
-        $notificate = Notification::create([
-            'title' => 'Thêm công việc',
-            'content'   => $content,
+        $supervisor = User::find($task->userID);
+        $project = Project::find($projectID);
+        if ($supervisor ) {
+            // Tạo thông báo
+            $content = 'Bạn được phân công phụ trách công việc ' . $task->task_name . ' có mã công việc ' . $task->task_code . ' của dự án '. $project->projectName .' mã ' . $project->projectCode;
+            $notificate = Notification::create([
+                'title' => 'Việc làm của bạn',
+                'content'   => $content,
+            ]);
+            if($supervisor->divisionID == null){
 
-        ]);
-        $users = User::all();
-
-        foreach ($users as $user) {
+            
             NotificationUser::create([
-                'user_id' => $user->id,
+                'user_id' => $supervisor->id,
                 'notification_id' => $notificate->id,
                 'is_read' => 0, // Mặc định là chưa đọc
             ]);
+            }
+            else{
+                $users = User::where('divisionID',$supervisor->divisionID)->get();
+                foreach($users as $user){
+                    NotificationUser::create([
+                        'user_id' => $user->id,
+                        'notification_id' => $notificate->id,
+                        'is_read' => 0, // Mặc định là chưa đọc
+                    ]);
+                }
+            }
+
+
         }
 
         $notification = array(
@@ -400,7 +422,7 @@ class TaskController extends Controller
         $task->duration = $duration;
         $task->progress = $request->progress;
         $task->status = $request->status;
-        $task->userID = $request->userID;
+        
 
         if ($request->filled('budget')) {
             $task->budget = $request->budget;
@@ -414,7 +436,24 @@ class TaskController extends Controller
         elseif($request->progress < 100)
             $task->status = 0;
 
+        if($task->userID != $request->userID){
+            $supervisor = User::find($request->userID);
+            $project = Project::find($request->projectID);
+            $content = 'Bạn được phân công phụ trách công việc ' . $task->task_name . ' có mã công việc ' . $task->task_code . ' của dự án '. $project->projectName .' mã ' . $project->projectCode;
+            $notificate = Notification::create([
+                'title' => 'Việc làm',
+                'content'   => $content,
+            ]);
+            NotificationUser::create([
+                'user_id' => $supervisor->id,
+                'notification_id' => $notificate->id,
+                'is_read' => 0, // Mặc định là chưa đọc
+            ]);
+        }
+        $task->userID = $request->userID;
         $task->save();
+
+        
 
         // Cập nhật progress và status của project
         $allTasks = Task::where('projectID', $project->id)->get();
@@ -444,21 +483,7 @@ class TaskController extends Controller
         DB::commit();
 
 
-        $content =Auth::user()->name . ' đã cập nhật công việc của dự án '. $project->projectName .' có mã: '.$task->task_code;
-        $notificate = Notification::create([
-            'title' => 'Cập nhật công việc',
-            'content'   => $content,
-
-        ]);
-        $users = User::all();
-
-        foreach ($users as $user) {
-            NotificationUser::create([
-                'user_id' => $user->id,
-                'notification_id' => $notificate->id,
-                'is_read' => 0, // Mặc định là chưa đọc
-            ]);
-        }
+        
         return redirect()->back()->with([
             'message' => 'Công việc đã được cập nhật thành công',
             'alert-type' => 'success'

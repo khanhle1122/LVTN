@@ -63,6 +63,11 @@ $(function() {
         minlength: 3
 
       },
+      comment: {
+        required: true,
+        minlength: 3
+
+      },
       task_code: {
         required: true,
         minlength: 3
@@ -72,6 +77,9 @@ $(function() {
         required: true
       },
       phone: {
+        required: true
+      },
+      is_pass:{
         required: true
       },
       gender_radio: {
@@ -122,6 +130,10 @@ $(function() {
         required: "Vui lòng nhập tên",
         minlength: "Tên phải có độ dài tối thiểu là 3 ký tự"
       },
+      comment: {
+        required: "Vui lòng nhập bình luận",
+        minlength: "bình luận có độ dài tối thiểu là 3 ký tự"
+      },
       note: {
         required: "Vui lòng nhập mô tả công việc",
         minlength: "Mô tả công việc phải có độ dài tối thiểu là 3 ký tự"
@@ -129,7 +141,7 @@ $(function() {
 
       task_name: {
         required: "Vui lòng nhập tên công việc",
-        minlength: "Tên phải lớn hơn 3 ký tự"
+        minlength: "Độ dài phải lớn hơn 3 ký tự"
       },
       task_code: {
         required: "Vui lòng nhập mã công việc",
@@ -175,6 +187,7 @@ $(function() {
       },
       email: "Vui lòng nhập địa chỉ email hợp lệ",
       age_select: "Vui lòng chọn độ tuổi",
+      is_pass: "Vui lòng chọn Đánh giá",
       type: "Vui lòng chọn loại công trình",
       userID: "Vui lòng chọn nhân viên phụ trách",
       parentID: "Vui lòng chọn công việc tiên quyết",

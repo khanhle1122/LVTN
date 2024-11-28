@@ -1,25 +1,53 @@
-<section>
-    <link rel="stylesheet" href="{{ asset('frontend/style.css') }}">
-    <div class="card_k">
-        
-        
-        <div class="d-flex ">
-            <div>
-                @if($project->status != 2)
-                    <a href="{{ route('project.toggleStar',$project->id) }}" class="d-flex flex-row-reverse mt-2" > @if( $project->toggleStar == 1) <i class="fa-solid fa-star" style="color: #FFD43B;"></i> @else <i class="fa-regular fa-star" ></i>  @endif </a>
-                @endif
-            </div>
-            <div class="circle-k" style="background: @if($project->status == 3) conic-gradient(rgb(255, 0, 0) @else conic-gradient(rgb(49, 164, 7) @endif {{$project->progress}}%, #e0e0e0 0)">
+<link rel="stylesheet" href="{{ asset('frontend/style.css') }}">
+<div class="mb-5">
+    <div class="row">
+        <h3 class="h3 col-6">Thông tin dự án</h3>
+        <h3 class="col">Thư mục dự án</h3>
+
+    </div>
+    <div>
+        @if($project->status != 2)
+
+        <a href="{{ route('project.toggleStar',$project->id) }}" class=" mt-2" > @if( $project->toggleStar == 1) <i class="fa-solid fa-star" style="color: #FFD43B;"></i> @else <i class="fa-regular fa-star" ></i>  @endif </a>
+        @endif
+    </div>
+    <div class="row" >
+        <div class="col-6 row">
+            
+            <div class="circle-k col-3" style="background: @if($project->status == 3) conic-gradient(rgb(255, 0, 0) @else conic-gradient(rgb(49, 164, 7) @endif {{$project->progress}}%, #e0e0e0 0)">
+                
                 <span class="percentage_k">{{ $project->progress }}%</span>
             </div>
-            
-            <div class="ms-5">
-                
+            <div class="col-1"></div>
+            <div class="mx-2 col">
                 
 
-                <div class="">Mã: {{ $project->projectCode }}</div>
-                <div class="">Tên: {{ $project->projectName }} </div>
-                <div>Trạng thái: 
+                <div class=""><span class="h6">Mã:</span> {{ $project->projectCode }}</div>
+                <div class=""><span class="h6">Tên:</span> {{ $project->projectName }} </div>
+                <div><span class="h6">Ngân sách: </span>{{ $project->budget }}</div>
+                <div>
+                    <span class="h6">Giám sát công trình:</span> 
+                    @foreach(App\Models\WorkingProject::where('project_id',$project->id)->get() as $WorkingProject)
+                        @if($WorkingProject->users) 
+                            @if($WorkingProject->is_work == 1)
+                            <div>{{ $WorkingProject->users->name }} ( đảm nhận từ {{ $WorkingProject->at_work }} đến {{ $WorkingProject->out_work }} )</div>
+                            @else()
+                            <div>{{ $WorkingProject->users->name }} ( đang đảm nhận )</div>
+                            @endif
+                        
+                        @endif
+                    @endforeach
+                    @php
+                    $workingProjects = App\Models\WorkingProject::where('project_id', $project->id)->get();
+                    @endphp
+                    
+                    @if($workingProjects->isEmpty())    
+                    <div>{{ $project->user->name }}</div>
+
+                    
+                    @endif
+                </div>
+                <div><span class="h6">Trạng thái: </span>
                     @if($project->status == 1)   
                                             Đã hoàn thành
 
@@ -32,26 +60,21 @@
                                             Chậm tiến độ 
                                         @endif
                 </div>
-                <div class="">Quy mô: {{ $project->level }}</div>
+                <div class=""><span class="h6">Loại công trình: </span>{{ $project->type }}</div>
+                <div class=""><span class="h6">Quy mô: </span>{{ $project->level }}</div>
+                <div><span class="h6">Khởi công: </span>{{ $project->startDate }}</div>
+               
                 <div class="">
-                    <div>Khởi công: </div>
-                    <div>{{ $project->startDate }}</div> 
+                    <span class="h6">Hoàn thành dự kiến: </span>{{ $project->endDate }}
                 </div>
-                <div class="">
-                    <div>Hoàn thành dự kiến: </div>
-                    <div>{{ $project->endDate }}</div> 
-                </div>
-                <div class="">Đối tác: {{ $project->clientName }}</div>
+                <div class=""><span class="h6">Đối tác:</span> {{ $project->contractors->name }}</div>
+                <div class=""><span class="h6">Địa điểm thi công:</span> {{ $project->address }}</div>
             </div>
-            
         </div>
-       
-        <div>
-            <div>Mô tả: </div>
-            <div class="ms-2">{{ $project->description }}</div>
+        <div class="col">
+            @include('admin.task.add-do')
+            <span class="h6 ms-5">Mô tả dự án: </span>
+            <div class="ms-5"> {{ $project->description }}</div>
         </div>
     </div>
-    
-    
-</section>
-
+</div>

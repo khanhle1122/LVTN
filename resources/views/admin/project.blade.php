@@ -12,17 +12,18 @@
             <div class="card">
             <div class="card-body">
                 <h3 class="mb-3 h3">Danh Sách dự án</h3>
-                <button type="button" class="btn btn-outline-primary mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    <i data-feather="plus" class="icon "></i>
-                    <span>Thêm dự án</span>
-                  </button>
-                  <!-- Thêm dự án -->
-                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div>
+                    <button type="button" class="btn btn-outline-primary mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <i data-feather="plus" class="icon "></i>
+                        <span>Thêm dự án</span>
+                    </button>
+                    <!-- Thêm dự án -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-xl">
-                      <div class="modal-content">
+                        <div class="modal-content">
                         <div class="modal-header">
-                          <h5 class="modal-title" id="exampleModalLabel">Thêm dự án</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                            <h5 class="modal-title" id="exampleModalLabel">Thêm dự án</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
                         </div>
                         <div class="modal-body">
                             <form id="signupForm" action="{{ route('project.store') }}" method="POST" enctype="multipart/form-data">
@@ -88,7 +89,7 @@
                                             </select>
                                         </div>
                                         
-                                       
+                                        
                                     </div>
                                     <div class="col-sm row mb-0">
                                         <div class="mb-4  col">
@@ -132,8 +133,8 @@
                                         <input type="file" multiple onchange="updateFileList(this)" name="files[]"/>
                                         <span id="file-count"></span>
                                         <div class="file-info">
-                                          
-                                          <ul class="file-list" id="file-list"></ul>
+                                            
+                                            <ul class="file-list" id="file-list"></ul>
                                         </div>
                                     </label>
                                 </div>
@@ -149,22 +150,55 @@
                                     <button type="submit" class="btn btn-primary px-5" >Thêm dự án</button>
                                 </div>
                             </form>
-
-
-
+    
+    
+    
                         </div>
                         
-                      </div>
+                        </div>
                     </div>
-                  </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary mb-3" data-bs-toggle="modal" data-bs-target="#projectList">
+                        <i data-feather="plus" class="icon "></i>
+                        <span>Thêm danh sách dự án</span>
+                    </button>
+                    <!-- Thêm dự án -->
+                    <div class="modal fade" id="projectList" tabindex="-1" aria-labelledby="projectListLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="projectListLabel">Thêm dự án</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <form action="{{ route('project.import.khanh') }}" method="POST" enctype="multipart/form-data" id="importForm">
+                                @csrf
+                                <div class="mb-4">
+                                    <label for="fileInput">Danh sách:</label>
+                                    <input type="file" name="file" class="form-control" id="fileInput">
+                                    <!-- Invalid feedback sẽ được thêm vào đây bằng JS -->
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Thêm danh sách</button>
+                                </div>
+                            </form>
+    
+    
+                        </div>
+                        
+                        </div>
+                    </div>
+                    </div>
+                </div>
 
 
                 <div class="table-responsive">
-                <table id="projectList" class="table">
+                <table id="projectListTable" class="table">
                     <thead>
                     <tr>
-                        <th></th>
                         <th>STT</th>
+                        <th></th>
                         <th>Mã dự án</th>
                         <th>Tên dự án</th>
                         <th>Địa điểm</th>
@@ -181,11 +215,11 @@
                     @foreach($projects as $project)
                         
                             <tr>
+                                <td ><div class="mt-2">{{ $loop->iteration }}</div></td>
                                 <td>                                            
                                     <a href="{{ route('project.toggleStar',$project->id) }}" class="d-flex flex-row-reverse mt-2" > @if( $project->toggleStar == 1) <i class="fa-solid fa-star" style="color: #FFD43B;"></i> @else <i class="fa-regular fa-star" ></i>  @endif </a>                                    
                                 </td>
-                                <td ><div class="mt-2">{{ $loop->iteration }}</div></td>
-                                <td><div class="mt-2"><a class="" href="{{ route('view.task',$project->id) }}">{{ $project->projectCode }}</a></div></td>
+                                <td><div class="mt-2 "><a class="text-dark" href="{{ route('view.task',$project->id) }}">{{ $project->projectCode }}</a></div></td>
                                 <td><div class="mt-2"><span class="">{{ $project->projectName  }}</span></div></td>
                                 <td>
                                     <div class="mt-2">{{ $project->address }}</div>
@@ -503,11 +537,67 @@
     </script>
     <script>
         $(document).ready(function() {
-            $('#projectList').DataTable({
+            $('#projectListTable').DataTable({
                 columnDefs: [
                     { orderable: false, targets: 11 } // Chỉ định cột thứ 2 không cho phép sắp xếp
                 ]
             });
         });
         </script>
+
+<script>
+    $(document).ready(function() {
+        $('#importForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Reset các thông báo lỗi cũ
+            $('.is-invalid').removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+            
+            const fileInput = $('#fileInput');
+            const file = fileInput[0].files[0];
+            const maxSize = 8 * 1024 * 1024; // 8MB
+            let hasError = false;
+            
+            // Kiểm tra file có được chọn không
+            if (!file) {
+                showError(fileInput, 'Vui lòng chọn file');
+                hasError = true;
+                return;
+            }
+            
+            // Kiểm tra định dạng file
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            if (!['xlsx', 'xls', 'csv'].includes(fileExtension)) {
+                showError(fileInput, 'File phải có định dạng .xlsx, .xls hoặc .csv');
+                hasError = true;
+                return;
+            }
+            
+            // Kiểm tra kích thước file
+            if (file.size > maxSize) {
+                showError(fileInput, 'Kích thước file không được vượt quá 8MB');
+                hasError = true;
+                return;
+            }
+            
+            // Nếu không có lỗi thì submit form
+            if (!hasError) {
+                this.submit();
+            }
+        });
+    
+        // Hàm hiển thị lỗi
+        function showError(element, message) {
+            element.addClass('is-invalid');
+            element.after(`<div class="invalid-feedback">${message}</div>`);
+        }
+    
+        // Reset lỗi khi chọn file mới
+        $('#fileInput').on('change', function() {
+            $(this).removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+        });
+    });
+    </script>
 @endsection

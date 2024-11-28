@@ -23,7 +23,8 @@ class Project extends Model
         'progress',
         'type',
         'toggleStar',
-        'address'
+        'address',
+        'report_status'
     ];
 
     public function user()

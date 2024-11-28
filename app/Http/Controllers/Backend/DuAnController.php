@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Http\Request;
 use App\Models\Project;
@@ -16,7 +17,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Message;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ProjectsImport;
+use App\Models\WorkingProject;
+use Carbon\Carbon;
 
 
 
@@ -165,21 +169,17 @@ class DuAnController extends Controller{
                     ]);
                 }
             }
-
-            $content = Auth::user()->name . ' đã thêm dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode  ;
+            $supervisor = User::find($project->userID);
+            $content = 'Bạn được phân công là giám sát của dự án'.$project->projectName . ' có mã dự án ' . $project->projectCode  ;
             $notificate = Notification::create([
-                'title' => 'Đã thêm dự án',
+                'title' => 'Giám sát dự án',
                 'content'   => $content,
             ]);
-            $users = User::all();
-
-            foreach ($users as $user) {
-                NotificationUser::create([
-                    'user_id' => $user->id,
-                    'notification_id' => $notificate->id,
-                    'is_read' => 0, // Mặc định là chưa đọc
-                ]);
-            }
+            NotificationUser::create([
+                'user_id' => $supervisor->id,
+                'notification_id' => $notificate->id,
+                'is_read' => 0, // Mặc định là chưa đọc
+            ]);
 
         }
 
@@ -223,7 +223,6 @@ class DuAnController extends Controller{
          $project->projectCode = $request->input('projectCode');
          $project->projectName = $request->input('projectName');
          $project->clientID = $request->input('clientID');
-         $project->userID = $request->input('userID');
          $project->startDate = $request->input('startDate');
          $project->endDate = $request->input('endDate');
          $project->type = $request->input('type');
@@ -238,6 +237,40 @@ class DuAnController extends Controller{
              $project->description = $request->input('description');
          }
          
+         if($project->userID != $request->userID){
+            $currentDate = Carbon::today();
+            $outWorks = WorkingProject::where('project_id',$project->id)->where('user_id',$project->userID)->get();
+            foreach($outWorks as $outWork){
+                $workingProject = WorkingProject::find($outWork->id);
+
+                if ($workingProject) {
+                    $workingProject->update([
+                        'out_work' => $currentDate,
+                        'is_work'  => 1,
+                    ]);
+                }
+            }
+
+
+            $supervisor = User::find($request->userID);
+            WorkingProject::create([
+                'user_id'   => $request->userID,
+                'project_id'    => $project->id,
+                'at_work'   => $currentDate	
+            ]);
+            $content = 'Bạn được phân công là giám sát của dự án ' . $project->projectName . ' có mã dự án ' . $project->projectCode;
+            $notificate = Notification::create([
+                'title' => 'Giám sát dự án',
+                'content'   => $content,
+            ]);
+            NotificationUser::create([
+                'user_id' => $supervisor->id,
+                'notification_id' => $notificate->id,
+                'is_read' => 0, // Mặc định là chưa đọc
+            ]);
+        }
+        $project->userID = $request->input('userID');
+
          // Lưu lại thay đổi
          $project->save();        
  
@@ -246,21 +279,7 @@ class DuAnController extends Controller{
              'alert-type' => 'success'
          );
 
-         $content = Auth::user()->name .' Đã Cập nhât dự án '.$project->projectName . ' có mã dự án ' . $project->projectCode ;
-        $notificate = Notification::create([
-            'title' => 'Đã cập nhật dự án',
-            'content'   => $content,
-        ]);
-        $users = User::all();
-
-            foreach ($users as $user) {
-                NotificationUser::create([
-                    'user_id' => $user->id,
-                    'notification_id' => $notificate->id,
-                    'is_read' => 0, // Mặc định là chưa đọc
-                ]);
-            }
-       }
+        }
         
         return redirect()->route('project')->with($notification);
     }
@@ -328,5 +347,48 @@ class DuAnController extends Controller{
         
         return redirect()->route('project')->with($notification);
     }   
+    public function import(Request $request) 
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:8192' // 8192 KB = 8MB
+
+        ]);
+
+        try {
+            Log::info('Bắt đầu import file');
+            
+            if(!$request->hasFile('file')) {
+                Log::error('Không tìm thấy file');
+                $notification = array(
+                    'message' => 'Không tìm thấy file',
+                    'alert-type' => 'error'
+                );
+                return redirect()->back()->with($notification);        
+            }
+
+            $file = $request->file('file');
+            Log::info('File được tải lên: ' . $file->getClientOriginalName());
+
+            DB::beginTransaction();
+            Excel::import(new ProjectsImport, $request->file('file'));
+            DB::commit();
+            $notification = array(
+                'message' => 'Đã Thêm thành công',
+                'alert-type' => 'success'
+            );
+            return redirect()->back()->with($notification);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Lỗi import: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+
+            $notification = array(
+                'message' => 'Lỗi import: ' . $e->getMessage(),
+                'alert-type' => 'error'
+            );
+
+            return redirect()->back()->with($notification);
+        }
+    }
 }   
 

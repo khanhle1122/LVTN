@@ -16,58 +16,54 @@
     <div class="row">
       <div class="col-12 col-xl-12 stretch-card">
         <div class="row flex-grow-1">
-          <div class="col-md grid-margin stretch-card">
+          <div class="col-md-4 grid-margin stretch-card">
             <div class="card">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-baseline">
-                  <h6 class="card-title mb-0">Dự án</h6>
+                  <h6 class="card-title mb-0">Tổng dự án</h6>
                   
                 </div>
-                <div class="row">
+                <div class=" d-flex mt-2 ms-5">
+                  <div><i data-feather="box"></i></div>
+                  <span class="mx-2"> {{  $totalProject}} </span>
+                </div>
+                
+                
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-baseline">
+                  <h6 class="card-title mb-0">Tổng Đối tác</h6>
                   
-                  <div class=" " style="height:200px; width:400px">
-                    <canvas style="height:200px; width:400px" id="myChart"></canvas>
-
-                  </div>
-
-
+                </div>
+                <div class=" d-flex mt-2 ms-5">
+                  <div><i data-feather="users"></i></div>
+                  <span class="mx-2"> {{ $totalClient }} </span>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-baseline">
+                  <h6 class="card-title mb-0">Tổng báo cáo</h6>
+                  
+                </div>
+                <div class=" d-flex mt-2 ms-5">
+                  <div><i data-feather="file-text"></i></div>
+                  <span class="mx-2">{{ $totalReport }}</span>
                 </div>
               </div>
             </div>
           </div>
-          
-          <div class="col-md grid-margin stretch-card">
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-baseline">
-                  <h6 class="card-title mb-0">Đối tác</h6>
-                  <div class="dropdown mb-2">
-                    <a type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="icon-lg text-muted pb-3px" data-feather="more-horizontal"></i>
-                    </a>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-6 col-md-12 col-xl-5">
-                    <h3 class="mb-2">35,084</h3>
-                    <div class="d-flex align-items-baseline">
-                      <p class="text-danger">
-                        <span>-2.8%</span>
-                        <i data-feather="arrow-down" class="icon-sm mb-1"></i>
-                      </p>
-                    </div>
-                  </div>
-                  <div class="col-6 col-md-12 col-xl-7">
-                    <div id="ordersChart" class="mt-md-3 mt-xl-0"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
         </div>
       </div>
-    </div> <!-- row -->
+    </div>
 
    
 
@@ -161,141 +157,28 @@
               
             </div>
             <div class="d-flex flex-column">
-              <a href="javascript:;" class="d-flex align-items-center border-bottom pb-3">
-                <div class="me-3">
-                  <img src="https://via.placeholder.com/35x35" class="rounded-circle wd-35" alt="user">
-                </div>
-                <div class="w-100">
-                  <div class="d-flex justify-content-between">
-                    <h6 class="text-body mb-2">Leonardo Payne</h6>
-                    <p class="text-muted tx-12">12.30 PM</p>
+                
+                @foreach($requestClient as $client)
+                  <div class="w-100 mt-2">
+                    <div class="d-flex justify-content-between">
+                      <h6 class="text-body mb-1">{{ $client->name }} - {{ $client->email }}</h6>
+                      <p class="text-muted tx-12"><em>{{ $client->created_at->diffForHumans() }}</em></p>
+                    </div>
+                    <p class="text-muted tx-13">{{ $client->description }}</p>
                   </div>
-                  <p class="text-muted tx-13">Hey! there I'm available...</p>
-                </div>
-              </a>
-              <a href="javascript:;" class="d-flex align-items-center border-bottom py-3">
-                <div class="me-3">
-                  <img src="https://via.placeholder.com/35x35" class="rounded-circle wd-35" alt="user">
-                </div>
-                <div class="w-100">
-                  <div class="d-flex justify-content-between">
-                    <h6 class="text-body mb-2">Carl Henson</h6>
-                    <p class="text-muted tx-12">02.14 AM</p>
-                  </div>
-                  <p class="text-muted tx-13">I've finished it! See you so..</p>
-                </div>
-              </a>
-              <a href="javascript:;" class="d-flex align-items-center border-bottom py-3">
-                <div class="me-3">
-                  <img src="https://via.placeholder.com/35x35" class="rounded-circle wd-35" alt="user">
-                </div>
-                <div class="w-100">
-                  <div class="d-flex justify-content-between">
-                    <h6 class="text-body mb-2">Jensen Combs</h6>
-                    <p class="text-muted tx-12">08.22 PM</p>
-                  </div>
-                  <p class="text-muted tx-13">This template is awesome!</p>
-                </div>
-              </a>
-              <a href="javascript:;" class="d-flex align-items-center border-bottom py-3">
-                <div class="me-3">
-                  <img src="https://via.placeholder.com/35x35" class="rounded-circle wd-35" alt="user">
-                </div>
-                <div class="w-100">
-                  <div class="d-flex justify-content-between">
-                    <h6 class="text-body mb-2">Amiah Burton</h6>
-                    <p class="text-muted tx-12">05.49 AM</p>
-                  </div>
-                  <p class="text-muted tx-13">Nice to meet you</p>
-                </div>
-              </a>
-              <a href="javascript:;" class="d-flex align-items-center border-bottom py-3">
-                <div class="me-3">
-                  <img src="https://via.placeholder.com/35x35" class="rounded-circle wd-35" alt="user">
-                </div>
-                <div class="w-100">
-                  <div class="d-flex justify-content-between">
-                    <h6 class="text-body mb-2">Yaretzi Mayo</h6>
-                    <p class="text-muted tx-12">01.19 AM</p>
-                  </div>
-                  <p class="text-muted tx-13">Hey! there I'm available...</p>
-                </div>
-              </a>
+
+
+                @endforeach
+              
+              
+              
             </div>
           </div>
         </div>
       </div>
     </div> <!-- row -->
-    <div class="row mt-4">
-      <div class="col-12 col-xl-12 stretch-card">
-        <div class="row flex-grow-1">
-          <div class="col-md grid-margin stretch-card">
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-baseline">
-                  <h6 class="card-title mb-0">Báo cáo</h6>
-                  
-                </div>
-                <div class="row">
-                  
-                  <div class=" " style="height:200px; width:400px">
-                    <canvas style="height:200px; width:400px" id="myChart"></canvas>
-
-                  </div>
-
-
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          
-          
-        </div>
-      </div>
-    </div> <!-- row -->
+    
 </div>
 
 
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
- <script>
-    const inProgressProjects = {{ $inProgressProjects }};
-    const onHoldProjects = {{ $onHoldProjects }};
-    const lowProjects = {{ $lowProjects }};
-    const successProjects = {{ $successProjects }}
-
-    const pieChart = new Chart(
-            document.getElementById('myChart'),
-            {
-                type: 'doughnut',
-                data: {
-                    labels: ['Đang tiến hành', 'đã hoàn thành', 'Chậm tiến độ','tạm dừng'],
-                    datasets: [{
-                        data: [inProgressProjects, successProjects, lowProjects, onHoldProjects],
-                        backgroundColor: [
-                            '#6571ff',
-                            '#05a34a',
-                            '#ff3366',
-                            '#fbbc06'
-                        ]
-                    }]
-                },
-                options: {
-                  aspectRatio: 2,
-                  plugins: {
-                      legend: {
-                        display: true,
-                        labels: {
-                          color: '#000'
-                        }
-                      },
-                      
-                  }
-                  
-                }
-            }
-        );
- </script>
 @endsection

@@ -1,3 +1,11 @@
+<style>
+      .perfect-scrollbar-example {
+	position: relative;
+	max-height: 380px;	
+  overflow-y: auto; /* Thêm thanh cuộn dọc */
+
+}
+</style>
 <nav class="navbar">
     <a href="#" class="sidebar-toggler">
         <i data-feather="menu"></i>
@@ -42,7 +50,7 @@
                           <a href="{{ route('clear.notification') }}" class="text-muted">Clear all</a>
                       @endif
                   </div>
-                  <div class="p-1">
+                  <div class="p-1 perfect-scrollbar-example">
                       @if(count($notifications) > 0)
                           @foreach($notifications as $notification)
                               <a href="{{ route('check.notification', $notification->id) }}" class="dropdown-item d-flex align-items-center py-2">

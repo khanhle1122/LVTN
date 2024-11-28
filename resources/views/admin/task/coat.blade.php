@@ -2,53 +2,85 @@
     <h3 class="mt-2 mb-4">Chi phí dự án</h3>
     @if($project->status != 2)
 
-    <div class="mt-2">
-        <a type="button" class="btn btn-outline-primary" title="Thêm chi phí"  data-bs-toggle="modal" data-bs-target="#coatAdd">
-            <div class="d-flex">
-                <i class="icon text-muted" data-feather="plus"></i> Thêm Chi phí
-            </div>
-        </a>
-        <div class="modal fade" id="coatAdd" tabindex="-1" aria-labelledby="coatAddLebel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="coatAddLebel">Thêm chi phí</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+    <div class="d-flex">
+        <div class="mt-2">
+            <a type="button" class="btn btn-outline-primary" title="Thêm chi phí"  data-bs-toggle="modal" data-bs-target="#coatAdd">
+                <div class="d-flex">
+                    <i class="icon text-muted" data-feather="plus"></i> Thêm Chi phí
                 </div>
-                <div class="modal-body">
-                    <form id="addcoat" action="{{ route('add.coat') }}" method="post" enctype="multipart/form-data">
-                        @csrf
-                        <div class="mb-3 ">
-                            <label class="form-check-label" for="hangmuc">Hạng mục</label>
-                            <input type="text" class="form-control" name="hangmuc" id="hangmuc">
-                        </div>
-                        <div class="mb-3">
-                            <lablel>Chi phí:</lablel>
-                            <input name="estimated_cost"  autocomplete="estimated_cost" class="form-control mt-0" id="estimated_cost" data-inputmask="'alias': 'currency', 'suffix':'₫'"/>
-                        </div>   
-                        <div class="mb-3">
-                            <lablel>Mô tả chi tiết:</lablel>
-                            <textarea class="form-control" name="description" id="description"  rows="4"></textarea>
-                        </div>    
-                        <div class="mb-3">
-                            <lablel>Ghi chú:</lablel>
-                            <textarea class="form-control" name="note" id="note"  rows="4"></textarea>
-
-                        </div>      
-                        <input type="hidden" name="projectID" value="{{ $project->id }}">
-
-
-                        <button type="submit" class="btn btn-primary float-end">Thêm</button>
-                    </form>
+            </a>
+            <div class="modal fade" id="coatAdd" tabindex="-1" aria-labelledby="coatAddLebel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="coatAddLebel">Thêm chi phí</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addcoat" action="{{ route('add.coat') }}" method="post" enctype="multipart/form-data">
+                            @csrf
+                            <div class="mb-3 ">
+                                <label class="form-check-label" for="hangmuc">Hạng mục</label>
+                                <input type="text" class="form-control" name="hangmuc" id="hangmuc">
+                            </div>
+                            <div class="mb-3">
+                                <lablel>Chi phí:</lablel>
+                                <input name="estimated_cost"  autocomplete="estimated_cost" class="form-control mt-0" id="estimated_cost" data-inputmask="'alias': 'currency', 'suffix':'₫'"/>
+                            </div>   
+                            <div class="mb-3">
+                                <lablel>Mô tả chi tiết:</lablel>
+                                <textarea class="form-control" name="description" id="description"  rows="4"></textarea>
+                            </div>    
+                            <div class="mb-3">
+                                <lablel>Ghi chú:</lablel>
+                                <textarea class="form-control" name="note" id="note"  rows="4"></textarea>
+    
+                            </div>      
+                            <input type="hidden" name="projectID" value="{{ $project->id }}">
+    
+    
+                            <button type="submit" class="btn btn-primary float-end">Thêm</button>
+                        </form>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+        </div>
+        <div class="mt-2 ms-2">
+            <a type="button" class="btn btn-outline-primary" title="Thêm chi phí"  data-bs-toggle="modal" data-bs-target="#coatListAdd">
+                <div class="d-flex">
+                    <i class="icon text-muted" data-feather="plus"></i> Thêm danh sách chi phí
+                </div>
+            </a>
+            <div class="modal fade" id="coatListAdd" tabindex="-1" aria-labelledby="coatListAddLebel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="coatListAddLebel">Thêm chi phí</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ route('coat.import.khanh') }}" method="POST" enctype="multipart/form-data" id="importForm">
+                            @csrf
+                            <div class="mb-4">
+                                <label for="fileInput">Danh sách:</label>
+                                <input type="file" name="file" class="form-control" id="fileInput">
+                                <!-- Invalid feedback sẽ được thêm vào đây bằng JS -->
+                            </div>
+                            <input type="hidden" name="projectID" value="{{ $project->id }}">
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Thêm danh sách</button>
+                            </div>
+                        </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </div>
     </div>
     @endif
-    @if(count($coats) >0 )
     <div class="table-responsive mt-3">
-        <table id="dataTable" class="table">
+        <table id="coatTable" class="table">
           <thead>
             <tr>
               <th>Hạng mục</th>
@@ -127,9 +159,7 @@
           </tbody>
         </table>
     </div>
-    @else
-    <div class="text-center">Không có dữ liệu</div>
-    @endif
+
     
 
 </div>
@@ -239,3 +269,13 @@ $(document).ready(function() {
 
   </script>
 
+<script>
+    $(document).ready(function() {
+        $('#coatTable').DataTable({
+            columnDefs: [
+                { orderable: false, targets: 4 } // Chỉ định cột thứ 2 không cho phép sắp xếp
+            ]
+        });
+    });
+    </script>
+    

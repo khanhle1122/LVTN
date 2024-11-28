@@ -15,6 +15,7 @@ use App\Http\Controllers\LeaderController;
 use App\Http\Controllers\SupervisorController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GuestController;
+use App\Http\Controllers\RePortController;
 use App\Http\Controllers\Backend\CoatController;
 use App\Events\NewMessage;
 use App\Http\Controllers\PusherAuthController;
@@ -76,13 +77,23 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::post('/client/chinhsua', [ClientController::class, 'editClient'])->name('edit.client');
     Route::post('/client/abc', [ClientController::class, 'editRoleClient'])->name('edit.role.client');
     Route::get('/duyet-request/id={id}', [ClientController::class, 'checkRequest'])->name('check.status.client');
-    Route::get('/report-project', [ClientController::class, 'reportProject'])->name('report.project');
     Route::get('client/delete/{id}', [ClientController::class, 'deleteClient'])->name('delete.client.guest');
-
+    Route::post('/client/import', [ClientController::class, 'import'])->name('client.import.khanh');
+    
+    Route::get('/report-project', [RePortController::class, 'reportProject'])->name('report.project');
 
 
 });
+Route::middleware('auth','role:admin')->group(function () {
+    
+    Route::get('/report-project', [RePortController::class, 'reportProject'])->name('report.project');
+    Route::get('/report-detail-project/id={id}', [RePortController::class, 'reportDetail'])->name('report.detail');
+    Route::post('/report-project', [RePortController::class, 'store'])->name('store.report');
+    Route::post('/report-project/file', [RePortController::class, 'storeFlie'])->name('store.file.report');
+    Route::post('/report-project', [RePortController::class, 'editReport'])->name('edit.report');
 
+
+});
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -98,6 +109,7 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::get('/project/{id}', [DuAnController::class, 'toggleStar'])->name('project.toggleStar');
     Route::post('/project/edit/{id}', [DuAnController::class, 'editProject'])->name('edit.project');
     Route::get('/project/lock/{id}', [DuAnController::class, 'lockProject'])->name('lock.project');
+    Route::post('/project/import', [DuAnController::class, 'import'])->name('project.import.khanh');
 
 });
 
@@ -127,6 +139,7 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::post('/add/coat', [CoatController::class, 'addCoat'])->name('add.coat');
     Route::post('/edit/coat', [CoatController::class, 'editCoat'])->name('edit.coat');
     Route::get('/delete/id={id}', [CoatController::class, 'deleteCoat'])->name('delete.coat');
+    Route::post('/coat/import', [CoatController::class, 'import'])->name('coat.import.khanh');
 
 
 });

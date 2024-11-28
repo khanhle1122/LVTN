@@ -8,7 +8,7 @@
                 <div class="card-body"> 
                     <h3 class="mb-3">Thông báo</h3>
                     <div class="table-responsive">
-                        <table id="dataTableExample" class="table">
+                        <table id="notificationTable" class="table">
                             <thead>
                                 <tr>
                                   <th>tiêu đề</th>
@@ -38,8 +38,12 @@
                                   <td>
                                     @if($notification->is_read == 0)
                                     <a href="{{ route('check.notification', $notification->id) }}" title="đánh dấu đã đọc" class="">
-                                      <i data-feather="check" class="icon-sm mx-2"></i>
+                                      <i data-feather="check" class="icon-sm mx-2 text-warning"></i>
                                     </a>
+                                    @else
+
+                                    <i data-feather="check" class="icon-sm mx-2 text-success"></i>
+
                                     @endif
 
                                     <a href="{{ route('delete.notification', $notification->id) }}" title="đánh dấu đã đọc" class="">
@@ -58,5 +62,16 @@
         </div>
     </div>
 </div>
+
+<script>
+  $(document).ready(function() {
+      $('#notificationTable').DataTable({
+          columnDefs: [
+              { orderable: false, targets: 4} // Chỉ định cột thứ 2 không cho phép sắp xếp
+          ]
+      });
+  });
+  </script>
+
 
 @endsection

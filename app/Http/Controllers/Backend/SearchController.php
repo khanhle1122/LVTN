@@ -27,9 +27,7 @@ class SearchController extends Controller
         // Tìm kiếm trong bảng Project
         $projects = Project::where('projectName', 'LIKE', "%{$query}%")
             ->orWhere('projectCode', 'LIKE', "%{$query}%")
-            ->orWhere('address', 'LIKE', "%{$query}%")
-            ->orWhere('description', 'LIKE', "%{$query}%")
-            ->orWhere('budget', 'LIKE', "%{$query}%")
+            
             ->get();
 
         // Tìm kiếm trong bảng User
