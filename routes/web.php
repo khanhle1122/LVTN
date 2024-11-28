@@ -86,11 +86,11 @@ Route::middleware('auth','role:admin')->group(function () {
 });
 Route::middleware('auth','role:admin')->group(function () {
     
-    Route::get('/report-project', [RePortController::class, 'reportProject'])->name('report.project');
+    Route::get('/report-project/index', [RePortController::class, 'reportProject'])->name('report.project');
     Route::get('/report-detail-project/id={id}', [RePortController::class, 'reportDetail'])->name('report.detail');
-    Route::post('/report-project', [RePortController::class, 'store'])->name('store.report');
+    Route::post('/report-project/store/{id}', [RePortController::class, 'store'])->name('store.report');
     Route::post('/report-project/file', [RePortController::class, 'storeFlie'])->name('store.file.report');
-    Route::post('/report-project', [RePortController::class, 'editReport'])->name('edit.report');
+    Route::post('/report-project/edit', [RePortController::class, 'editReport'])->name('edit.report');
 
 
 });

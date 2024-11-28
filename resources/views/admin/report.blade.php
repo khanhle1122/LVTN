@@ -65,11 +65,11 @@ overflow-y: auto; /* Thêm thanh cuộn dọc */
                                             <div class="pt-3 ps-3 pb-3">
                                                 <div class="ms-1"><a class="text-dark" href="{{ route('report.detail',$projected->id) }}">Mã: {{ $projected->projectCode }}</a></div>
                                                 <div class="ms-1"><a class="text-dark" href="{{ route('report.detail',$projected->id) }}">{{ $projected->projectName }}</a></div>
-                                                @if($project->status==1)
+                                                @if($projected->status==1)
                                                 <span class="ms-1 text-success">Đã hoàng thành</span>
-                                                @elseif($project->status==0)
+                                                @elseif($projected->status==0)
                                                 <span class="ms-1 text-primary">Đang tiến hành</span>
-                                                @elseif($project->status==2)
+                                                @elseif($projected->status==2)
                                                 <span class="ms-1 text-danger">Đã tạm dừng</span>
                                                 @else 
                                                 <span class="ms-1 text-warning">Đã tạm dừng</span>

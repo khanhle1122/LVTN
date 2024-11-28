@@ -97,40 +97,46 @@ class ReportController extends Controller
 
 
     }
-    public function store(Request $request ){
-        $request->validate([
-            'is_pass' => 'required',
-            'totalCoat' => 'required',
-            'projectID' => 'required',
-            'comment'   => 'required'
-        ]);
-        $is_pass = $request->is_pass == "0" ? false : true; 
-        $userID = Auth()->id();
-        
-        $totalCost = Coat::where('projectID', $request->projectID) // Lọc theo projectID
-            ->pluck('estimated_cost') // Lấy tất cả giá trị estimated_cost
-            ->map(function ($cost) {
-                // Loại bỏ các ký tự không phải số và chuyển thành kiểu int
-                return (int) preg_replace('/[^0-9]/', '', $cost);
-            })
-            ->sum();
-        Report::create([
-            'is_pass' => $is_pass,
-            'totalCoat' => $totalCost,
-            'project_id' => $request->projectID,
-            'comment'   => $request->comment,
-            'user_id'    => $userID,
-        ]);
-        $project = Project::find($request->projectID);
-        $project->report_status = 1;
-        $project->save();
-        $notification = array(
-            'message' => 'Bạn đã viết báo cáo',
-            'alert-type' => 'success'
-        );
-        
-        return redirect()->route('report.project')->with($notification);
-    }
+    public function store(Request $request, $id)
+{
+    $request->validate([
+        'is_pass' => 'required',
+        'comment' => 'required',
+        // 'totalCost' => 'required',
+        // 'projectID' => 'required|exists:projects,id' // Kiểm tra projectID có tồn tại không
+    ]);
+
+    // Xử lý giá trị 'is_pass'
+    $is_pass = $request->is_pass == "0" ? false : true;
+    $userID = Auth::id(); // Sử dụng Auth::id() thay vì Auth()->id()
+
+    // Tính toán tổng chi phí dựa trên projectID
+    
+
+    // Lưu báo cáo
+    Report::create([
+        'is_pass' => $is_pass,
+        'totalCoat' => 0,
+        'project_id' => $id,
+        'comment' => $request->comment,
+        'user_id' => $userID,
+    ]);
+
+    // Cập nhật trạng thái báo cáo của project
+    $project = Project::find($id);
+    $project->report_status = 1;
+    $project->save();
+
+    // Thông báo cho người dùng
+    $notification = array(
+        'message' => 'Bạn đã viết báo cáo',
+        'alert-type' => 'success'
+    );
+
+    // Chuyển hướng về trang báo cáo
+    return redirect()->route('report.project')->with($notification);
+}
+
     public function storeFlie(Request $request){
         $request->validate([
             

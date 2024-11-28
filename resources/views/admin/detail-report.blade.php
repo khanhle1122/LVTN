@@ -8,6 +8,7 @@
             <div class="card-body"> 
               <div class="d-flex">
                 <h2 class="mb-2">Báo cáo dự án: {{ $project->projectName }}</h2>
+                @if($project->report_status == 1)
                 <div class="me-1 mt-2 ms-4">
                   <a href="#" data-bs-toggle="modal" data-bs-target="#editProject{{ $project->id }}" title="Chỉnh sửa">
                       <i class="fa-regular fa-pen-to-square text-warning"></i>
@@ -61,6 +62,8 @@
                       </div>
                   </div>
               </div>
+              @endif
+
               </div>
               @include('admin.task.detail-project')
 
@@ -141,7 +144,7 @@
                 <div class="col">
                   <h3>Đánh giá</h3>
                   <div>
-                    <form id="signupForm" action="{{ route('store.report') }}" method="POST" class="mt-3" >
+                    <form id="signupForm" action="{{ route('store.report',$project->id) }}" method="post" class="mt-3" >
                       @csrf
                       <div>
                         <div class="mb-3">
@@ -153,6 +156,7 @@
                                 Đạt
                               </label>
                             </div>
+                            
                             <div class="form-check form-check-inline">
                               <input type="radio" class="form-check-input" name="is_pass" id="gender2" value="0">
                               <label class="form-check-label" for="gender2">
@@ -167,7 +171,8 @@
                         <label for="comment">Bình luận:</label>
                         <textarea class="form-control" rows="5" id="comment" name="comment"></textarea>
                       </div>
-                      <input type="hidden" name="projectID" value="{{ $project->id }}">
+                      <input type="hidden" name="totalCoat" value="{{ $totalCost }}">
+                      {{-- <input type="hidden" name="projectID" value="{{ $project->id }}"> --}}
                       <div>
                         <button type="submit" class="btn btn-primary mt-3" >Gửi báo cáo</button>
                       </div>
