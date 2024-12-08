@@ -11,17 +11,10 @@ overflow-y: auto; /* Thêm thanh cuộn dọc */
       <i data-feather="menu"></i>
   </a>
   <div class="navbar-content">
-      <form class="search-form" action="{{ route('search') }}" method="GET">
-          <div class="input-group">
-              <div class="input-group-text">
-                  <i data-feather="search"></i>
-              </div>
-              <input type="text" class="form-control" id="navbarForm" name="query" placeholder="Search here...">
-          </div>
-      </form>
+      
       <ul class="navbar-nav">
           <li class="nav-item dropdown">
-              <a class="nav-link " id="message" href="{{ route('chat.index') }}" >
+              <a class="nav-link " id="message" href="{{ route('chat.staff.index') }}" >
                   <i class="fa-regular fa-comment fa-lg"></i>                    
                   @if($unreadMessagesCount > 0)
                       <div class="indicator">
@@ -95,7 +88,7 @@ overflow-y: auto; /* Thêm thanh cuộn dọc */
                   
                   <li class="dropdown-item py-2">
                       
-                      <a href="{{ route('admin.logout') }}" class="text-body ms-0">
+                      <a href="{{ route('staff.logout') }}" class="text-body ms-0">
                       <i class="me-2 icon-md" data-feather="log-out"></i>
                       <span>Log Out</span>
                       </a>

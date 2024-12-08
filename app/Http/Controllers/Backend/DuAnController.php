@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Message;
+use App\Models\Contractor;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProjectsImport;
 use App\Models\WorkingProject;
@@ -50,13 +51,15 @@ class DuAnController extends Controller{
         ->where('is_read', 0)
         ->with('notification') // Kèm thông tin từ bảng `notifications`
         ->get();
-        $contractors = Client::where('role','contractor')->get();
+        $contractors = Contractor::all();
         $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
             $query->where('user_id', Auth::id())
                     ->orWhere('other_user_id', Auth::id());
         })->where('sender_id', '!=', Auth::id())
             ->where('is_read', 0)
             ->count();
+
+        
         return view('admin.project',compact('projects','contractors','notifications','unreadMessagesCount'));
     } 
 
@@ -134,7 +137,7 @@ class DuAnController extends Controller{
                 'description'  => $request->description
             ]);
             
-            $client = Client::find($request->clientID);
+            $client = Contractor::find($request->clientID);
             $client->status = 1;
             $client->save();
 
@@ -179,6 +182,14 @@ class DuAnController extends Controller{
                 'user_id' => $supervisor->id,
                 'notification_id' => $notificate->id,
                 'is_read' => 0, // Mặc định là chưa đọc
+            ]);
+            $currentDate = Carbon::today();
+
+            $supervisor = User::find($request->userID);
+            WorkingProject::create([
+                'user_id'   => $request->userID,
+                'project_id'    => $project->id,
+                'at_work'   => $currentDate	
             ]);
 
         }
@@ -229,7 +240,7 @@ class DuAnController extends Controller{
  
          $project->address = $request->input('address');
          $project->level = $request->input('level');
-         if ($request->filled('budget')) {
+         if ($request->filled('budget') && $request->budget !== "0đ") {
              $project->budget = $request->input('budget');
          }
           // Lưu vào cột budget dạng decimal

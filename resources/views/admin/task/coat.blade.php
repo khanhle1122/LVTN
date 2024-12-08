@@ -119,7 +119,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <lablel>Chi phí cũ:</lablel>
-                                            <input value="{{ $coat->estimated_cost }}"  class="form-control mt-0 " disabled type="text"/>
+                                            <input value="{{ $coat->estimated_cost }}" name="estimated_cost"  class="form-control mt-0 " disabled type="text"/>
                                         </div> 
                                         <div class="mb-3">
                                             <lablel>Chi phí:</lablel>

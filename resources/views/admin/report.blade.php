@@ -22,8 +22,14 @@ overflow-y: auto; /* Thêm thanh cuộn dọc */
         <div class="col-12">
             <div class="card rounded">
                 <div class="card-body"> 
+                    @if($projectReported->isEmpty() && $projects->isEmpty())
+
+                        <div class="h6 text-center">Không có dự án cần báo cáo</div>
+                    @else
                     <div class="perfect-scrollbar-example" style="height:850px">
-                        <div class= >
+                        @if($projects->isEmpty())
+                        @else
+                        <div >
                             <h3>Danh sách dự án cần báo cáo</h3>
                             <div class="mt-3 perfect-scrollbar-example-x">
                                 @foreach($projects as $project)
@@ -49,6 +55,10 @@ overflow-y: auto; /* Thêm thanh cuộn dọc */
                                 @endforeach
                             </div>
                         </div>
+                        @endif
+                        @if($projectReported->isEmpty())
+
+                        @else
                         <div class="mt-5">
                             <h3>Danh sách đã báo cáo</h3>
                             <div class="mt-3 perfect-scrollbar-example-x">
@@ -83,11 +93,12 @@ overflow-y: auto; /* Thêm thanh cuộn dọc */
                             </div>
                         </div>
                         
-
+                        @endif
 
 
 
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

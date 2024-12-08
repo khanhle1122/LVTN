@@ -92,7 +92,12 @@
                         </div>
                     </div>
                     <ul class="list-unstyled p-1">
-                    
+                        <li class="dropdown-item py-2">
+                            <a href="{{ route('admin.profile') }}" class="text-body ms-0">
+                              <i class="me-2 icon-md" data-feather="repeat"></i>
+                              <span>Đổi mật khẩu</span>
+                            </a>
+                          </li>
                     <li class="dropdown-item py-2">
                         
                         <a href="{{ route('admin.logout') }}" class="text-body ms-0">

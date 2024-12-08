@@ -193,8 +193,8 @@ class NhanVienController extends Controller
         })->where('sender_id', '!=', Auth::id())
             ->where('is_read', 0)
             ->count();
-
-        return view('admin.division',compact('project','divisions','notifications','unreadMessagesCount'));
+        $supervitor = User::where('role','supervisor')->get();
+        return view('admin.division',compact('project','divisions','notifications','unreadMessagesCount','supervitor'));
     }
     public function addMember(Request $request){
         $request->validate([
@@ -250,11 +250,13 @@ class NhanVienController extends Controller
         $userLeaderOld = User::where('divisionID',$user->divisionID)->where('status_division',1)->get();
         foreach($userLeaderOld as $item){
             $item->status_division =0;
+            $item->role="staff";
             $item->save();
 
         }
         
         $user->status_division = 1;
+        $user->role = "leader";
         $user->save();
         return redirect()->back();
 
@@ -295,7 +297,7 @@ class NhanVienController extends Controller
         Log::error($e->getTraceAsString());
 
         $notification = array(
-            'message' => 'Lỗi import: ' . $e->getMessage(),
+            'message' =>  $e->getMessage(),
             'alert-type' => 'error'
         );
 

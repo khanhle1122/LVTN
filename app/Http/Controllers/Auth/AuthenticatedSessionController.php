@@ -26,30 +26,44 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        // Kiểm tra usercode và mật khẩu
+        $credentials = [
+            'usercode' => $request->usercode,
+            'password' => $request->password,
+        ];
 
-        $user = Auth::user();
+        if (Auth::attempt($credentials)) {
+            // Lấy thông tin người dùng vừa đăng nhập
+            $user = Auth::user();
 
-        // Kiểm tra trạng thái nhân viên
-        if ($user->status == 1) {
-            Auth::logout();
-            return redirect()->route('login')->withErrors(['Your account is locked. Please contact administrator.']);
+            // Kiểm tra trạng thái người dùng (tài khoản bị khóa)
+            if ($user->status == 1) {
+                Auth::logout();
+                return redirect()->route('login')->withErrors(['Tài khoảng của bạn bị khoá xin vui lòng liên hệ quản tri viên']);
+            }
+
+            // Tạo lại session sau khi đăng nhập thành công
+            $request->session()->regenerate();
+
+            // Điều hướng người dùng đến trang dashboard dựa trên vai trò
+            $url = '';
+            if ($user->role === 'admin' || $user->role === 'root') {
+                $url = 'admin/dashboard';
+            } elseif ($user->role === 'supervisor') {
+                $url = 'supervisor/index';
+            } elseif ($user->role === 'leader' ) {
+                $url = 'leader/index';
+            } else {
+                $url = 'staff/index';
+            }
+
+            return redirect()->intended($url);
         }
 
-        $request->session()->regenerate();
-
-        $url = '';
-        if($request->user()->role === 'admin'){
-            $url= 'admin/dashboard';
-        }elseif($request->user()->role === 'supervisor'){
-            $url= 'supervisor';
-        }elseif($request->user()->role === 'leader'){
-            $url= 'leader';
-        }else{
-            $url= 'staff';
-        }
-
-        return redirect()->intended($url);
+        // Nếu không xác thực được
+        return back()->withErrors([
+            'usercode' => 'Mã nhân viên hoặc mật khẩu không đúng.',
+        ])->onlyInput('usercode');
     }
 
     /**

@@ -48,22 +48,32 @@ Route::middleware(['auth','role:admin'])->group(function(){
 
 
 Route::middleware('auth','role:staff')->group(function () {
-    Route::get('/staff', [StaffController::class, 'index'])->name('client');
+    Route::get('/staff/index', [StaffController::class, 'index'])->name('staff');
     Route::get('/staff/logout', [StaffController::class, 'StaffLogout'])->name('staff.logout');
-    Route::get('staff/chat', [ChatController::class, 'index_staff'])->name('chat.staff.index');
-
-
+    Route::get('/staff/chat', [ChatController::class, 'index_staff'])->name('chat.staff.index');
+    Route::get('/staff/profile', [StaffController::class, 'index_profile'])->name('profile.staff');
+    Route::post('/staff/profile', [StaffController::class, 'editProfile'])->name('profile.update.staff');
 
 });
 Route::middleware('auth','role:leader')->group(function () {
-    Route::get('/leader', [LeaderController::class, 'index'])->name('leader');
+    Route::get('/leader/index', [LeaderController::class, 'index'])->name('leader');
+    Route::get('/leader/logout', [LeaderController::class, 'StaffLogout'])->name('leader.logout');
+    Route::get('/leader/chat', [ChatController::class, 'index_leader'])->name('chat.leader.index');
+    Route::get('/leader/profile', [LeaderController::class, 'index_profile'])->name('profile.leader');
+    Route::post('/leader/profile', [LeaderController::class, 'editProfile'])->name('profile.update.leader');
 
 
 
 });
 Route::middleware('auth','role:supervisor')->group(function () {
-    Route::get('/supervisor', [SupervisorController::class, 'index'])->name('supervisor');
-
+    Route::get('/supervisor/index', [SupervisorController::class, 'index'])->name('supervisor');
+    Route::get('/supervisor/logout', [SupervisorController::class, 'StaffLogout'])->name('supervisor.logout');
+    Route::get('/supervisor/chat', [ChatController::class, 'index_supervisor'])->name('chat.supervisor.index');
+    Route::get('/supervisor/profile', [SupervisorController::class, 'index_profile'])->name('profile.supervisor');
+    Route::post('/supervisor/profile', [SupervisorController::class, 'editProfile'])->name('profile.update.supervisor');
+    Route::get('/supervisor/project/task/id={id}',[TaskController::class, 'viewtaskSupervisor'])->name('view.task.supervisor');
+    Route::get('/supervisor/report-project', [RePortController::class, 'reportProjectSupervisor'])->name('report.project.supervisor');
+    Route::get('/supervisor/report-detail-project/id={id}', [RePortController::class, 'reportDetailSupervisor'])->name('report.detail.supervisor');
 
 
 });
@@ -75,12 +85,12 @@ Route::middleware('auth','role:admin')->group(function () {
     Route::get('/client', [ClientController::class, 'index'])->name('client');
     Route::post('/client/themkhachhang', [ClientController::class, 'addClient'])->name('add.client');
     Route::post('/client/chinhsua', [ClientController::class, 'editClient'])->name('edit.client');
-    Route::post('/client/abc', [ClientController::class, 'editRoleClient'])->name('edit.role.client');
     Route::get('/duyet-request/id={id}', [ClientController::class, 'checkRequest'])->name('check.status.client');
-    Route::get('client/delete/{id}', [ClientController::class, 'deleteClient'])->name('delete.client.guest');
+    Route::get('/client/delete/{id}', [ClientController::class, 'deleteClient'])->name('delete.client.guest');
     Route::post('/client/import', [ClientController::class, 'import'])->name('client.import.khanh');
     
     Route::get('/report-project', [RePortController::class, 'reportProject'])->name('report.project');
+    Route::get('/request', [ClientController::class, 'request'])->name('request');
 
 
 });
@@ -88,12 +98,13 @@ Route::middleware('auth','role:admin')->group(function () {
     
     Route::get('/report-project/index', [RePortController::class, 'reportProject'])->name('report.project');
     Route::get('/report-detail-project/id={id}', [RePortController::class, 'reportDetail'])->name('report.detail');
-    Route::post('/report-project/store/{id}', [RePortController::class, 'store'])->name('store.report');
-    Route::post('/report-project/file', [RePortController::class, 'storeFlie'])->name('store.file.report');
-    Route::post('/report-project/edit', [RePortController::class, 'editReport'])->name('edit.report');
-
 
 });
+Route::post('/report-project/store/{id}', [RePortController::class, 'store'])->name('store.report');
+Route::post('/report-project/file', [RePortController::class, 'storeFlie'])->name('store.file.report');
+Route::post('/report-project/edit', [RePortController::class, 'editReport'])->name('edit.report');
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -116,33 +127,35 @@ Route::middleware('auth','role:admin')->group(function () {
 Route::middleware('auth','role:admin')->group(function () {
     Route::get('/project/task/id={id}',[TaskController::class, 'viewtask'])->name('view.task');
 
-    Route::get('/task/star{id}', [TaskController::class, 'toggleStar'])->name('task.toggleStar');
 
     Route::get('/task/list_task',[TaskController::class, 'listTask'])->name('list.task');
 
     Route::get('/document',[TaiLieuController::class, 'viewDocument'])->name('view.document');
-    Route::post('/task/add',[TaskController::class, 'addDo'])->name('add.do');
-    Route::post('/task/file',[TaskController::class, 'addFile'])->name('add.file');
+
     Route::post('/task/delete',[TaiLieuController::class, 'deleteFolder'])->name('delete.folder');
     Route::get('/document/{id}', [TaiLieuController::class, 'deleteInterFolder'])->name('delete.folder.inter');
     Route::delete('/file/delete',[TaiLieuController::class, 'deleteFile'])->name('delete.file');
     Route::get('/file/{id}', [TaiLieuController::class, 'deleteInterFile'])->name('delete.file.inter');
-    Route::post('/progress',[TaskController::class, 'updateProgressTask'])->name('update.progress.task');
-    Route::post('/task/add-task',[TaskController::class, 'addTask'])->name('task.store');
-    Route::post('/task/edit',[TaskController::class, 'editTask'])->name('task.edit');
-    Route::post('/task/lock', [TaskController::class, 'lockTask'])->name('lock.task');
-    Route::post('/task/import', [TaskController::class, 'import'])->name('task.import.khanh');
 
 
 });
-Route::middleware('auth','role:admin')->group(function () {
+Route::get('/task/star{id}', [TaskController::class, 'toggleStar'])->name('task.toggleStar');
+
+Route::post('/progress',[TaskController::class, 'updateProgressTask'])->name('update.progress.task');
+Route::post('/task/add-task',[TaskController::class, 'addTask'])->name('task.store');
+Route::post('/task/edit',[TaskController::class, 'editTask'])->name('task.edit');
+Route::get('/task/lock/{id}', [TaskController::class, 'lockTask'])->name('lock.task');
+Route::post('/task/import', [TaskController::class, 'import'])->name('task.import.khanh');
+
+Route::post('/task/add',[TaskController::class, 'addDo'])->name('add.do');
+Route::post('/task/file',[TaskController::class, 'addFile'])->name('add.file');
+
+
     Route::post('/add/coat', [CoatController::class, 'addCoat'])->name('add.coat');
     Route::post('/edit/coat', [CoatController::class, 'editCoat'])->name('edit.coat');
     Route::get('/delete/id={id}', [CoatController::class, 'deleteCoat'])->name('delete.coat');
     Route::post('/coat/import', [CoatController::class, 'import'])->name('coat.import.khanh');
 
-
-});
 
 Route::middleware('auth')->group(function () {
     

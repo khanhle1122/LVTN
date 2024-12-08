@@ -41,7 +41,7 @@ class Project extends Model
     }
     public function contractors()
     {
-        return $this->belongsTo(Client::class, 'clientID');
+        return $this->belongsTo(Contractor::class, 'clientID');
     }
 
 }

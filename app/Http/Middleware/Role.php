@@ -23,20 +23,23 @@ class Role
         switch ($user->role) {
             // Kiểm tra nếu người dùng là 'staff'
             case 'staff':
-                return redirect('staff');
+                return redirect('staff/index');
 
             // Kiểm tra nếu người dùng là 'leader'
             case 'leader':
-                return redirect('leader');
+                return redirect('leader/index');
 
             case 'supervisor':
-                return redirect('supervisor');
+                return redirect('supervisor/index');
             
             // Kiểm tra nếu người dùng là 'admin', admin có thể truy cập tất cả
             case 'admin':
+                return redirect('admin_index');
+            
+            case 'root';
                 // Admin có quyền truy cập vào tất cả
                 return $next($request);
-
+            
             // Default case nếu không tìm thấy role
             default:
                 return redirect('/login'); // Hoặc một trang khác mà bạn muốn chuyển hướng

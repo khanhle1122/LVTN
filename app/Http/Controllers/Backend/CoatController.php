@@ -48,9 +48,14 @@ class CoatController extends Controller
         $coat = Coat::find($request->id);
 
         $coat->hangmuc = $request->hangmuc;
-        $coat->estimated_cost = $request->estimated_cost;
+        if ($request->has('estimated_cost') && !is_null($request->estimated_cost)) {
+
+            $coat->estimated_cost = $request->estimated_cost;
+
+        }
         $coat->description = $request->description;
         $coat->note = $request->note;
+
         $coat->save();
         $notification = array(
             'message' => 'Chi phí đã được chỉnh sửa ',

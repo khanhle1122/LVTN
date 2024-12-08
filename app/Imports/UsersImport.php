@@ -1,48 +1,44 @@
 <?php
-
 namespace App\Imports;
 
 use App\Models\User;
-use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithStartRow; // Thêm trait này
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 
-class UsersImport implements ToCollection, WithHeadingRow
+class UsersImport implements ToModel, WithStartRow
 {
-    public function collection(Collection $rows)
+    // Xác định bắt đầu từ dòng thứ 2 (dòng đầu tiên là tiêu đề)
+    public function startRow(): int
     {
-        // Lấy tất cả usercode từ file Excel
-        $usercodes = $rows->pluck('usercode')->toArray();
-        
-        // Kiểm tra usercode trùng lặp trong file Excel
-        $duplicateUsercodes = array_diff_assoc($usercodes, array_unique($usercodes));
-        if (!empty($duplicateUsercodes)) {
-            throw new \Exception('Có usercode bị trùng lặp trong file: ' . implode(', ', $duplicateUsercodes));
+        return 2; // Dòng đầu tiên (dòng tiêu đề) sẽ bị bỏ qua
+    }
+
+    public function model(array $row)
+    {
+        // Kiểm tra xem email có trùng trong cơ sở dữ liệu không
+        $existingEmail = User::where('email', $row[1])->exists();
+        if ($existingEmail) {
+            throw new \Exception('Email "' . $row[1] . '" đã tồn tại trong hệ thống.');
         }
 
-        // Kiểm tra usercode đã tồn tại trong database
-        $existingUsercodes = User::whereIn('usercode', $usercodes)->pluck('usercode')->toArray();
-        if (!empty($existingUsercodes)) {
-            throw new \Exception('Các usercode sau đã tồn tại trong hệ thống: ' . implode(', ', $existingUsercodes));
+        // Kiểm tra xem usercode có trùng trong cơ sở dữ liệu không
+        $existingUsercode = User::where('usercode', $row[7])->exists();
+        if ($existingUsercode) {
+            throw new \Exception('Usercode "' . $row[7] . '" đã tồn tại trong hệ thống.');
         }
 
-        // Nếu không có lỗi, tiến hành import
-        foreach ($rows as $row) {
-            User::create([
-                'name' => $row['name'],
-                'email' => $row['email'],
-                'expertise' => $row['expertise'],
-                'password' => Hash::make($row['password']),
-                'address' => $row['address'],
-                'status_division' => $row['status_division'] ?? 0,
-                'phone' => $row['phone'],
-                'usercode' => $row['usercode'],
-                'role' => $row['role'],
-                'divisionID' => $row['divisionid'] ?? null,
-                'status' => $row['status'] ?? 0,
-            ]);
-        }
+        // Trả về một instance của model User với các trường được ánh xạ từ các chỉ số cột
+        return new User([
+            'name' => $row[0],               // Cột 0: "name"
+            'email' => $row[1],              // Cột 1: "email"
+            'expertise' => $row[2],          // Cột 2: "expertise"
+            'password' => Hash::make($row[3]), // Cột 3: "password"
+            'address' => $row[4],            // Cột 4: "address"
+            'status_division' => $row[5] ?? 0, // Cột 5: "status_division" (giá trị mặc định là 0)
+            'phone' => $row[6],              // Cột 6: "phone"
+            'usercode' => $row[7],           // Cột 7: "usercode"
+            'role' => $row[8],               // Cột 8: "role"
+        ]);
     }
 }

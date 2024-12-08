@@ -19,13 +19,13 @@ class DatabaseSeeder extends Seeder
             
             [
                 'name' => 'Lê Quốc Khánh',
-                'email' => 'tes665454@example.com',
+                'email' => 'khanh300kkz@example.com',
                 'address' => 'Cần Thơ',
                 'phone' => '0336343416',
                 'usercode' => 'b2014751',
                 'password' => Hash::make('111'),
-                'role' => 'admin',
-               
+                'role' => 'root',
+                'expertise' => 'kỹ sư '
             ],
         
         

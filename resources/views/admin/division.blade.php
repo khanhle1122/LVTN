@@ -5,12 +5,31 @@
 <div class="page-content">
 
   
-  <div class="row ">
-          
+  <div class="row stretch-card">
+    <div class="d-none mt-5 d-md-block col-md-4 col-xl-4  grid-margin stretch-card ">
+      <div class="card h-100"> 
+        <div  class="card-body">
+            
+            
+              <h5>Danh sách giám sát viên</h5>
+                <div class="row mt-3 mb-3">
+                  <div class="col-8">Tên </div>
+                  <div class="col-4">Mã</div>
+              </div>
+            
+            @foreach($supervitor as $item)
+              <div class="row">
+                <div class="col-8">{{ $item->name }} </div>
+                <div class="col-4">{{ $item->usercode }}</div>
+              </div>
+            @endforeach
+        </div>
+      </div>
+    </div>
     @foreach($divisions as $item)
     @if($item)
-    <div class="d-none mt-5 d-md-block col-md-4 col-xl-4  ">
-      <div class="card"> 
+    <div class="d-none mt-5 d-md-block col-md-4 col-xl-4  grid-margin stretch-card">
+      <div class="card  h-100"> 
         <div  class="card-body">
             <div class="mb-3 text-center ">
               <h5 class="col">{{ $item->divisionName }}</h5>
@@ -54,7 +73,7 @@
                 <div class="mb-3 row">
                   <select class="col form-select" name="userID" >
                     <option disabled selected>Chọn thành viên</option>
-                    @foreach(App\Models\User::wherenull('divisionID')->where('role', '!=', 'admin')->get() as $user)
+                    @foreach(App\Models\User::wherenull('divisionID')->where('role', '!=', 'admin')->where('role', '!=', 'root')->where('role', '!=', 'supervisor')->get() as $user)
                       <option value="{{ $user->id }}">{{ $user->usercode }} - {{ $user->name }}</option>
                     @endforeach
                   </select>
@@ -70,8 +89,8 @@
     </div>
     @endif
     @endforeach
-    <div class="d-none mt-5 d-md-block col-md-4 col-xl-4  ">
-      <div class="card"> 
+    <div class="d-none mt-5 d-md-block col-md-4 col-xl-4  grid-margin stretch-card">
+      <div class="card  h-100"> 
         <div  class="card-body">
           <div id="add-division" class="text-center mt-4 mb-4" style="cursor: pointer;">
               <i data-feather="plus"></i>
@@ -87,7 +106,7 @@
                 <div class="col-sm">
                   <div class="mb-4">
                       <label>Tên nhóm:</label>
-                      <input type="text" id="divisionName" class="form-control mt-2" placeholder="Nhập mã dự án" name="divisionName" required>
+                      <input type="text" id="divisionName" class="form-control mt-2" placeholder="Nhập tên nhóm" name="divisionName" required>
                   </div>
               </div>
               </div>

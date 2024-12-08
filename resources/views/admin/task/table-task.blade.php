@@ -64,13 +64,7 @@
                                                         <lablel>Ngày kết thúc:</lablel>
                                                         <input  class="form-control" id="endDate" data-inputmask="'alias': 'datetime'" data-inputmask-inputformat="yyyy-mm-dd" placeholder="" name="endDate" required>
                                                     </div>
-                                                    <div class="col">
-                                                        <lablel>Chi phí dự kiến:</lablel>
-                                                        <input type="hidden" id="currencySelect" name="currency" value="vnd">
-                                                        <div id="budgetInputContainer">
-                                                            <input name="budget" min="1" autocomplete="budget" class="form-control mt-0" id="budgetInput" data-inputmask="'alias': 'currency', 'suffix':'₫'"/>
-                                                        </div>
-                                                    </div>        
+                                                         
                                                 </div>
                                                 <div class="row mt-4">
                                                     <div class="col-6">
@@ -78,9 +72,8 @@
                                                         <select class="form-select" id="userID" name="userID">
                                                             <option selected disabled>Chọn nhân viên phụ trách</option>                                                                                                
                                                             @foreach(App\Models\User::all() as $employee)
-                                                            @if( ($employee->role !== "admin" && $employee->role !== "supervitor" && $employee->status_division == 1) || 
-                                                                ($employee->divisionID == null && $employee->role !== "admin" && $employee->role !== "supervision") )
-                                                                                                                        <option value="{{ $employee->id }}"> {{ $employee->name }}</option>
+                                                            @if( ($employee->role !== "admin" &&  $employee->divisionID != null && $employee->status_division==1) )
+                                                                    <option value="{{ $employee->id }}"> {{ $employee->name }}</option>
                                                                 @endif
                                                                 
                                                             @endforeach
@@ -164,7 +157,6 @@
                                 <th>phụ trách</th>
                                 <th>Trạng thái</th>
                                 <th>Tiến độ</th>
-                                <th>Chi phí</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -172,21 +164,21 @@
                             <tbody>
                             @foreach ($tasks as $task)
                                 <tr>
-                                    <td><div class="mt-3">{{ $counter }}</div></td>
+                                    <td><div class="">{{ $counter }}</div></td>
                                     <td>                                            
-                                        <a href="{{ route('task.toggleStar',$task->id) }}" class="d-flex flex-row-reverse mt-3" > @if( $task->star == 1) <i class="fa-solid fa-star" style="color: #FFD43B;"></i> @else <i class="fa-regular fa-star" ></i>  @endif </a>                                    
+                                        <a href="{{ route('task.toggleStar',$task->id) }}" class="d-flex flex-row-reverse" > @if( $task->star == 1) <i class="fa-solid fa-star" style="color: #FFD43B;"></i> @else <i class="fa-regular fa-star" ></i>  @endif </a>                                    
                                     </td>
                                         @php $counter++; @endphp
-                                    <td><div class="mt-3">{{ $task->task_code }}</div></td>
-                                    <td><div class="mt-3">{{ $task->task_name }}</div></td>
-                                    <td><div class="mt-3">{{ $task->note }}</div></td>
-                                    <td><div class="mt-3">{{ $task->startDate }}</div></td>
-                                    <td><div class="mt-3">{{ $task->endDate }}</div></td>
+                                    <td><div class="">{{ $task->task_code }}</div></td>
+                                    <td><div class="">{{ $task->task_name }}</div></td>
+                                    <td><div class="">{{ $task->note }}</div></td>
+                                    <td><div class="">{{ $task->startDate }}</div></td>
+                                    <td><div class="">{{ $task->endDate }}</div></td>
                                     
-                                    <td><div class="mt-3">{{ $task->duration }} ngày</div></td>
-                                    <td><div class="mt-3">{{ $task->users->name }} </div></td>
+                                    <td><div class="">{{ $task->duration }} ngày</div></td>
+                                    <td><div class="">{{ $task->users->name }} </div></td>
                                     <td>
-                                        <div class="mt-3">@if( $task->status == 0)
+                                        <div class="">@if( $task->status == 0)
                                             <span class="badge bg-primary-subtle text-primary border border-primary d-inline-flex align-items-center">
                                                 Đang tiến hành
                                             </span>
@@ -205,12 +197,11 @@
                                         @endif </div>
 
                                     </td>
-                                    <td><div class="mt-3">{{ $task->progress }} %</div></td>
-                                    <td><div class="mt-3">{{ $task->budget }}</div></td>
+                                    <td><div class="">{{ $task->progress }} %</div></td>
                                     @if($project->status !=2)
                                     <td>
                                         <div class="d-flex">
-                                            <div class="mt-2 ">
+                                            <div class="">
 
                                                 <a  title="Chỉnh sửa"  href="#editTask{{ $task->id }}" data-bs-toggle="modal" data-bs-target="#editTask{{ $task->id }}" >
                                                     <i class="fa-regular fa-pen-to-square text-warning"></i>
@@ -279,17 +270,7 @@
                                                                         <lablel>Ngày kết thúc:</lablel>
                                                                         <input value="{{ $task->endDate }}" class="form-control" id="endDate" data-inputmask="'alias': 'datetime'" data-inputmask-inputformat="yyyy-mm-dd" placeholder="" name="endDate" required>
                                                                     </div>
-                                                                    <div class="col">
-                                                                        <label for="">Chi phí cũ:</label>
-                                                                        <input class="form-control " type="text" value="{{ $task->budget }}" disabled name="budget_old">
-                                                                    </div>
-                                                                    <div class="col">
-                                                                        <lablel>Chi phí dự kiến mới:</lablel>
-                                                                        <input type="hidden" id="currencySelect" name="currency" value="vnd">
-                                                                        <div id="budgetInputContainer">
-                                                                            <input name="budget" placeholder="Nhập chi phí mới" min="1" autocomplete="budget" class="form-control mt-0 budget-mask" id="budgetInput" data-inputmask="'alias': 'currency', 'suffix':'₫'"/>
-                                                                        </div>
-                                                                    </div>        
+                                                                          
                                                                 </div>
                                                                 <div class="row mt-4">
                                                                     <div class="col-6">
@@ -326,9 +307,17 @@
                                                 </div>
                                                 </div>
                                             </div>
-                                            {{-- <div class="mt-2 mx-1">
-                                                <a href="{{ route('lock.task') }}"></a>
-                                                <form action="{{ route('lock.task') }}" method="POST">
+                                            <div class=" ms-2">
+                                                @if($task->progress <100)
+                                                <a href="{{ route('lock.task',$task->id) }}">
+                                                    @if($task->status==3)
+                                                        <i class="icon-sm text-success" data-feather="unlock"></i>
+                                                        @else
+                                                        <i class="icon-sm text-danger" data-feather="lock"></i>
+                                                        @endif
+                                                </a>
+                                                @endif
+                                                {{-- <form action="{{ route('lock.task') }}" method="POST">
                                                     @csrf
                                                     <input type="hidden" name="task_id" value="{{ $task->id }}">
                                                     <a class="btn btn-outline-danger">
@@ -338,8 +327,8 @@
                                                         <i class="icon-sm" data-feather="lock"></i>
                                                         @endif
                                                     </a>
-                                                </form>
-                                            </div> --}}
+                                                </form> --}}
+                                            </div>
                                         </div>
                                     
                                     </td>
@@ -360,7 +349,7 @@
         $(document).ready(function() {
             $('#taskList').DataTable({
                 columnDefs: [
-                    { orderable: false, targets: 12 } // Chỉ định cột thứ 2 không cho phép sắp xếp
+                    { orderable: false, targets: 11 } // Chỉ định cột thứ 2 không cho phép sắp xếp
                 ]
             });
         });

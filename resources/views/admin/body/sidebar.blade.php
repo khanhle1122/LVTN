@@ -2,7 +2,7 @@
 <nav class="sidebar">
     <div class="sidebar-header">
       <a href="{{ route('admin_index') }}" class="sidebar-brand">
-        CDC<span> Admin</span>
+        CDC<span> @if(Auth::user()->role === "root")Admin @else Manage @endif</span>
       </a>
       <div class="sidebar-toggler not-active">
         <span></span>
@@ -32,7 +32,7 @@
               </li>
               
               <li class="nav-item">
-                <a href="{{ route('division.employee') }}" class="nav-link">Phân công nhân viên</a>
+                <a href="{{ route('division.employee') }}" class="nav-link">Bộ phận  </a>
               </li>
               
             </ul>
@@ -48,6 +48,13 @@
           <a class="nav-link" href="{{ route('client') }}" >
             <i class="link-icon icon-sm" data-feather="users"></i>
               <span class="link-title">Danh sách đối tác</span>
+          </a>
+          
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('request') }}" >
+            <i class="link-icon icon-sm" data-feather="help-circle"></i>
+              <span class="link-title">Danh sách yêu cầu</span>
           </a>
           
         </li>

@@ -23,24 +23,6 @@ License: For each use you must have a valid license purchased only from above li
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
   <!-- End fonts -->
 
-	<!-- core:css -->
-	<link rel="stylesheet" href="../../../assets/vendors/core/core.css">
-	<!-- endinject -->
-
-	<!-- Plugin css for this page -->
-	<link rel="stylesheet" href="../../../assets/vendors/select2/select2.min.css">
-	<link rel="stylesheet" href="../../../assets/vendors/jquery-tags-input/jquery.tagsinput.min.css">
-	<link rel="stylesheet" href="../../../assets/vendors/dropzone/dropzone.min.css">
-	<link rel="stylesheet" href="../../../assets/vendors/dropify/dist/dropify.min.css">
-	<link rel="stylesheet" href="../../../assets/vendors/pickr/themes/classic.min.css">
-	<link rel="stylesheet" href="../../../assets/vendors/font-awesome/css/font-awesome.min.css">
-	<link rel="stylesheet" href="../../../assets/vendors/flatpickr/flatpickr.min.css">
-	<!-- End plugin css for this page -->
-
-	<!-- inject:css -->
-	<link rel="stylesheet" href="../../../assets/fonts/feather-font/css/iconfont.css">
-	<link rel="stylesheet" href="../../../assets/vendors/flag-icon-css/css/flag-icon.min.css">
-	<!-- endinject -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Trong blade layout -->
 
@@ -57,7 +39,16 @@ License: For each use you must have a valid license purchased only from above li
       padding: 0;
       box-sizing: border-box;
   }
-  
+  .error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+input:invalid, textarea:invalid {
+    border-color: red;
+}
+
   .header {
       position: relative;
       width: 100%;
@@ -194,45 +185,47 @@ License: For each use you must have a valid license purchased only from above li
   
   <section class="py-3 pb-5" style="background-color:  rgba(244, 244, 244, 0.939)" id="project">
       <h1 class="mt-3 text-center " style="color: #ff6600">DỰ ÁN TIÊU BIỂU</h1>
-      <div class="text-center mt-4">
+      <div class="text-center mt-4 mb-4">
           Các công trình CDC Xây Dựng thi công luôn đảm bảo 
-          <span class="h6">An toàn - Chất lượng - Tiến độ</span>
+          <span class="h6 mb-4">An toàn - Chất lượng - Tiến độ</span>
 
       </div>
 
-      <div id="demo" class="carousel slide mx-auto mt-5" data-bs-ride="carousel" style="width: 500px;height:300px">
+      <!-- Carousel -->
+      <div class="row">
+        <div id="demo" class="carousel slide col-4 mx-auto" data-bs-ride="carousel">
 
-          <!-- Indicators/dots -->
+            <!-- Indicators/dots -->
           
           
-          <!-- The slideshow/carousel -->
-          <div class="carousel-inner text-center">
-            <div class="carousel-item active">
-              <img style="height:300px" src="{{ asset('image/slideshow/3.jpg') }}" alt="Image 3">
-              <div class="carousel-caption">
-                <h3>Los Angeles</h3>
-                <p>We had such a great time in LA!</p>
+            <!-- The slideshow/carousel -->
+            <div class="carousel-inner" > 
+              <div class="carousel-item active">
+                <img src="{{ asset('image/slideshow/1.jpg') }}" style="height:300px" alt="Los Angeles" class="d-block w-100">
+              </div>
+              <div class="carousel-item">
+                <img src="{{ asset('image/slideshow/2.jpg') }}" style="height:300px" alt="Chicago" class="d-block w-100">
+              </div>
+              <div class="carousel-item">
+                <img src="{{ asset('image/slideshow/3.jpg') }}" style="height:300px" class="d-block w-100">
+              </div>
+              <div class="carousel-item">
+                <img src="{{ asset('image/slideshow/4.jpg') }}" style="height:300px" class="d-block w-100">
+              </div>
+              <div class="carousel-item">
+                <img src="{{ asset('image/slideshow/5.jpg') }}" style="height:300px" class="d-block w-100">
               </div>
             </div>
-            <div class="carousel-item">
-              <img style="height:300px" src="{{ asset('image/slideshow/3.jpg') }}" alt="Image 3">
-              <div class="carousel-caption">
-                <h3>Chicago</h3>
-                <p>Thank you, Chicago!</p>
-              </div> 
-            </div>
-            <div class="carousel-item">
-              <img style="height:300px" src="{{ asset('image/slideshow/3.jpg') }}" alt="Image 3">
-              <div class="carousel-caption">
-                <h3>New York</h3>
-                <p>We love the Big Apple!</p>
-              </div>  
-            </div>
-          </div>
           
-          <!-- Left and right controls/icons -->
-         
-        </div>
+            <!-- Left and right controls/icons -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+              <span class="carousel-control-next-icon"></span>
+            </button>
+          </div>
+      </div>
       
       
   </section>
@@ -277,34 +270,43 @@ License: For each use you must have a valid license purchased only from above li
               <h6 class="text-center">Gửi yêu cầu tư vấn</h6>
               <div class="mt-3">Nếu bạn có thắc mắc gì, có thể gửi yêu cầu cho chúng tôi, và chúng tôi sẽ liên lạc với bạn sớm nhất có thể.</div>
               <div class="mt-3">
-                  <form action="{{ route('client.store') }}" method="POST" id="signupForm" class="signupForm">
-                    @csrf  
+                <form action="{{ route('client.store') }}" method="POST" id="signupForm" class="signupForm">
+                    @csrf
                     <div class="mb-3 mt-3">
-                          <label for="">Tên:</label>
-                          <input type="text" class="form-control" name="name" id="name">
-                      </div>
-                      <div class="mb-3 mt-3">
-                        <label for="">Email:</label>
-                        <input  type="email" class="form-control" name="email" id="email">
+                        <label for="name">Tên:</label>
+                        <input type="text" class="form-control" name="name" id="name">
+                        <div class="error-message" id="name-error"></div> <!-- Error message for name -->
                     </div>
-                      <div class="mb-3 mt-3">
-                          <label for="">Số điện thoại:</label>
-                          <input  class="form-control" name="phone" id="phone" data-inputmask-alias="(+99) 9999-9999">
-                      </div>
-
-                      <div class="mb-3 mt-3">
-                          <label for="">Địa chỉ:</label>
-                          <input type="text" class="form-control" name="address" id="addresss">
-                      </div>
-                     
-                      <div class="mb-3 mt-3">
-                          <label for="">Mô tả yêu cầu:</label>
-                            <textarea class="form-control" name="description" id="description" rows="6"></textarea>
-                        </div>
-                      <div class="text-center">
-                          <button class="btn btn-primary px-3" type="submit">Gửi</button>
-                      </div>
-                  </form>
+                
+                    <div class="mb-3 mt-3">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" name="email" id="email">
+                        <div class="error-message" id="email-error"></div> <!-- Error message for email -->
+                    </div>
+                
+                    <div class="mb-3 mt-3">
+                        <label for="phone">Số điện thoại:</label>
+                        <input class="form-control" value="(+84)" name="phone" id="phone" >
+                        <div class="error-message" id="phone-error"></div> <!-- Error message for phone -->
+                    </div>
+                
+                    <div class="mb-3 mt-3">
+                        <label for="address">Địa chỉ:</label>
+                        <input type="text" class="form-control" name="address" id="addresss">
+                        <div class="error-message " id="address-error"></div> <!-- Error message for address -->
+                    </div>
+                
+                    <div class="mb-3 mt-3">
+                        <label for="description">Mô tả yêu cầu:</label>
+                        <textarea class="form-control" name="description" id="description" rows="6"></textarea>
+                        <div class="error-message" id="description-error"></div> <!-- Error message for description -->
+                    </div>
+                
+                    <div class="text-center">
+                        <button class="btn btn-primary px-3" type="submit">Gửi</button>
+                    </div>
+                </form>
+                
               </div>
           </div>
       </div>
@@ -313,42 +315,6 @@ License: For each use you must have a valid license purchased only from above li
 
   @include('guest.body.footer')
 </body>
-
-	<!-- core:js -->
-	<script src="../../../assets/vendors/core/core.js"></script>
-	<!-- endinject -->
-
-	<!-- Plugin js for this page -->
-	<script src="../../../assets/vendors/jquery-validation/jquery.validate.min.js"></script>
-	<script src="../../../assets/vendors/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
-	<script src="../../../assets/vendors/inputmask/jquery.inputmask.min.js"></script>
-	<script src="../../../assets/vendors/select2/select2.min.js"></script>
-	<script src="../../../assets/vendors/typeahead.js/typeahead.bundle.min.js"></script>
-	<script src="../../../assets/vendors/jquery-tags-input/jquery.tagsinput.min.js"></script>
-	<script src="../../../assets/vendors/dropzone/dropzone.min.js"></script>
-	<script src="../../../assets/vendors/dropify/dist/dropify.min.js"></script>
-	<script src="../../../assets/vendors/pickr/pickr.min.js"></script>
-	<script src="../../../assets/vendors/moment/moment.min.js"></script>
-	<script src="../../../assets/vendors/flatpickr/flatpickr.min.js"></script>
-	<!-- End plugin js for this page -->
-
-	<!-- inject:js -->
-	<script src="../../../assets/vendors/feather-icons/feather.min.js"></script>
-	<script src="../../../assets/js/template.js"></script>
-	<!-- endinject -->
-
-	<!-- Custom js for this page -->
-	<script src="../../../assets/js/form-validation.js"></script>
-	<script src="../../../assets/js/bootstrap-maxlength.js"></script>
-	<script src="../../../assets/js/inputmask.js"></script>
-	<script src="../../../assets/js/select2.js"></script>
-	<script src="../../../assets/js/typeahead.js"></script>
-	<script src="../../../assets/js/tags-input.js"></script>
-	<script src="../../../assets/js/dropzone.js"></script>
-	<script src="../../../assets/js/dropify.js"></script>
-	<script src="../../../assets/js/pickr.js"></script>
-	<script src="../../../assets/js/flatpickr.js"></script>
-	<!-- End custom js for this page -->
 
     <script>
 		@if(Session::has('message'))
@@ -370,4 +336,69 @@ License: For each use you must have a valid license purchased only from above li
 			}
 		@endif
 	</script>
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            // Ngừng gửi form nếu có lỗi
+            event.preventDefault();
+    
+            // Lấy các giá trị của các trường
+            let name = document.getElementById('name').value;
+            let email = document.getElementById('email').value;
+            let phone = document.getElementById('phone').value;
+            let address = document.getElementById('addresss').value;
+            let description = document.getElementById('description').value;
+    
+            let isValid = true; // Biến để kiểm tra tính hợp lệ
+    
+            // Reset các thông báo lỗi cũ
+            document.querySelectorAll('.error-message').forEach(function(errorDiv) {
+                errorDiv.textContent = '';
+            });
+    
+            // Kiểm tra trường "Tên"
+            if (!name.trim()) {
+                document.getElementById('name-error').textContent = 'Tên không được để trống.';
+                isValid = false;
+            }
+    
+            // Kiểm tra trường "Email"
+            let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!email.trim()) {
+                document.getElementById('email-error').textContent = 'Email không được để trống.';
+                isValid = false;
+            } else if (!emailRegex.test(email)) {
+                document.getElementById('email-error').textContent = 'Email không hợp lệ.';
+                isValid = false;
+            }
+    
+            // Kiểm tra trường "Số điện thoại"
+            let phoneRegex = /^\(\+\d{2,3}\)\s?\d{4}-\d{4}$/;
+            if (!phone.trim()) {
+                document.getElementById('phone-error').textContent = 'Số điện thoại không được để trống.';
+                isValid = false;
+            } else if (!phoneRegex.test(phone)) {
+                document.getElementById('phone-error').textContent = 'Số điện thoại không hợp lệ.';
+                isValid = false;
+            }
+    
+            // Kiểm tra trường "Địa chỉ"
+            if (!address.trim()) {
+                document.getElementById('address-error').textContent = 'Địa chỉ không được để trống.';
+                isValid = false;
+            }
+    
+            // Kiểm tra trường "Mô tả yêu cầu"
+            if (!description.trim()) {
+                document.getElementById('description-error').textContent = 'Mô tả yêu cầu không được để trống.';
+                isValid = false;
+            }
+    
+            // Nếu tất cả các trường hợp lệ, mới gửi form
+            if (isValid) {
+                document.getElementById('signupForm').submit(); // Gửi form nếu không có lỗi
+            }
+        });
+    </script>
+    
+      
 </html>

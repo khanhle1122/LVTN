@@ -49,7 +49,7 @@
                                             <select class="form-select" name="clientID" id="clientID">
                                                 <option selected disabled>Chọn đối tác</option>
                                                 @foreach($contractors as $contractor)
-                                                <option value="{{ $contractor->id }}">{{ $contractor->name }}</option>
+                                                <option value="{{ $contractor->id }}">{{ $contractor->contactorCode }}  -  {{ $contractor->name }}</option>
             
             
                                                 @endforeach
@@ -291,7 +291,7 @@
                                                                             <label for="clientID" class="form-label">Đối tác</label>
                                                                             <select class="form-select" name="clientID" id="clientID">
                                                                                 @foreach($contractors as $contractor)
-                                                                                <option @if($contractor->id == $project->clientID) selected @endif value="{{ $contractor->id }}">{{ $contractor->name }}</option>
+                                                                                <option @if($contractor->id == $project->clientID) selected @endif value="{{ $contractor->id }}">{{ $contractor->contactorCode }}  -  {{ $contractor->name }}</option>
                                             
                                             
                                                                                 @endforeach
@@ -365,24 +365,16 @@
                                                                         <div class="mb-4">
                                                                             <label class="form-label">Ngân sách cũ:</label>
                                                                             <div >
-                                                                                <input type="text" class="form-control mt-0" value="{{ $project->budget }}" disabled>
+                                                                                <input name="budget" value="{{ $project->budget }}" autocomplete="budget" class="form-control mt-0 budget-mask"  id="budgetInput{{ $project->id }}" disabled />
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-sm-2">
-                                                                        <div class="mb-4">
-                                                                            <label class="form-label">Loại tiền tệ:</label>
-                                                                            <select class="form-select" id="currencySelect{{ $project->id }}" name="currency">
-                                                                                <option value="vnd">VND</option>
-                                                                                <option value="usd">USD</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
+                                                                    
                                                                     <div class="col-sm-3">
                                                                         <div class="mb-4">
                                                                             <label class="form-label">Ngân sách mới:</label>
                                                                             <div id="budgetInputContainer{{ $project->id }}">
-                                                                                <input name="budget" value="0" autocomplete="budget" class="form-control mt-0 budget-mask"  id="budgetInput{{ $project->id }}" data-inputmask="'alias': 'currency', 'suffix':'₫'"/>
+                                                                                <input name="budget" placeholder="Nhập số tiền (vnd)" autocomplete="budget" class="form-control mt-0 budget-mask"  id="budgetInput{{ $project->id }}" data-inputmask="'alias': 'currency', 'suffix':'₫'"/>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -514,7 +506,6 @@
         // Áp dụng inputmask cho tất cả các trường có class `cost-mask` khi modal hiển thị
         $('.modal').on('shown.bs.modal', function() {
             Inputmask({
-                alias: "numeric",
                 groupSeparator: ".",
                 radixPoint: ",",
                 autoGroup: true,
@@ -524,12 +515,9 @@
                 suffix: " ₫",
                 autoUnmask: true,
                 placeholder: "Nhập số tiền (VND)",
-                removeMaskOnSubmit: true,
                 allowMinus: false,
                 min: 0,
-                onBeforeMask: function(value, opts) {
-                    return value < 0 ? '0' : value;
-                }
+                
             }).mask($('.budget-mask'));
         });
     });

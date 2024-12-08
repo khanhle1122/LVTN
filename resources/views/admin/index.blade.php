@@ -5,68 +5,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <div class="page-content">
-
-    <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-      <div>
-        <h4 class="mb-3 mb-md-0">Welcome to Dashboard</h4>
-      </div>
-      
-    </div>
-
-    <div class="row">
-      <div class="col-12 col-xl-12 stretch-card">
-        <div class="row flex-grow-1">
-          <div class="col-md-4 grid-margin stretch-card">
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-baseline">
-                  <h6 class="card-title mb-0">Tổng dự án</h6>
-                  
-                </div>
-                <div class=" d-flex mt-2 ms-5">
-                  <div><i data-feather="box"></i></div>
-                  <span class="mx-2"> {{  $totalProject}} </span>
-                </div>
-                
-                
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 grid-margin stretch-card">
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-baseline">
-                  <h6 class="card-title mb-0">Tổng Đối tác</h6>
-                  
-                </div>
-                <div class=" d-flex mt-2 ms-5">
-                  <div><i data-feather="users"></i></div>
-                  <span class="mx-2"> {{ $totalClient }} </span>
-                </div>
-                
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 grid-margin stretch-card">
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-baseline">
-                  <h6 class="card-title mb-0">Tổng báo cáo</h6>
-                  
-                </div>
-                <div class=" d-flex mt-2 ms-5">
-                  <div><i data-feather="file-text"></i></div>
-                  <span class="mx-2">{{ $totalReport }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-   
-
     <div class="row ">
       <div class="col-lg-7 col-xl-8 stretch-card ms-1 row">
         <div class="card">
@@ -86,6 +24,7 @@
                     <th class="pt-0">Hoàn thành</th>
                     <th class="pt-0">Tiến độ</th>
                     <th class="pt-0">Giám sát</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -99,6 +38,12 @@
                       <td>{{ $project->endDate }}</td>
                       <td>{{ $project->progress }} %</td>
                       <td>{{ $project->user->name }}</td>
+                      <td><div class="">
+                        <a  class="" href="{{ route('view.task',$project->id) }}">
+                            <i class="fa-solid fa-eye text-primary"></i>
+                        </a>
+                        
+                    </div></td>
                     </tr>
                     @endif
                   
@@ -125,6 +70,7 @@
                     <th class="pt-0">Ngày bắt đầu</th>
                     <th class="pt-0">Hoàn thành</th>
                     <th class="pt-0">Tiến độ</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -138,6 +84,12 @@
                       <td>{{ $task->startDate }}</td>
                       <td>{{ $task->endDate }}</td>
                       <td>{{ $task->progress }} %</td>
+                      <td><div class="">
+                        <a  class="" href="{{ route('view.task',$task->projects->id) }}">
+                            <i class="fa-solid fa-eye text-primary"></i>
+                        </a>
+                        
+                    </div></td>
                     </tr>
                     @endif
                   

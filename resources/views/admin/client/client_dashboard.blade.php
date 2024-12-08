@@ -6,147 +6,91 @@
     <div class="row ">
         <!-- left wrapper start -->
         
-        <div class="col-md-12 col-xl-12  ">
-
-
-            
+       
+        
+        <div class="col-md-12 col-xl-12  middle-wrapper">
             <div class="card rounded">
                 <div class="card-body"> 
-                  <h3 class="mb-3">Danh sách đối tác chờ tư vấn</h3>
-                  <div class="table-responsive">
-                    <table id="clientTable" class="table">
-                        <thead>
-                        <tr>
-                            <th>Tên khách tư vấn</th>
-                            <th>email</th>
-                            <th>số điẹn thoại</th>
-                            <th>Địa chỉ</th>
-                            <th>Mô tả yêu cầu tư vấn</th>
-                            <th>Trạng thái</th>
-                            <th>Xác nhận</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>  
-                            @foreach($clients as $client)
-                            @if($client->role=== 'client' )
-
-                                <tr>
-                                    <td>{{ $client->name }}</td>
-                                    <td>{{ $client->email }}</td>
-                                    <td>{{ $client->phone }}</td>
-                                    <td>{{ $client->address }}</td>
-                                    <td>{{ $client->description }}</td>
-                                    <td>@if($client->status==0 ) Chờ duyệt @else Đã Tư vấn @endif</td>
-                                    <td>
-                                        @if($client->status == 0)
-                                        <a href="{{ route('check.status.client',$client->id) }}">
-                                            Duyệt
-                                        </a>
-                                          @else
-                                          
-                                            <i class=" ms-3 icon-sm text-success" data-feather="check"></i>
-                                       
-                                        @endif
-                                        
-
-                                    </td>   
-                                    <td>
-                                        <div class="d-flex">
-                                            <div>
-                                                <a href="#exampleModal{{ $client->id }}"  data-bs-toggle="modal" data-bs-target="#exampleModal{{ $client->id }}">
-                                                    <i class="icon-sm text-warning" data-feather="edit-2"></i>
-                                                  </a>
-                                                  <div class="modal fade" id="exampleModal{{ $client->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                      <div class="modal-content">
-                                                        <div class="modal-header">
-                                                          <h5 class="modal-title" id="exampleModalLabel">Nâng cấp Đối tác</h5>
-                                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form class="mt-3" action="{{ route('edit.role.client') }}"  method="POST" id="signupForm">
-                                                                @csrf
-                                                                
-                                                                <div class="mb-3">
-                                                                    <label for="exampleFormControlSelect1" class="form-label">Trạng thái khách hàng</label>
-                                                                    <select class="form-select" id="exampleFormControlSelect1" name="role">
-                                                                        <option selected value="client">khách hàng tư vấn</option>
-                                                                        <option value="contractor">nhà thâu thầu</option>
-                                                                    </select>
-                                                                </div>
-                                                                
-                                                                <input type="hidden" name="id" value="{{ $client->id }}">
-                                                                <div class="text-center"><button class="btn btn-primary" type="submit">Thêm</button></div>
-                                                            </form>
-                                                        </div>
-                                                        
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                            </div>
-                                            <a href="{{ route('delete.client.guest',$client->id) }}">
-                                                <i data-feather="trash" class="icon-sm text-danger ms-3"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                  </div>
-
-
-                 
-                </div>
-  
-            </div>
-        </div>
-        <div class="col-md-3 col-xl-3  mt-4">
-            <div class="card rounded">
-                <div class="card-body"> 
-                  <h3>Thêm gói thầu</h3>
-                  <form class="mt-3" action="{{ route('add.client') }}"  method="POST" id="signupForm">
-                      @csrf
-                      <div class="mb-3">
-                          <label for="name">Tên đối tác</label>
-                          <input class="form-control" type="text" name="name" id="name">
-                      </div>
-                      <div class="mb-3">
-                          <label for="email">email</label>
-                          <input class="form-control" type="text" name="email" id="email">
-                      </div>
-                      <div class="mb-3">
-                          <label for="">Số điện thoại</label>
-                          <input  class="form-control" name="phone" id="phone" data-inputmask-alias="(+99) 9999-9999">                      </div>
-                      <div class="mb-3">
-                          <label for="">Địa chỉ</label>
-                          <input class="form-control" type="text" name="address" id="address">
-                      </div>
-                      <div class="mb-3">
-                          <label for="">Mô tả</label>
-                          <textarea name="description" id="description" rows="4" class="form-control"></textarea>
-                      </div>
-                      <input type="hidden" name="role" value="contractor">
-                      <div class="text-center"><button class="btn btn-primary" type="submit">Thêm</button></div>
-                  </form>
-  
-  
-  
-                </div>
-  
-            </div>
-        </div>
-        <div class="col-md-9 col-xl-9 mt-4  middle-wrapper">
-            <div class="card rounded">
-                <div class="card-body"> 
-                  <h3 class="mb-3">Danh sách Các gói thầu</h3>
+                    <h3 class="mb-3">Danh sách Các gói thầu</h3>
+                    <button type="button" class="btn btn-outline-primary my-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <i class="" data-feather="plus"></i>
+                        <span>Thêm đối tác</span>
+                    </button>
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog ">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Thêm đối tác</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form class="mt-3" action="{{ route('add.client') }}"  method="POST" id="signupForm">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="name">Tên đối tác</label>
+                                        <input class="form-control" type="text" name="name" id="name">
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="">Mã đối tác</label>
+                                      <input type="text" name="contactorCode" id="contactorCode" class="form-control">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email">email</label>
+                                        <input class="form-control" type="text" name="email" id="email">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="">Số điện thoại</label>
+                                        <input  class="form-control" name="phone" id="phone" data-inputmask-alias="(+99) 9999-9999">                      </div>
+                                    <div class="mb-3">
+                                        <label for="">Địa chỉ</label>
+                                        <input class="form-control" type="text" name="address" id="address">
+                                    </div>
+                                    
+                                    <input type="hidden" name="role" value="contractor">
+                                    <div class="text-center"><button class="btn btn-primary" type="submit">Thêm</button></div>
+                                </form>
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary my-3" data-bs-toggle="modal" data-bs-target="#addListEmployee">
+                        <i class="" data-feather="plus"></i>
+                        <span>Thêm danh sách đối tác</span>
+                    </button>
+    
+                    <div class="modal fade" id="addListEmployee" tabindex="-1" aria-labelledby="addListEmployeeLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="addListEmployeeLabel">Thêm danh sách đối tác</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                            </div>
+                            <div class="modal-body">
+                                
+                                <form action="{{ route('client.import.khanh') }}" method="POST" enctype="multipart/form-data" id="importForm">
+                                    @csrf
+                                    <div class="mb-4">
+                                        <label for="fileInput">Danh sách:</label>
+                                        <input type="file" name="file" class="form-control" id="fileInput">
+                                        <!-- Invalid feedback sẽ được thêm vào đây bằng JS -->
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary">Thêm danh sách</button>
+                                    </div>
+                                </form>
+                            
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
                   <div class="table-responsive">
                     <table id="contractTable" class="table">
                         <thead>
                         <tr>
                             <th>Tên đối tác</th>
+                            <th>Mã đối tác</th>
                             <th>email</th>
                             <th>số điẹn thoại</th>
                             <th>Địa chỉ</th>
@@ -155,10 +99,10 @@
                         </tr>
                         </thead>
                         <tbody>  
-                            @foreach($clients as $client)
-                                @if($client->role=== 'contractor' )
+                            @foreach($contactors as $client)
                                 <tr>
                                     <td>{{ $client->name }}</td>
+                                    <td>{{ $client->contactorCode }}</td>
                                     <td>{{ $client->email }}</td>
                                     <td>{{ $client->phone }}</td>
                                     <td>{{ $client->address }}</td>
@@ -184,6 +128,10 @@
                                                                     <input class="form-control" type="text" name="name" id="name" value="{{ $client->name }}">
                                                                 </div>
                                                                 <div class="mb-3">
+                                                                    <label for="">Mã đối tác</label>
+                                                                    <input type="text" name="contactorCode" id="contactorCode" class="form-control" value="{{ $client->contactorCode }}">
+                                                                  </div>
+                                                                <div class="mb-3">
                                                                     <label for="email">email</label>
                                                                     <input class="form-control" type="email" name="email" id="email" value="{{ $client->email }}">
                                                                 </div>
@@ -202,10 +150,7 @@
                                                                         <option @if($client->status == 1) selected @endif value="1">Đã thầu</option>
                                                                     </select>
                                                                 </div>
-                                                                <div class="mb-3">
-                                                                    <label for="">Mô tả</label>
-                                                                    <input name="description" id="description" value="{{ $client->description }}" class="form-control"></input>
-                                                                </div>
+                                                                
                                                                 <input type="hidden" name="id" value="{{ $client->id }}">
                                                                 <div class="text-center"><button class="btn btn-primary" type="submit">Thêm</button></div>
                                                             </form>
@@ -277,7 +222,6 @@
                                         </div>
                                     </td>
                                 </tr>
-                                @endif
                             @endforeach
                         </tbody>
                     </table>
@@ -290,16 +234,67 @@
 </div>
 <script>
     $(document).ready(function() {
-        $('#clientTable').DataTable({
-            columnDefs: [
-                    { orderable: false, targets: 7 } // Chỉ định cột thứ 2 không cho phép sắp xếp
-                ]
-        });
+       
         $('#contractTable').DataTable({
             columnDefs: [
-                    { orderable: false, targets: 5 } // Chỉ định cột thứ 2 không cho phép sắp xếp
+                    { orderable: false, targets: 6 } // Chỉ định cột thứ 2 không cho phép sắp xếp
                 ]
         });
     });
     </script>
+    <script>
+        $(document).ready(function() {
+            $('#importForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                // Reset các thông báo lỗi cũ
+                $('.is-invalid').removeClass('is-invalid');
+                $('.invalid-feedback').remove();
+                
+                const fileInput = $('#fileInput');
+                const file = fileInput[0].files[0];
+                const maxSize = 8 * 1024 * 1024; // 8MB
+                let hasError = false;
+                
+                // Kiểm tra file có được chọn không
+                if (!file) {
+                    showError(fileInput, 'Vui lòng chọn file');
+                    hasError = true;
+                    return;
+                }
+                
+                // Kiểm tra định dạng file
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+                if (!['xlsx', 'xls', 'csv'].includes(fileExtension)) {
+                    showError(fileInput, 'File phải có định dạng .xlsx, .xls hoặc .csv');
+                    hasError = true;
+                    return;
+                }
+                
+                // Kiểm tra kích thước file
+                if (file.size > maxSize) {
+                    showError(fileInput, 'Kích thước file không được vượt quá 8MB');
+                    hasError = true;
+                    return;
+                }
+                
+                // Nếu không có lỗi thì submit form
+                if (!hasError) {
+                    this.submit();
+                }
+            });
+        
+            // Hàm hiển thị lỗi
+            function showError(element, message) {
+                element.addClass('is-invalid');
+                element.after(`<div class="invalid-feedback">${message}</div>`);
+            }
+        
+            // Reset lỗi khi chọn file mới
+            $('#fileInput').on('change', function() {
+                $(this).removeClass('is-invalid');
+                $('.invalid-feedback').remove();
+            });
+        });
+        </script>
 @endsection

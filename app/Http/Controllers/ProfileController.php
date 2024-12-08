@@ -36,8 +36,11 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        $notification = [
+            'message' => 'Đã chỉnh sưa thông tin',
+            'alert-type' => 'success'
+        ];
+        return redirect()->back()->with($notification);
     }
 
     /**

@@ -57,9 +57,27 @@ class ReportController extends Controller
         return   view('admin.report',compact('notifications','unreadMessagesCount','projects','projectReported')); 
 
     }
+    public function reportProjectSupervisor(){
+        
+        $notifications = NotificationUser::where('user_id', Auth::id())
+        ->where('is_read', 0)
+        ->with('notification') // Kèm thông tin từ bảng `notifications`
+        ->get();
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
+        $projects = Project::where('progress',100)->where('report_status',0)->where('userID',Auth::id())->get();
+        $projectReported = Project::where('progress',100)->where('report_status',1)->where('userID',Auth::id())->get();
+        return view('supervisor.report',compact('notifications','unreadMessagesCount','projects','projectReported')); 
+
+    }
     public function reportDetail($id){
         $project = Project::find($id);
-
+        $project->status = 1;
+        $project->save();
         if($project === null){
             
             
@@ -97,26 +115,66 @@ class ReportController extends Controller
 
 
     }
+    public function reportDetailSupervisor($id){
+        $project = Project::find($id);
+        $project->status = 1;
+        $project->save();
+        if($project === null){
+            
+            
+            return view('error.404');
+        }
+        $documents = Document::where('projectID',$id)->get();
+
+        $notifications = NotificationUser::where('user_id', Auth::id())
+        ->where('is_read', 0)
+        ->with('notification') // Kèm thông tin từ bảng `notifications`
+        ->get();
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
+        
+        $rootTasks = Task::where('parentID', 0)
+                            ->where('projectID',$id)
+                            ->orderBy('startDate', 'asc')
+                            ->get();
+        $tasks = $this->buildTaskHierarchy($rootTasks);
+        $coats = Coat::where('projectID',$id)->get();
+        
+        $totalCost = Coat::where('projectID', $id) // Lọc theo projectID
+        ->pluck('estimated_cost') // Lấy tất cả giá trị estimated_cost
+        ->map(function ($cost) {
+            // Loại bỏ các ký tự không phải số và chuyển thành kiểu int
+            return (int) preg_replace('/[^0-9]/', '', $cost);
+        })
+        ->sum();
+        $reports = Report::where('project_id',$project->id)->orderBy('created_at', 'desc')->get();
+        return   view('supervisor.detail-report',compact('reports','coats','notifications','unreadMessagesCount','project','documents','tasks','totalCost')); 
+
+
+    }
     public function store(Request $request, $id)
 {
     $request->validate([
         'is_pass' => 'required',
         'comment' => 'required',
-        // 'totalCost' => 'required',
-        // 'projectID' => 'required|exists:projects,id' // Kiểm tra projectID có tồn tại không
+        'totalCost' => 'required',
     ]);
 
     // Xử lý giá trị 'is_pass'
     $is_pass = $request->is_pass == "0" ? false : true;
     $userID = Auth::id(); // Sử dụng Auth::id() thay vì Auth()->id()
-
+   
     // Tính toán tổng chi phí dựa trên projectID
     
-
+    
     // Lưu báo cáo
     Report::create([
         'is_pass' => $is_pass,
-        'totalCoat' => 0,
+        'totalCoat' => $request->totalCost,
         'project_id' => $id,
         'comment' => $request->comment,
         'user_id' => $userID,
@@ -168,22 +226,17 @@ class ReportController extends Controller
         $request->validate([
             'is_pass' => 'required',
             'id' => 'required',
-            'comment'   => 'required'
+            'comment'   => 'required',
+            'totalCost' => 'required'
         ]);
         $report= Report::find($request->id);
-        $totalCost = Coat::where('projectID', $report->projectID) // Lọc theo projectID
-            ->pluck('estimated_cost') // Lấy tất cả giá trị estimated_cost
-            ->map(function ($cost) {
-                // Loại bỏ các ký tự không phải số và chuyển thành kiểu int
-                return (int) preg_replace('/[^0-9]/', '', $cost);
-            })
-            ->sum();
+        
         $userID = Auth()->id();
         $is_pass = $request->is_pass == "0" ? false : true; 
 
         Report::create([
             'is_pass' => $is_pass,
-            'totalCoat' => $totalCost,
+            'totalCoat' => $request->totalCost,
             'project_id' => $report->project_id,
             'comment'   => $request->comment,
             'user_id'    => $userID,

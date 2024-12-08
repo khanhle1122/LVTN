@@ -15,10 +15,12 @@ use App\Models\Task;
 use App\Models\Coat;
 use App\Models\User;
 use App\Models\Document;
+use App\Models\TaskWork;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Message;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\TasksImport;
+use Carbon\Carbon;
 
 
 
@@ -85,6 +87,46 @@ class TaskController extends Controller
             ->count();
         // Trả về view với project và tasks
         return view('admin.task', compact('project','documents','tasks','coats','notifications','unreadMessagesCount'));
+    }
+    public function viewtaskSupervisor($id) {
+        $show = 0 ;
+        $project = Project::find($id);
+        if($project === null){
+            
+            
+            return view('error.404');
+        }
+        $documents = Document::where('projectID',$id)->get();
+        
+        $rootTasks = Task::where('parentID', 0)
+                            ->where('projectID',$id)
+                            ->orderBy('startDate', 'asc')
+                            ->get();
+
+        // Xây dựng cây task phân cấp
+        $tasks = $this->buildTaskHierarchy($rootTasks);
+        $coats = Coat::where('projectID',$project->id)->get();
+        $notifications = NotificationUser::where('user_id', Auth::id())
+        ->where('is_read', 0)
+        ->with('notification') // Kèm thông tin từ bảng `notifications`
+        ->get();
+
+        // Kiểm tra nếu project không tồn tại
+        if (!$project) {
+            $notification = array(
+                'message' => 'dự án không tồn tại',
+                'alert-type' => 'error'
+            );
+            return redirect()->back()->with($notification);
+        }
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
+        // Trả về view với project và tasks
+        return view('supervisor.task', compact('project','documents','tasks','coats','notifications','unreadMessagesCount'));
     }
     
     
@@ -196,7 +238,6 @@ class TaskController extends Controller
             'projectID' => 'required',
             'userID' => 'required',
             'parentID' => 'required',
-            'budget' => 'required',
         ]);
         //kiểm tra mã dự án
         $project = Project::find($request->projectID);
@@ -252,7 +293,6 @@ class TaskController extends Controller
             'parentID' => $request->parentID,
             'projectID' => $request->projectID,
             'userID' => $request->userID,
-            'budget' => $request->budget,
             'duration' => $duration,
         ]);
         if ($request->parentID == 0) {
@@ -265,7 +305,7 @@ class TaskController extends Controller
 
         }
         $supervisor = User::find($task->userID);
-        $project = Project::find($projectID);
+        $project = Project::find($request->projectID);
         if ($supervisor ) {
             // Tạo thông báo
             $content = 'Bạn được phân công phụ trách công việc ' . $task->task_name . ' có mã công việc ' . $task->task_code . ' của dự án '. $project->projectName .' mã ' . $project->projectCode;
@@ -283,7 +323,10 @@ class TaskController extends Controller
             ]);
             }
             else{
+                $currentDate = Carbon::today();
                 $users = User::where('divisionID',$supervisor->divisionID)->get();
+
+                
                 foreach($users as $user){
                     NotificationUser::create([
                         'user_id' => $user->id,
@@ -291,10 +334,40 @@ class TaskController extends Controller
                         'is_read' => 0, // Mặc định là chưa đọc
                     ]);
                 }
+                TaskWork::create([
+                    'task_id'   => $task->id,
+                    'division_id'    => $supervisor->divisionID,
+                    'at_work'   => $currentDate	
+                ]); 
             }
 
 
         }
+
+        $allTasks = Task::where('projectID', $project->id)->get();
+        $totalWeightedProgress = 0;
+        $totalWeight = 0;
+
+        foreach ($allTasks as $projectTask) {
+            $taskWeight = max(1, \Carbon\Carbon::parse($projectTask->endDate)
+                ->diffInDays(\Carbon\Carbon::parse($projectTask->startDate)));
+            
+            $totalWeightedProgress += ($projectTask->progress * $taskWeight);
+            $totalWeight += $taskWeight;
+        }
+
+        if ($totalWeight > 0) {
+            $project->progress = round($totalWeightedProgress / $totalWeight);
+        }
+
+        $currentDate = \Carbon\Carbon::now();
+        if ($project->endDate < $currentDate ) {
+            $project->status = 3; // Quá hạn
+        } elseif ($project->progress == 100) {
+            $project->status = 1; // Đã hoàn thành
+        }
+
+        $project->save();
 
         $notification = array(
             'message' => 'Công việc đã được thêm ',
@@ -325,9 +398,9 @@ class TaskController extends Controller
             $task->save();
     
             // Cập nhật progress của project
-            $project = Project::find($task->projectID);
+        $project = Project::find($task->projectID);
 
-            $allTasks = Task::where('projectID', $project->id)->get();
+        $allTasks = Task::where('projectID', $project->id)->get();
         $totalWeightedProgress = 0;
         $totalWeight = 0;
 
@@ -424,9 +497,7 @@ class TaskController extends Controller
         $task->status = $request->status;
         
 
-        if ($request->filled('budget')) {
-            $task->budget = $request->budget;
-        }
+
         
         if ($request->filled('note')) {
             $task->description = $request->note;
@@ -439,6 +510,8 @@ class TaskController extends Controller
         if($task->userID != $request->userID){
             $supervisor = User::find($request->userID);
             $project = Project::find($request->projectID);
+            $userOld = User::find($task->userID);
+            $currentDate = Carbon::today();
             $content = 'Bạn được phân công phụ trách công việc ' . $task->task_name . ' có mã công việc ' . $task->task_code . ' của dự án '. $project->projectName .' mã ' . $project->projectCode;
             $notificate = Notification::create([
                 'title' => 'Việc làm',
@@ -449,6 +522,24 @@ class TaskController extends Controller
                 'notification_id' => $notificate->id,
                 'is_read' => 0, // Mặc định là chưa đọc
             ]);
+            
+            $taskWords = TaskWork::where('task_id',$task->id)->where('division_id',$userOld->divisionID)->get();
+            foreach($taskWords as $work){
+                $work->update([
+                    'out_work' => $currentDate,
+                    'is_work'  => 1,
+                ]);
+
+            }
+            TaskWork::create([
+                'task_id'   => $task->id,
+                'division_id'    => $supervisor->divisionID,
+                'at_work'   => $currentDate	
+            ]); 
+
+
+
+
         }
         $task->userID = $request->userID;
         $task->save();
@@ -473,8 +564,27 @@ class TaskController extends Controller
         }
 
         $currentDate = \Carbon\Carbon::now();
-        if ($project->endDate < $currentDate && $project->progress < 100) {
+        if ($project->endDate < $currentDate ) {
             $project->status = 3; // Quá hạn
+
+            
+            $content = 'Dự án ' . $project->projectName .' mã ' . $project->projectCode . ' Đang chậm tiến độ';
+            
+            $supervisors = User::all();
+            
+            $notificate = Notification::create([
+                'title' => 'Chậm tiến độ dự án',
+                'content'   => $content,
+            ]);
+            foreach($supervisors as $supervisor){
+                if($supervisor->role === "admin" || $supervisor->id == $project->userID)
+                NotificationUser::create([
+                    'user_id' => $supervisor->id,
+                    'notification_id' => $notificate->id,
+                    'is_read' => 0, // Mặc định là chưa đọc
+                ]);
+            }
+
         } elseif ($project->progress == 100) {
             $project->status = 1; // Đã hoàn thành
         }
@@ -498,12 +608,10 @@ class TaskController extends Controller
         ]);
     }
 }
-    public function lockTask(Request $request) {
-        $request->validate([
-            'task_id' => 'required',
-        ]);
+    public function lockTask($id) {
+        
         $currentDate = now();
-        $task = Task::find($request->task_id);
+        $task = Task::find($id);
         if($task->status == 0 || $task->status == 1 || $task->status == 2){
             $task->status = 3;
             $task->save();
