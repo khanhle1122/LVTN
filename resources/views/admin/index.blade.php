@@ -5,6 +5,70 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <div class="page-content">
+  <div class="row">
+    <div class="col-12 col-xl-12 stretch-card">
+      <div class="row flex-grow-1">
+        <div class="col-md-3 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-baseline">
+                <h6 class="card-title mb-0">Dự án</h6>
+                <div>{{ $totalProject }}</div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-baseline">
+                <h6 class="card-title mb-0">Nhân viên</h6>
+                <div>{{ $totalUser }}</div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-baseline">
+                <h6 class="card-title mb-0">Yêu cầu</h6>
+                <div>{{ $totalClient }}</div>
+              </div>
+              
+            </div>
+          </div>
+        
+        </div>
+        <div class="col-md-3 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-baseline">
+                <h6 class="card-title mb-0">Đối tác</h6>
+                <div>{{ $totalContractor }}</div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-baseline">
+                <h6 class="card-title mb-0">Báo cáo</h6>
+                <div>{{ $totalReport }}</div>
+              </div>
+              
+            </div>
+          </div>
+        
+        </div>
+        
+      </div>
+    </div>
+  </div> <!-- row -->
     <div class="row ">
       <div class="col-lg-7 col-xl-8 stretch-card ms-1 row">
         <div class="card">

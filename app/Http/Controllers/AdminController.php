@@ -14,6 +14,8 @@ use App\Models\NotificationUser;
 use App\Models\Client;
 use App\Models\Report;
 use App\Models\Task;
+use App\Models\User;
+use App\Models\Contractor;
 
 class AdminController extends Controller
 {
@@ -35,8 +37,10 @@ class AdminController extends Controller
         })->where('sender_id', '!=', Auth::id())
             ->where('is_read', 0)
             ->count();
-            $totalClient = Client::where('role','=','contractor')->count();
+            $totalClient = Client::count();
         $totalReport = Report::count();
+        $totalUser = User::count();
+        $totalContractor = Contractor::count();
         $requestClient = Client::where('role','client')->where('status',0)->get();
         return view('admin.index',compact(
                         'projects',
@@ -50,7 +54,9 @@ class AdminController extends Controller
                         'unreadMessagesCount',
                         'totalClient',
                         'totalReport',
-                        'requestClient'
+                        'requestClient',
+                        'totalUser',
+                        'totalContractor'
                     
                     
                     ));

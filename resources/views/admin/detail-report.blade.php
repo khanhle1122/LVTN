@@ -340,9 +340,11 @@
   
                 @endif
               </div>
-              <div class="no-print text-end">
+              @if($project->status_report == 1)
+              <div class="no-print text-end pb-4">
                 <button class="btn btn-dark " onclick="printContent()"><i data-feather="download" class="icon-sm"></i> <span class="ms-1"> In báo cáo</span></button>
               </div>
+              @endif
             </div>
         </div>
     </div>

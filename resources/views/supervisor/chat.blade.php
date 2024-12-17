@@ -190,11 +190,7 @@
                     </div>
                     <!-- Footer -->
                     <div class="chat-footer pt-3 d-flex">
-                      <div>
-                        <button type="button" class="btn border btn-icon rounded-circle me-2" data-bs-toggle="tooltip" data-bs-title="Emoji">
-                          <i data-feather="paperclip" class="text-muted"></i>
-                        </button>
-                      </div>
+                      
                       <form class="search-form flex-grow-1 me-2">
                         @csrf
                         <div class="input-group">

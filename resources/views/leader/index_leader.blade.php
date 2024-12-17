@@ -9,74 +9,83 @@
             <div class="card h-100">
                 <div class="card body ">
                     <div class="m-3">
-                        @foreach($projects as $project)
-                        @foreach($divisions as $division)
-                            @if($project->id == $division->tasks->projectID)
-                                <div class="ps-3">@include('admin.task.detail-project')</div>
-                                @break
-                            @endif
-
-                        @endforeach
-                        @endforeach
-
-                        <div class="mx-4 mb-4">
-                            <h3 class="mt-4">Danh sách công việc</h3>
+                        <h3 class="mb-4">Danh sách dự án</h3>
+                        <div>
                             
                             <div class="table-responsive">
-                                <table id="employee" class="table">
+                                <table id="employeeTable" class="table">
                                     <thead>
                                     <tr>
+                                        <th>Tên dự án</th>
                                         <th>Mã dự án</th>
-                                        <th>Tên công việc</th>
-                                        <th>Mã công việc</th>
+                                        <th>Địa điểm</th>
+                                        <th>Tiến độ</th>
                                         <th>Trạng thái</th>
                                         <th>Thời gian bắt đầu</th>
                                         <th>Thời gian kết thúc</th>
-                                        <th>Địa điểm</th>
+                                        <th>Ngân sách</th>
+                                        <th></th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($divisions as $division)
-                                            @if($division->out_work == null)
-                                                <tr>
-                                                    <td>{{ $division->tasks->projects->projectCode }}</td>
-
-                                                    <td>{{ $division->tasks->task_name }}</td>
-                                                    <td>{{ $division->tasks->task_code }}</td>
-                                                    <td>
-                                                        @if($division->tasks->status == 0)
-                                                        Đang thực hiện
-                                                        @elseif($division->tasks->status == 1) 
-                                                        Đã hoàn thành
-                                                        @elseif($division->tasks->status == 2) 
-                                                        Chậm tiến độ
-                                                        @else 
-                                                        Tạm dựng
-                                                        @endif
-                                                    </td>
-                                                    <td>{{ $division->tasks->endDate }}</td>
-                                                    <td>{{ $division->tasks->endDate }}</td>
-                                                    <td>{{ $division->tasks->projects->address }}</td>
-                                                </tr>
-
-                                            @else
-
-                                                <tr>
-                                                    <td>{{ $division->tasks->task_name }}</td>
-                                                    <td>{{ $division->tasks->task_code }}</td>
-                                                    <td>
-                                                        @if($division->is_work == 1)
-                                                        Đã thay đổi nhóm
+                                        @foreach($projects as $project)
+                                            @foreach($divisions as $division)
+                                                @if($project->id == $division->tasks->projectID)
+                                                    <tr>
+                                            
+                                                        <td><div class="mt-2 ">{{ $project->projectCode }}</div></td>
+                                                        <td><div class="mt-2"><span class="">{{ $project->projectName  }}</span></div></td>
+                                                        <td>
+                                                            <div class="mt-2">{{ $project->address }}</div>
+                                                        </td>
+                                                        <td><div class="mt-2">{{ $project->progress }} %</div></td>
+                                                        <td>
+                                                            <div class="mt-2">
+                                                                
+                                                            @if($project->status == 1)   
+                                                            <span class="badge bg-success-subtle text-success border border-success d-inline-flex align-items-center">
+                                                                Đã hoàn thành
+                                                            </span>
+                                                            @elseif($project->status == 2)
+                                                            <span class="badge bg-warning-subtle text-warning border border-warning d-inline-flex align-items-center">
+                                                                Tạm dừng
+                                                            </span>
+                                                            @elseif($project->status == 0)
+                                                            <span class="badge bg-primary-subtle text-primary border border-primary d-inline-flex align-items-center">
+                                                                Đang tiến hành
+                                                            </span>
+                                                            @elseif($project->status == 3)
+                                                            <span class="badge bg-danger-subtle text-danger border border-danger d-inline-flex align-items-center">
+                                                                Chậm tiến độ
+                                                            </span>
+                                                            @endif
+                        
+                                                            </div>
+                                                        </td>
+                                                        <td><div class="mt-2">{{ $project->startDate }}</div></td>
+                                                        <td><div class="mt-2">{{ $project->endDate }}</div></td>
+                                                        <td><div class="mt-2">{{ $project->budget }}</div></td>
+                                                        <td>
+                                                            <div class="d-flex justify-content-between mt-2">
+                                                                
+                                                
+                                                                
+                                                                <div class="">
+                                                                    <a  class="ms-2" href="{{ route('view.task.leader',$project->id) }}">
+                                                                        <i class="fa-solid fa-eye text-primary"></i>
+                                                                    </a>
+                                                                    
+                                                                </div>
+                                                                
+                                                            </div>
+                                                        </td>
                                                     
-                                                        @endif
-                                                    </td>
-                                                    <td>{{ $division->at_work }}</td>
-                                                    <td>{{ $division->out_work }}</td>
-                                                    <td>{{ $division->tasks->projects->address }}</td>
+                                                    </tr>
+                                                    @break
+                                                @endif
 
-                                                </tr>
-                                            @endif
-
+                                            @endforeach
+                                           
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -92,11 +101,14 @@
 </div>
 <script>
     $(document).ready(function() {
-        $('#employee').DataTable({
+        $('#employeeTable').DataTable({
             lengthMenu: [10, 25, 50, 100],
+            columnDefs: [
+                    { orderable: false, targets: 8 } // Chỉ định cột thứ 2 không cho phép sắp xếp
+                ],
             
         });
     });
-    </script>
+</script>
 
     @endsection

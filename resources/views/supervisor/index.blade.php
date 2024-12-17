@@ -29,8 +29,7 @@
                                     </thead>
                                     <tbody>
                                         @foreach($projects as $project)
-                                            @foreach($divisions as $division)
-                                                @if($project->id == $division->tasks->projectID)
+                                            
                                                     <tr>
                                             
                                                         <td><div class="mt-2 ">{{ $project->projectCode }}</div></td>
@@ -81,10 +80,7 @@
                                                         </td>
                                                     
                                                     </tr>
-                                                    @break
-                                                @endif
-
-                                            @endforeach
+                                                    
                                            
                                         @endforeach
                                     </tbody>

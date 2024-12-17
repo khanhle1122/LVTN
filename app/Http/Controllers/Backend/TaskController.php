@@ -128,6 +128,48 @@ class TaskController extends Controller
         // Trả về view với project và tasks
         return view('supervisor.task', compact('project','documents','tasks','coats','notifications','unreadMessagesCount'));
     }
+    public function viewtaskLeader($id) {
+        $show = 0 ;
+        $project = Project::find($id);
+        if($project === null){
+            
+            
+            return view('error.404');
+        }
+        $documents = Document::where('projectID',$id)->get();
+        
+        $rootTasks = Task::where('parentID', 0)
+                            ->where('projectID',$id)
+                            ->orderBy('startDate', 'asc')
+                            ->get();
+                            $user = User::find(Auth::id());
+
+        // Xây dựng cây task phân cấp
+        $tasks = Task::where('userID',$user->id)->where('projectID',$id)->get();
+        $coats = Coat::where('projectID',$project->id)->get();
+        $notifications = NotificationUser::where('user_id', Auth::id())
+        ->where('is_read', 0)
+        ->with('notification') // Kèm thông tin từ bảng `notifications`
+        ->get();
+        $divisions = TaskWork::where('division_id',$user->divisionID)->get();
+
+        // Kiểm tra nếu project không tồn tại
+        if (!$project) {
+            $notification = array(
+                'message' => 'dự án không tồn tại',
+                'alert-type' => 'error'
+            );
+            return redirect()->back()->with($notification);
+        }
+        $unreadMessagesCount = Message::whereHas('chatRoom', function ($query) {
+            $query->where('user_id', Auth::id())
+                    ->orWhere('other_user_id', Auth::id());
+        })->where('sender_id', '!=', Auth::id())
+            ->where('is_read', 0)
+            ->count();
+        // Trả về view với project và tasks
+        return view('leader.task_leader', compact('divisions','project','documents','tasks','coats','notifications','unreadMessagesCount'));
+    }
     
     
 

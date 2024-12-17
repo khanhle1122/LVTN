@@ -61,7 +61,7 @@ Route::middleware('auth','role:leader')->group(function () {
     Route::get('/leader/chat', [ChatController::class, 'index_leader'])->name('chat.leader.index');
     Route::get('/leader/profile', [LeaderController::class, 'index_profile'])->name('profile.leader');
     Route::post('/leader/profile', [LeaderController::class, 'editProfile'])->name('profile.update.leader');
-
+    Route::get('/leader/project/task/id={id}',[TaskController::class, 'viewtaskLeader'])->name('view.task.leader');
 
 
 });
